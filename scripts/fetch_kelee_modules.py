@@ -10,6 +10,11 @@ import urllib.request
 from datetime import datetime
 from pathlib import Path
 
+try:
+    from stable_output import json_payload_matches, previous_timestamp, tree_contents_match
+except ModuleNotFoundError:
+    from scripts.stable_output import json_payload_matches, previous_timestamp, tree_contents_match
+
 
 LOON_USER_AGENT = "Loon/860 CFNetwork/3826.500.111.2.2 Darwin/24.4.0"
 WINDOWS_INVALID_FILENAME_CHARS = set('<>:"/\\|?*')
@@ -158,13 +163,19 @@ def fetch_kelee_modules(base_url: str, output_dir: str) -> None:
 
         result = {
             "source": base_url,
-            "fetched_at": timestamp(),
+            "fetched_at": "",
             "total": total,
             "downloaded": len(index),
             "failed": len(failures),
             "modules": index,
             "failures": failures,
         }
+        content_unchanged = tree_contents_match(temp_output_root, output_root, {"modules.index.json"})
+        index_unchanged = json_payload_matches(index_path, result, "fetched_at")
+        if content_unchanged and index_unchanged:
+            result["fetched_at"] = previous_timestamp(index_path, "fetched_at") or timestamp()
+        else:
+            result["fetched_at"] = timestamp()
         temp_index_path.write_text(json.dumps(result, ensure_ascii=False, indent=4), encoding="utf-8", newline="\n")
 
         if failures:

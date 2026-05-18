@@ -11,6 +11,11 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+try:
+    from stable_output import file_contents_match, json_payload_matches, previous_timestamp, tree_contents_match
+except ModuleNotFoundError:
+    from scripts.stable_output import file_contents_match, json_payload_matches, previous_timestamp, tree_contents_match
+
 
 WINDOWS_INVALID_FILENAME_CHARS = set('<>:"/\\|?*')
 SECTION_ORDER = ("General", "Rule", "URL Rewrite", "Header Rewrite", "Body Rewrite", "Map Local", "Script", "MITM")
@@ -796,13 +801,20 @@ def convert_kelee_to_surge(input_dir: str, output_dir: str, report_path: str) ->
 
         temp_manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=4), encoding="utf-8", newline="\n")
         summary = {
-            "generated_at": timestamp(),
+            "generated_at": "",
             "input_dir": input_dir,
             "output_dir": output_dir,
             "total": len(files),
             "warnings": len(report),
             "items": report,
         }
+        modules_unchanged = tree_contents_match(temp_output_root, output_root, {"modules.index.json", "convert-report.json"})
+        manifest_unchanged = file_contents_match(temp_manifest_path, manifest_full_path)
+        report_unchanged = json_payload_matches(report_full_path, summary, "generated_at")
+        if modules_unchanged and manifest_unchanged and report_unchanged:
+            summary["generated_at"] = previous_timestamp(report_full_path, "generated_at") or timestamp()
+        else:
+            summary["generated_at"] = timestamp()
         temp_report_full_path.write_text(json.dumps(summary, ensure_ascii=False, indent=4), encoding="utf-8", newline="\n")
 
         replace_tree(temp_output_root, output_root, root)
