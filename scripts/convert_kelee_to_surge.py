@@ -5,6 +5,7 @@ import json
 import re
 import shutil
 import tempfile
+import urllib.request
 from collections import OrderedDict
 from datetime import datetime
 from pathlib import Path
@@ -13,6 +14,26 @@ from typing import Any
 
 WINDOWS_INVALID_FILENAME_CHARS = set('<>:"/\\|?*')
 SECTION_ORDER = ("General", "Rule", "URL Rewrite", "Header Rewrite", "Body Rewrite", "Map Local", "Script", "MITM")
+JQ_PATH_CACHE: dict[str, str] = {}
+LOON_USER_AGENT = "Loon/860 CFNetwork/3826.500.111.2.2 Darwin/24.4.0"
+DOMAIN_RULE_TYPES = {"DOMAIN", "DOMAIN-SUFFIX", "DOMAIN-KEYWORD"}
+IP_RULE_TYPES = {"IP-CIDR", "IP-CIDR6"}
+LOGICAL_RULE_TYPES = {"AND", "OR", "NOT"}
+PRE_MATCHING_RULE_TYPES = {
+    "DOMAIN",
+    "DOMAIN-SUFFIX",
+    "DOMAIN-KEYWORD",
+    "DOMAIN-SET",
+    "DOMAIN-WILDCARD",
+    "IP-CIDR",
+    "IP-CIDR6",
+    "GEOIP",
+    "IP-ASN",
+    "SUBNET",
+    "DEST-PORT",
+    "SRC-PORT",
+    "SRC-IP",
+}
 
 
 def timestamp() -> str:
@@ -158,19 +179,69 @@ def convert_path_to_jq_array(path: str) -> str:
     return json.dumps(segments, ensure_ascii=False, separators=(",", ":"))
 
 
-def convert_delete_paths_to_jq(paths: list[str]) -> str:
-    converted = [convert_path_to_jq_array(path) for path in paths]
-    return "'delpaths([" + ",".join(converted) + "])'"
+def path_segments(path: str) -> list[str | int]:
+    return json.loads(convert_path_to_jq_array(path))
 
 
-def convert_replace_pairs_to_jq(text: str) -> str:
+def jq_array(segments: list[str | int]) -> str:
+    return json.dumps(segments, ensure_ascii=False, separators=(",", ":"))
+
+
+def convert_delete_paths_to_jq(paths: list[str]) -> list[str]:
+    return ["'delpaths([" + convert_path_to_jq_array(path) + "])'" for path in paths]
+
+
+def convert_replace_pair_to_jq(path_text: str, value_text: str) -> str:
+    segments = path_segments(path_text)
+    if not segments:
+        return "'" + convert_json_value(value_text) + "'"
+
+    parent = jq_array(segments[:-1])
+    key = json.dumps(segments[-1], ensure_ascii=False, separators=(",", ":"))
+    path = jq_array(segments)
+    value = convert_json_value(value_text)
+    return f"'if (getpath({parent}) | has({key})) then (setpath({path}; {value})) else . end'"
+
+
+def convert_replace_pairs_to_jq(text: str) -> list[str]:
     tokens = [token for token in re.split(r"\s+", text.strip()) if token]
     parts: list[str] = []
     for index in range(0, len(tokens) - 1, 2):
-        path = convert_path_to_jq_array(tokens[index])
-        value = convert_json_value(tokens[index + 1])
-        parts.append(f"setpath({path}; {value})")
-    return "'" + " | ".join(parts) + "'"
+        parts.append(convert_replace_pair_to_jq(tokens[index], tokens[index + 1]))
+    return parts
+
+
+def fetch_jq_path(url: str) -> str:
+    if url not in JQ_PATH_CACHE:
+        request = urllib.request.Request(
+            url,
+            headers={
+                "User-Agent": LOON_USER_AGENT,
+                "Accept": "*/*",
+                "Accept-Language": "zh-CN,zh-Hans;q=0.9",
+            },
+        )
+        with urllib.request.urlopen(request, timeout=30) as response:
+            text = response.read().decode("utf-8")
+        JQ_PATH_CACHE[url] = " ".join(line.strip() for line in text.splitlines() if line.strip() and not line.lstrip().startswith("#"))
+    return JQ_PATH_CACHE[url]
+
+
+def quote_jq_expression(text: str) -> str:
+    return "'" + text.replace("'", "\\'") + "'"
+
+
+def convert_jq_expression(text: str, report: list[dict[str, str]], file: str, line: str) -> str:
+    match = re.fullmatch(r'jq-path=(["\']?)(.+?)\1', text.strip())
+    if not match:
+        return text
+
+    url = match.group(2)
+    try:
+        return quote_jq_expression(fetch_jq_path(url))
+    except Exception as exc:  # noqa: BLE001 - keep converting the module and report the fallback.
+        add_report(report, file, "jq-path-inline-failed", f"Unable to inline jq-path {url}: {exc}", line)
+        return text
 
 
 def parse_properties(text: str | None) -> OrderedDict[str, str]:
@@ -190,41 +261,171 @@ def is_reject_policy(policy: str) -> bool:
     return policy.upper().startswith("REJECT")
 
 
-def ensure_rule_option(parts: list[str], option: str) -> None:
-    if option not in (part.strip() for part in parts[3:]):
+def ensure_rule_option(parts: list[str], option: str, start_index: int) -> None:
+    if option not in (part.strip() for part in parts[start_index:]):
         parts.append(option)
 
 
-def remove_rule_option(parts: list[str], option: str) -> None:
-    parts[:] = parts[:3] + [part for part in parts[3:] if part.strip() != option]
+def remove_rule_option(parts: list[str], option: str, start_index: int) -> None:
+    parts[:] = parts[:start_index] + [part for part in parts[start_index:] if part.strip() != option]
 
 
-def convert_rule_line(line: str) -> str:
+def is_wrapped_parentheses(text: str) -> bool:
+    if len(text) < 2 or text[0] != "(" or text[-1] != ")":
+        return False
+
+    quote = ""
+    depth = 0
+    previous = ""
+
+    for index, char in enumerate(text):
+        if quote:
+            if char == quote and previous != "\\":
+                quote = ""
+            previous = char
+            continue
+
+        if char in ("'", '"'):
+            quote = char
+        elif char == "(":
+            depth += 1
+        elif char == ")":
+            depth -= 1
+            if depth == 0 and index != len(text) - 1:
+                return False
+            if depth < 0:
+                return False
+        previous = char
+
+    return depth == 0
+
+
+def strip_wrapping_parentheses(text: str) -> str:
+    stripped = text.strip()
+    if is_wrapped_parentheses(stripped):
+        return stripped[1:-1].strip()
+    return stripped
+
+
+def convert_logical_matcher_group(text: str) -> str:
+    inner = strip_wrapping_parentheses(text)
+    converted: list[str] = []
+    for item in split_top_level(inner, ","):
+        matcher = strip_wrapping_parentheses(item)
+        converted.append(f"({convert_rule_line(matcher, matcher_only=True)})")
+    return "(" + ",".join(converted) + ")"
+
+
+def matcher_supports_pre_matching(text: str) -> bool:
+    normalized = re.sub(r"\s*,\s*", ",", text).strip()
+    parts = split_top_level(normalized, ",")
+    if not parts:
+        return False
+
+    rule_type = parts[0].strip().upper()
+    if rule_type in LOGICAL_RULE_TYPES and len(parts) >= 2:
+        return logical_group_supports_pre_matching(parts[1])
+    return rule_type in PRE_MATCHING_RULE_TYPES
+
+
+def logical_group_supports_pre_matching(text: str) -> bool:
+    inner = strip_wrapping_parentheses(text)
+    items = split_top_level(inner, ",")
+    return bool(items) and all(matcher_supports_pre_matching(strip_wrapping_parentheses(item)) for item in items)
+
+
+def convert_rule_line(line: str, matcher_only: bool = False) -> str:
     normalized = re.sub(r"\s*,\s*", ",", line).strip()
     parts = split_top_level(normalized, ",")
-    if len(parts) < 3:
+    if not parts:
         return normalized
 
     rule_type = parts[0].strip().upper()
-    policy = parts[2].strip().upper()
+    if rule_type in LOGICAL_RULE_TYPES and len(parts) >= 2:
+        parts[1] = convert_logical_matcher_group(parts[1])
+        if not matcher_only and len(parts) >= 3:
+            option_start = 3
+            if is_reject_policy(parts[2].strip().upper()) and logical_group_supports_pre_matching(parts[1]):
+                ensure_rule_option(parts, "pre-matching", option_start)
+            else:
+                remove_rule_option(parts, "pre-matching", option_start)
+        return ",".join(parts)
+
+    min_parts = 2 if matcher_only else 3
+    if len(parts) < min_parts:
+        return normalized
+
+    option_start = 2 if matcher_only else 3
+    policy = "" if matcher_only else parts[2].strip().upper()
     reject_policy = is_reject_policy(policy)
 
-    if rule_type in ("DOMAIN", "DOMAIN-SUFFIX", "DOMAIN-KEYWORD"):
-        ensure_rule_option(parts, "extended-matching")
-        if reject_policy:
-            ensure_rule_option(parts, "pre-matching")
-        else:
-            remove_rule_option(parts, "pre-matching")
+    if rule_type in DOMAIN_RULE_TYPES:
+        ensure_rule_option(parts, "extended-matching", option_start)
+        if not matcher_only:
+            if reject_policy:
+                ensure_rule_option(parts, "pre-matching", option_start)
+            else:
+                remove_rule_option(parts, "pre-matching", option_start)
     elif rule_type == "URL-REGEX":
-        ensure_rule_option(parts, "extended-matching")
-    elif rule_type in ("IP-CIDR", "IP-CIDR6"):
-        ensure_rule_option(parts, "no-resolve")
-        if reject_policy:
-            ensure_rule_option(parts, "pre-matching")
-        else:
-            remove_rule_option(parts, "pre-matching")
+        ensure_rule_option(parts, "extended-matching", option_start)
+    elif rule_type in IP_RULE_TYPES:
+        ensure_rule_option(parts, "no-resolve", option_start)
+        if not matcher_only:
+            if reject_policy:
+                ensure_rule_option(parts, "pre-matching", option_start)
+            else:
+                remove_rule_option(parts, "pre-matching", option_start)
 
     return ",".join(parts)
+
+
+def is_bare_domain_rule(line: str) -> bool:
+    return bool(re.fullmatch(r"[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)+", line.strip()))
+
+
+def append_unique_rule(output: list[str], line: str) -> None:
+    if line not in output:
+        output.append(line)
+
+
+def ensure_mock_option(mock: str, key: str, value: str) -> str:
+    if re.search(rf"\b{re.escape(key)}=", mock):
+        return mock
+    return f"{mock} {key}={value}".strip()
+
+
+def convert_mock_response_options(text: str) -> str:
+    mock = re.sub(r"^mock-response-body\s+", "", text)
+
+    if re.search(r"\bdata-path=", mock):
+        if re.search(r"\bdata-type=", mock):
+            mock = re.sub(r"\bdata-type=\S+", "data-type=file", mock, count=1)
+        else:
+            mock = f"data-type=file {mock}"
+        mock = re.sub(r"\bdata-path=", "data=", mock, count=1)
+        mock = ensure_mock_option(mock, "header", '"Content-Type:text/plain"')
+    elif "data-type=json" in mock:
+        mock = mock.replace("data-type=json", "data-type=text")
+        mock = ensure_mock_option(mock, "header", '"Content-Type:application/json"')
+
+    return ensure_mock_option(mock, "status-code", "200")
+
+
+def quote_property_value(value: str) -> str:
+    stripped = value.strip()
+    if len(stripped) >= 2 and stripped[0] == stripped[-1] and stripped[0] in ("'", '"'):
+        return stripped
+    return '"' + stripped.replace('"', '\\"') + '"'
+
+
+def format_script_pattern(pattern: str) -> str:
+    if any(char in pattern for char in (",", " ")):
+        return quote_property_value(pattern)
+    return pattern
+
+
+def clean_hostname_list(text: str) -> str:
+    return ", ".join(item.strip() for item in split_top_level(text, ",") if item.strip())
 
 
 def convert_rewrite_line(line: str, sections: OrderedDict[str, list[str]], report: list[dict[str, str]], file: str) -> None:
@@ -234,12 +435,14 @@ def convert_rewrite_line(line: str, sections: OrderedDict[str, list[str]], repor
         rest = rest or ""
 
         if action == "response-body-json-jq":
-            sections["Body Rewrite"].append(f"http-response-jq {pattern} {rest}")
+            sections["Body Rewrite"].append(f"http-response-jq {pattern} {convert_jq_expression(rest, report, file, line)}")
         elif action == "response-body-json-del":
             paths = [item for item in re.split(r"\s+", rest.strip()) if item]
-            sections["Body Rewrite"].append(f"http-response-jq {pattern} {convert_delete_paths_to_jq(paths)}")
+            for expression in convert_delete_paths_to_jq(paths):
+                sections["Body Rewrite"].append(f"http-response-jq {pattern} {expression}")
         elif action == "response-body-json-replace":
-            sections["Body Rewrite"].append(f"http-response-jq {pattern} {convert_replace_pairs_to_jq(rest)}")
+            for expression in convert_replace_pairs_to_jq(rest):
+                sections["Body Rewrite"].append(f"http-response-jq {pattern} {expression}")
         elif action in ("response-body-replace-regex", "request-body-replace-regex"):
             first, second = split_first(rest, " ")
             sections["Body Rewrite"].append(f"{kind} {pattern} {first} {second}")
@@ -264,21 +467,16 @@ def convert_rewrite_line(line: str, sections: OrderedDict[str, list[str]], repor
     elif action == "reject-200":
         sections["Map Local"].append(f'{pattern} data-type=text data=" " status-code=200')
     elif action == "mock-response-body":
-        mock = re.sub(r"^mock-response-body\s+", "", rest)
-        if "data-type=json" in mock:
-            mock = mock.replace("data-type=json", "data-type=text")
-            if "header=" not in mock:
-                mock += ' header="Content-Type:application/json"'
-        if "status-code=" not in mock:
-            mock += " status-code=200"
-        sections["Map Local"].append(f"{pattern} {mock}")
+        sections["Map Local"].append(f"{pattern} {convert_mock_response_options(rest)}")
     elif action == "response-body-json-jq":
-        sections["Body Rewrite"].append(f"http-response-jq {pattern} {rest}")
+        sections["Body Rewrite"].append(f"http-response-jq {pattern} {convert_jq_expression(rest, report, file, line)}")
     elif action == "response-body-json-del":
         paths = [item for item in re.split(r"\s+", rest.strip()) if item]
-        sections["Body Rewrite"].append(f"http-response-jq {pattern} {convert_delete_paths_to_jq(paths)}")
+        for expression in convert_delete_paths_to_jq(paths):
+            sections["Body Rewrite"].append(f"http-response-jq {pattern} {expression}")
     elif action == "response-body-json-replace":
-        sections["Body Rewrite"].append(f"http-response-jq {pattern} {convert_replace_pairs_to_jq(rest)}")
+        for expression in convert_replace_pairs_to_jq(rest):
+            sections["Body Rewrite"].append(f"http-response-jq {pattern} {expression}")
     elif action == "response-body-replace-regex":
         first, second = split_first(rest, " ")
         sections["Body Rewrite"].append(f"http-response {pattern} {first} {second}")
@@ -310,7 +508,7 @@ def convert_script_line(line: str, output: list[str], report: list[dict[str, str
         script_type, pattern, props_text = match.groups()
         props = parse_properties(props_text)
         name = props.get("tag") or f"{script_type} {len(output) + 1}"
-        parts = [f"type={script_type}", f"pattern={pattern}"]
+        parts = [f"type={script_type}", f"pattern={format_script_pattern(pattern)}"]
 
         for key in ("script-path", "requires-body", "binary-body-mode", "timeout", "engine", "max-size", "ability"):
             if key in props:
@@ -450,6 +648,16 @@ def convert_file(path: Path, output_root: Path, report: list[dict[str, str]], se
             add_report(report, path.name, "general-pass-through", "General line passed through without conversion.", line)
 
     for line in section_lines(source_sections, "Rule"):
+        rewrite_match = re.match(r"^(\S+)\s+(\d{3})\s+(.+)$", line)
+        if rewrite_match:
+            pattern, status_code, replacement = rewrite_match.groups()
+            sections["URL Rewrite"].append(f"{pattern} {replacement.strip()} {status_code}")
+            continue
+
+        if is_bare_domain_rule(line):
+            append_unique_rule(sections["Rule"], convert_rule_line(f"DOMAIN,{line},REJECT"))
+            continue
+
         rule_parts = split_top_level(line, ",")
         if len(rule_parts) >= 3 and rule_parts[0].strip().upper() == "URL-REGEX":
             pattern = rule_parts[1].strip()
@@ -477,7 +685,9 @@ def convert_file(path: Path, output_root: Path, report: list[dict[str, str]], se
     for line in section_lines(source_sections, "MitM"):
         match = re.match(r"^hostname\s*=\s*(.+)$", line, flags=re.IGNORECASE)
         if match:
-            sections["MITM"].append(f"hostname = %APPEND% {match.group(1).strip()}")
+            hostnames = clean_hostname_list(match.group(1))
+            if hostnames:
+                sections["MITM"].append(f"hostname = %APPEND% {hostnames}")
         else:
             add_report(report, path.name, "mitm-unsupported", "Unsupported MitM line", line)
 

@@ -11,7 +11,10 @@
 
 [Body Rewrite]
 http-response-jq ^https:\/\/hera-webapp\.fenbi\.com\/(iphone|ipad)\/recommend\/info\? 'delpaths([["data","rollingBanner"]])'
-http-response-jq ^https:\/\/ke\.fenbi\.com\/(iphone|ipad)\/v3\/apps\/config\? 'delpaths([["data","bottomIconInfos","position","iconDefaultUrl"],["data","bottomIconInfos","position","iconSelectedUrl"],["data","bottomIconInfos","position","nightModeIconDefaultUrl"],["data","bottomIconInfos","position","nightModeIconSelectedUrl"]])'
+http-response-jq ^https:\/\/ke\.fenbi\.com\/(iphone|ipad)\/v3\/apps\/config\? 'delpaths([["data","bottomIconInfos","position","iconDefaultUrl"]])'
+http-response-jq ^https:\/\/ke\.fenbi\.com\/(iphone|ipad)\/v3\/apps\/config\? 'delpaths([["data","bottomIconInfos","position","iconSelectedUrl"]])'
+http-response-jq ^https:\/\/ke\.fenbi\.com\/(iphone|ipad)\/v3\/apps\/config\? 'delpaths([["data","bottomIconInfos","position","nightModeIconDefaultUrl"]])'
+http-response-jq ^https:\/\/ke\.fenbi\.com\/(iphone|ipad)\/v3\/apps\/config\? 'delpaths([["data","bottomIconInfos","position","nightModeIconSelectedUrl"]])'
 
 [Map Local]
 ^https:\/\/keapi\.fenbi\.com\/app\/(iphone|ipad)\/position_resource\/get_banners\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"

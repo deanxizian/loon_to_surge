@@ -10,7 +10,8 @@
 #!date=2025-11-21 13:02:33
 
 [Body Rewrite]
-http-response-jq ^https:\/\/app\.chengfenmiao\.com\/helper\/setting\? 'delpaths([["detail_buy_sites"],["bottom_sites"]])'
+http-response-jq ^https:\/\/app\.chengfenmiao\.com\/helper\/setting\? 'delpaths([["detail_buy_sites"]])'
+http-response-jq ^https:\/\/app\.chengfenmiao\.com\/helper\/setting\? 'delpaths([["bottom_sites"]])'
 
 [Map Local]
 ^https:\/\/app\.chengfenmiao\.com\/Listing\/LiveHots\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"

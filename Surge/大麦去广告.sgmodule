@@ -10,7 +10,8 @@
 #!date=2025-11-09 00:15:08
 
 [Body Rewrite]
-http-response-jq ^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.damai\.wireless\.user\.my\.content\.get\/ 'delpaths([["data","banner"],["data","performFilmVip","userProfitList"]])'
+http-response-jq ^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.damai\.wireless\.user\.my\.content\.get\/ 'delpaths([["data","banner"]])'
+http-response-jq ^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.damai\.wireless\.user\.my\.content\.get\/ 'delpaths([["data","performFilmVip","userProfitList"]])'
 http-response-jq ^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.damai\.wireless\.mypage\.feed\/ 'delpaths([["data","feedCard"]])'
 http-response-jq ^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.damai\.mec\.aristotle\.get\/ 'delpaths([["data","data","top","keywords"]])'
 

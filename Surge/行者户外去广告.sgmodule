@@ -11,7 +11,8 @@
 
 [Body Rewrite]
 http-response-jq ^https:\/\/www\.imxingzhe\.com\/api\/v4\/account\/get_user_info\? 'delpaths([["banner"]])'
-http-response-jq ^https:\/\/www\.imxingzhe\.com\/api\/v4\/discovery\/ios\/\? 'delpaths([["banners"],["ad"]])'
+http-response-jq ^https:\/\/www\.imxingzhe\.com\/api\/v4\/discovery\/ios\/\? 'delpaths([["banners"]])'
+http-response-jq ^https:\/\/www\.imxingzhe\.com\/api\/v4\/discovery\/ios\/\? 'delpaths([["ad"]])'
 http-response-jq ^https:\/\/www\.imxingzhe\.com\/api\/v4\/discovery\/ios\/\? '.display_areas |= map(select(.name == "赛事" or .name == "行者帮" or .name == "头条" or .name == "排行榜" or .name == "约伴"))'
 
 [Map Local]

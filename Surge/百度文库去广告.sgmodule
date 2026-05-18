@@ -10,7 +10,9 @@
 #!date=2025-12-07 05:57:46
 
 [Body Rewrite]
-http-response-jq ^https:\/\/appwk\.baidu\.com\/appapi\/index\/home\? 'delpaths([["data","bannerInfo"],["data","bannerList"],["data","bannerListV2"]])'
+http-response-jq ^https:\/\/appwk\.baidu\.com\/appapi\/index\/home\? 'delpaths([["data","bannerInfo"]])'
+http-response-jq ^https:\/\/appwk\.baidu\.com\/appapi\/index\/home\? 'delpaths([["data","bannerList"]])'
+http-response-jq ^https:\/\/appwk\.baidu\.com\/appapi\/index\/home\? 'delpaths([["data","bannerListV2"]])'
 http-response-jq ^https:\/\/(appwk|tanbi)\.baidu\.com\/gsula\/sula\/syncmrecall$ 'delpaths([["data","items"]])'
 http-response-jq ^https:\/\/appwk\.baidu\.com\/appapi\/index\/tab\? 'delpaths([["data"]])'
 http-response-jq ^https:\/\/appwk\.baidu\.com\/appapi\/forum\/feed\?reqMode=wenkuapp_main_feed 'delpaths([["data"]])'

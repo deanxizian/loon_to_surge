@@ -11,7 +11,8 @@
 
 [Body Rewrite]
 http-response-jq ^https:\/\/iphone\.myzaker\.com\/zaker\/article_mongo_sec\.php\? 'delpaths([["data","ad_url"]])'
-http-response-jq ^https:\/\/ggs\.myzaker\.com\/zk_article_ad\.php\? 'delpaths([["data","article_bottom"],["data","recommend_ad"]])'
+http-response-jq ^https:\/\/ggs\.myzaker\.com\/zk_article_ad\.php\? 'delpaths([["data","article_bottom"]])'
+http-response-jq ^https:\/\/ggs\.myzaker\.com\/zk_article_ad\.php\? 'delpaths([["data","recommend_ad"]])'
 http-response-jq ^https:\/\/iphone\.myzaker\.com\/zaker\/follow_promote\.php\? '.data.list |= map(select(.type != "web"))'
 http-response-jq ^https:\/\/iphone\.myzaker\.com\/zaker\/car_tab\/index\.php\? '.data.gallery |= map(select(.type != "web"))'
 

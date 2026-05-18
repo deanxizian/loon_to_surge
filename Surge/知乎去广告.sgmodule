@@ -26,7 +26,8 @@ http-response-jq ^https:\/\/page-info\.zhihu\.com\/answers\/v\d\/\d+$ 'delpaths(
 http-response-jq ^https:\/\/page-info\.zhihu\.com\/\/v\d\/\d$ 'delpaths([["third_business"]])'
 http-response-jq ^https:\/\/api\.zhihu\.com\/podcasts\/hub\/v\d$ 'delpaths([["banners"]])'
 http-response-jq ^https:\/\/api\.zhihu\.com\/search\/recommend_query\/v\d\? '.recommend_queries.queries |= map(select(.type == "normal"))'
-http-response-jq ^https:\/\/api\.zhihu\.com\/people\/self$ 'delpaths([["vip_info","entrance_new","right_button"],["vip_info","entrance_v2"]])'
+http-response-jq ^https:\/\/api\.zhihu\.com\/people\/self$ 'delpaths([["vip_info","entrance_new","right_button"]])'
+http-response-jq ^https:\/\/api\.zhihu\.com\/people\/self$ 'delpaths([["vip_info","entrance_v2"]])'
 
 [Map Local]
 ^https:\/\/api\.zhihu\.com\/commercial_api\/ data-type=text data="{}" status-code=200 header="Content-Type:application/json"

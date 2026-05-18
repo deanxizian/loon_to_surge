@@ -10,7 +10,9 @@
 #!date=2025-07-10 21:25:29
 
 [Body Rewrite]
-http-response-jq ^https:\/\/conf-m-ssl\.xunlei\.com\/external\/ 'delpaths([["values","me_config","entrance_list_vertical_enable"],["values","me_config","common_service_list"],["values","me_config","banner_service_list"]])'
+http-response-jq ^https:\/\/conf-m-ssl\.xunlei\.com\/external\/ 'delpaths([["values","me_config","entrance_list_vertical_enable"]])'
+http-response-jq ^https:\/\/conf-m-ssl\.xunlei\.com\/external\/ 'delpaths([["values","me_config","common_service_list"]])'
+http-response-jq ^https:\/\/conf-m-ssl\.xunlei\.com\/external\/ 'delpaths([["values","me_config","banner_service_list"]])'
 http-response-jq ^https:\/\/api-shoulei-ssl\.xunlei\.com\/flowhub\/v1\/slots:batchGet$ '.slots |= map(select(.id == "xl_ios_mytab_vipicon" or (.native.assets.title.text.value? and (.native.assets.title.text.value | . == "清理助手" or . == "云盘容量" or . == "远程设备"))))'
 
 [MITM]

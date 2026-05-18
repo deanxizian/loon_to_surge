@@ -14,7 +14,9 @@ DOMAIN,smad.ms.zhangyue.net,REJECT,extended-matching,pre-matching
 DOMAIN,saad.ms.zhangyue.net,REJECT,extended-matching,pre-matching
 
 [Body Rewrite]
-http-response-jq ^https:\/\/dj\.palmestore\.com\/zybk\/api\/powerup\/userGroup\? 'delpaths([["body","sevenDaysAd"],["body","shortPlayShow"],["body","sdkShortPlayAB"]])'
+http-response-jq ^https:\/\/dj\.palmestore\.com\/zybk\/api\/powerup\/userGroup\? 'delpaths([["body","sevenDaysAd"]])'
+http-response-jq ^https:\/\/dj\.palmestore\.com\/zybk\/api\/powerup\/userGroup\? 'delpaths([["body","shortPlayShow"]])'
+http-response-jq ^https:\/\/dj\.palmestore\.com\/zybk\/api\/powerup\/userGroup\? 'delpaths([["body","sdkShortPlayAB"]])'
 http-response-jq ^https:\/\/dj\.palmestore\.com\/zybk\/api\/search\/index\? 'delpaths([["body","keywords"]])'
 
 [Map Local]

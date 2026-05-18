@@ -10,7 +10,22 @@
 #!date=2025-11-25 03:30:07
 
 [Body Rewrite]
-http-response-jq ^https:\/\/open\.xueqiu\.com\/mpaas\/config\/content\?.*timeline_tab_name 'delpaths([["data","im_notice_show"],["data","request_notice_show"],["data","timeline_tab_name"],["data","profileMenuConfig_anonymous_V12"],["data","trade_open_account_promotion_url"],["data","trade_unify_open_account_list"],["data","community_ad_download_msg"],["data","home_tab_dynamic"],["data","home_tab_dynamic_before"],["data","home_tab_dynamic_after"],["data"],["isitor_page_login_config"],["data","open_wechat_mini_app_config"],["data","user_guide_contact_config"],["data","brokers_router_config"],["data","my_page_right_items"]])'
+http-response-jq ^https:\/\/open\.xueqiu\.com\/mpaas\/config\/content\?.*timeline_tab_name 'delpaths([["data","im_notice_show"]])'
+http-response-jq ^https:\/\/open\.xueqiu\.com\/mpaas\/config\/content\?.*timeline_tab_name 'delpaths([["data","request_notice_show"]])'
+http-response-jq ^https:\/\/open\.xueqiu\.com\/mpaas\/config\/content\?.*timeline_tab_name 'delpaths([["data","timeline_tab_name"]])'
+http-response-jq ^https:\/\/open\.xueqiu\.com\/mpaas\/config\/content\?.*timeline_tab_name 'delpaths([["data","profileMenuConfig_anonymous_V12"]])'
+http-response-jq ^https:\/\/open\.xueqiu\.com\/mpaas\/config\/content\?.*timeline_tab_name 'delpaths([["data","trade_open_account_promotion_url"]])'
+http-response-jq ^https:\/\/open\.xueqiu\.com\/mpaas\/config\/content\?.*timeline_tab_name 'delpaths([["data","trade_unify_open_account_list"]])'
+http-response-jq ^https:\/\/open\.xueqiu\.com\/mpaas\/config\/content\?.*timeline_tab_name 'delpaths([["data","community_ad_download_msg"]])'
+http-response-jq ^https:\/\/open\.xueqiu\.com\/mpaas\/config\/content\?.*timeline_tab_name 'delpaths([["data","home_tab_dynamic"]])'
+http-response-jq ^https:\/\/open\.xueqiu\.com\/mpaas\/config\/content\?.*timeline_tab_name 'delpaths([["data","home_tab_dynamic_before"]])'
+http-response-jq ^https:\/\/open\.xueqiu\.com\/mpaas\/config\/content\?.*timeline_tab_name 'delpaths([["data","home_tab_dynamic_after"]])'
+http-response-jq ^https:\/\/open\.xueqiu\.com\/mpaas\/config\/content\?.*timeline_tab_name 'delpaths([["data"]])'
+http-response-jq ^https:\/\/open\.xueqiu\.com\/mpaas\/config\/content\?.*timeline_tab_name 'delpaths([["isitor_page_login_config"]])'
+http-response-jq ^https:\/\/open\.xueqiu\.com\/mpaas\/config\/content\?.*timeline_tab_name 'delpaths([["data","open_wechat_mini_app_config"]])'
+http-response-jq ^https:\/\/open\.xueqiu\.com\/mpaas\/config\/content\?.*timeline_tab_name 'delpaths([["data","user_guide_contact_config"]])'
+http-response-jq ^https:\/\/open\.xueqiu\.com\/mpaas\/config\/content\?.*timeline_tab_name 'delpaths([["data","brokers_router_config"]])'
+http-response-jq ^https:\/\/open\.xueqiu\.com\/mpaas\/config\/content\?.*timeline_tab_name 'delpaths([["data","my_page_right_items"]])'
 
 [Map Local]
 ^https:\/\/api\.xueqiu\.com\/snowpard\/launch_strategy\/query\.json\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"

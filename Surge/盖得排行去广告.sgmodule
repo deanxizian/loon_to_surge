@@ -10,7 +10,16 @@
 #!date=2025-05-13 15:17:08
 
 [Body Rewrite]
-http-response-jq ^https:\/\/zone\.guiderank-app\.com\/guiderank-web\/app\/home\/getHomePageV 'delpaths([["data","countdownBanner"],["data","newEvaluations"],["data","freeToPayBannerPhotoUrl"],["data","groupBuyingList"],["data","multiCountdownBanner"],["data","banners"],["data","multiPlatformBanner"],["data","specialSaleBannerPhotoUrl"],["data","guide90Evaluation"],["data","insurancePromotions"]])'
+http-response-jq ^https:\/\/zone\.guiderank-app\.com\/guiderank-web\/app\/home\/getHomePageV 'delpaths([["data","countdownBanner"]])'
+http-response-jq ^https:\/\/zone\.guiderank-app\.com\/guiderank-web\/app\/home\/getHomePageV 'delpaths([["data","newEvaluations"]])'
+http-response-jq ^https:\/\/zone\.guiderank-app\.com\/guiderank-web\/app\/home\/getHomePageV 'delpaths([["data","freeToPayBannerPhotoUrl"]])'
+http-response-jq ^https:\/\/zone\.guiderank-app\.com\/guiderank-web\/app\/home\/getHomePageV 'delpaths([["data","groupBuyingList"]])'
+http-response-jq ^https:\/\/zone\.guiderank-app\.com\/guiderank-web\/app\/home\/getHomePageV 'delpaths([["data","multiCountdownBanner"]])'
+http-response-jq ^https:\/\/zone\.guiderank-app\.com\/guiderank-web\/app\/home\/getHomePageV 'delpaths([["data","banners"]])'
+http-response-jq ^https:\/\/zone\.guiderank-app\.com\/guiderank-web\/app\/home\/getHomePageV 'delpaths([["data","multiPlatformBanner"]])'
+http-response-jq ^https:\/\/zone\.guiderank-app\.com\/guiderank-web\/app\/home\/getHomePageV 'delpaths([["data","specialSaleBannerPhotoUrl"]])'
+http-response-jq ^https:\/\/zone\.guiderank-app\.com\/guiderank-web\/app\/home\/getHomePageV 'delpaths([["data","guide90Evaluation"]])'
+http-response-jq ^https:\/\/zone\.guiderank-app\.com\/guiderank-web\/app\/home\/getHomePageV 'delpaths([["data","insurancePromotions"]])'
 http-response-jq ^https:\/\/zone\.guiderank-app\.com\/guiderank-web\/app\/common\/getInitData\.do 'delpaths([["data","SpecialSalePageMidTabConfig"]])'
 
 [Map Local]

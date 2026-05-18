@@ -10,7 +10,9 @@
 #!date=2026-02-23 01:17:31
 
 [Body Rewrite]
-http-response-jq ^https:\/\/consumer\.fcbox\.com\/v1\/dynamicConfig\/findTabbarConfig\/mainPage$ 'delpaths([["data","lifeService"],["data","mall"],["data","wash"]])'
+http-response-jq ^https:\/\/consumer\.fcbox\.com\/v1\/dynamicConfig\/findTabbarConfig\/mainPage$ 'delpaths([["data","lifeService"]])'
+http-response-jq ^https:\/\/consumer\.fcbox\.com\/v1\/dynamicConfig\/findTabbarConfig\/mainPage$ 'delpaths([["data","mall"]])'
+http-response-jq ^https:\/\/consumer\.fcbox\.com\/v1\/dynamicConfig\/findTabbarConfig\/mainPage$ 'delpaths([["data","wash"]])'
 
 [Map Local]
 ^https:\/\/consumer\.fcbox\.com\/fcboxactivityweb\/api\/v\d\/clientPage\/modulesAggregated\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"

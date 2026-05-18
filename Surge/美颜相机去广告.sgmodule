@@ -13,8 +13,12 @@
 DOMAIN,adui.tg.meitu.com,REJECT,extended-matching,pre-matching
 
 [Body Rewrite]
-http-response-jq ^https:\/\/api\.meiyan\.com\/operation\/get_config\.json\? 'delpaths([["response","time_limit"],["response","bubble"],["response","person_center"]])'
-http-response-jq ^https:\/\/api\.meiyan\.com\/operation\/get_config\.json\? 'setpath(["response","function_pop","meiyan_style","is_pop"]; false) | setpath(["response","onoff","vip_half_window_exit_remain_popup","open"]; 0) | setpath(["response","onoff","vip_home_exit_remain_popup"]; 0)'
+http-response-jq ^https:\/\/api\.meiyan\.com\/operation\/get_config\.json\? 'delpaths([["response","time_limit"]])'
+http-response-jq ^https:\/\/api\.meiyan\.com\/operation\/get_config\.json\? 'delpaths([["response","bubble"]])'
+http-response-jq ^https:\/\/api\.meiyan\.com\/operation\/get_config\.json\? 'delpaths([["response","person_center"]])'
+http-response-jq ^https:\/\/api\.meiyan\.com\/operation\/get_config\.json\? 'if (getpath(["response","function_pop","meiyan_style"]) | has("is_pop")) then (setpath(["response","function_pop","meiyan_style","is_pop"]; false)) else . end'
+http-response-jq ^https:\/\/api\.meiyan\.com\/operation\/get_config\.json\? 'if (getpath(["response","onoff","vip_half_window_exit_remain_popup"]) | has("open")) then (setpath(["response","onoff","vip_half_window_exit_remain_popup","open"]; 0)) else . end'
+http-response-jq ^https:\/\/api\.meiyan\.com\/operation\/get_config\.json\? 'if (getpath(["response","onoff"]) | has("vip_home_exit_remain_popup")) then (setpath(["response","onoff","vip_home_exit_remain_popup"]; 0)) else . end'
 
 [Map Local]
 ^https:\/\/api\.meiyan\.com\/operation\/home_banner\.json\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"

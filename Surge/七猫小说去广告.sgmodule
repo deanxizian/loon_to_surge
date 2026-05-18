@@ -20,7 +20,8 @@ DOMAIN-SUFFIX,gdt.qq.com,REJECT,extended-matching,pre-matching
 ^https:\/\/api-cfg\.wtzw\.com\/v\d\/adv\/ - reject
 
 [Body Rewrite]
-http-response-jq ^https:\/\/xiaoshuo\.wtzw\.com\/api\/v\d\/user\/my-center\? 'delpaths([["data","func_area",1],["data","func_area",2]])'
+http-response-jq ^https:\/\/xiaoshuo\.wtzw\.com\/api\/v\d\/user\/my-center\? 'delpaths([["data","func_area",1]])'
+http-response-jq ^https:\/\/xiaoshuo\.wtzw\.com\/api\/v\d\/user\/my-center\? 'delpaths([["data","func_area",2]])'
 
 [Map Local]
 ^https:\/\/api-cfg\.wtzw\.com\/v\d\/splash\/ data-type=text data="{}" status-code=200 header="Content-Type:application/json"

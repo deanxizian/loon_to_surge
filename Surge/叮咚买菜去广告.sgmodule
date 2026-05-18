@@ -21,7 +21,8 @@ DOMAIN,rttrack.ddxq.mobi,REJECT,extended-matching,pre-matching
 [Body Rewrite]
 http-response-jq ^https:\/\/maicai\.api\.ddxq\.mobi\/homeApi\/categoriesNewDetail\? 'delpaths([["data","ad_info"]])'
 http-response-jq ^https:\/\/maicai\.api\.ddxq\.mobi\/tool\/getConfig\? 'delpaths([["data","ai_enter_config"]])'
-http-response-jq ^https?:\/\/maicai\.api\.ddxq\.mobi\/homeApi\/newDetails\? 'delpaths([["data","top_advert_data"],["data","suspension"]])'
+http-response-jq ^https?:\/\/maicai\.api\.ddxq\.mobi\/homeApi\/newDetails\? 'delpaths([["data","top_advert_data"]])'
+http-response-jq ^https?:\/\/maicai\.api\.ddxq\.mobi\/homeApi\/newDetails\? 'delpaths([["data","suspension"]])'
 http-response-jq ^https?:\/\/maicai\.api\.ddxq\.mobi\/homeApi\/newDetails\? '.data.list |= map(select(has("capsule_freedom_zone") | not))'
 http-response-jq ^https:\/\/maicai\.api\.ddxq\.mobi\/guide-service\/productApi\/productDetail\/info\? 'delpaths([["data","detail","chatEntry"]])'
 http-response-jq ^https?:\/\/maicai\.api\.ddxq\.mobi\/homeApi\/bottomNavi 'del(.data.adId?) | if (.data.bottom_list? | length > 0) then .data.bottom_list |= map(select(.type != "eatwhat")) else . end'

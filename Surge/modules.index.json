@@ -521,6 +521,7 @@
         "name": "斗鱼去广告",
         "sections": [
             "Rule",
+            "URL Rewrite",
             "Body Rewrite",
             "Map Local",
             "Script",

@@ -10,7 +10,7 @@
 #!date=2026-05-15 21:46:51
 
 [Rule]
-ad-sdk-config.youdao.com
+DOMAIN,ad-sdk-config.youdao.com,REJECT,extended-matching,pre-matching
 
 [Body Rewrite]
 http-response-jq ^https:\/\/dict\.youdao\.com\/homepage\/toolbar\/get\/ 'delpaths([["data","vipTag"]])'

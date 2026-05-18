@@ -13,8 +13,8 @@
 #!arguments=blockUpload:false,blockShorts:false,blockImmersive:false,captionLang:"zh-Hans",lyricLang:"zh-Hans",debug:false
 
 [Rule]
-AND,((DOMAIN-SUFFIX,googlevideo.com),(PROTOCOL,QUIC)),REJECT
-AND,((DOMAIN-SUFFIX,youtubei.googleapis.com),(PROTOCOL,QUIC)),REJECT
+AND,((DOMAIN-SUFFIX,googlevideo.com,extended-matching),(PROTOCOL,QUIC)),REJECT
+AND,((DOMAIN-SUFFIX,youtubei.googleapis.com,extended-matching),(PROTOCOL,QUIC)),REJECT
 
 [Map Local]
 ^https?:\/\/[\w-]+\.googlevideo\.com\/initplayback.+&oad data-type=text data=" " status-code=200

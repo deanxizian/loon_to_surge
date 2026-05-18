@@ -36,8 +36,11 @@ DOMAIN,pre-acs.youku.com,REJECT,extended-matching,pre-matching
 DOMAIN,youku-acs.m.taobao.com,REJECT,extended-matching,pre-matching
 
 [Body Rewrite]
-http-response-jq ^https:\/\/un-acs\.youku\.com\/gw\/mtop\.youku\.play\.ups\.appinfo\.get 'delpaths([["data","data","ad"],["data","data","watermark"],["data","data","ykad"]])'
-http-response-jq ^https:\/\/push\.m\.youku\.com\/collect-api\/get_push_interval_config_wx\? 'delpaths([["data","tipContent"],["data","tipContentNew"]])'
+http-response-jq ^https:\/\/un-acs\.youku\.com\/gw\/mtop\.youku\.play\.ups\.appinfo\.get 'delpaths([["data","data","ad"]])'
+http-response-jq ^https:\/\/un-acs\.youku\.com\/gw\/mtop\.youku\.play\.ups\.appinfo\.get 'delpaths([["data","data","watermark"]])'
+http-response-jq ^https:\/\/un-acs\.youku\.com\/gw\/mtop\.youku\.play\.ups\.appinfo\.get 'delpaths([["data","data","ykad"]])'
+http-response-jq ^https:\/\/push\.m\.youku\.com\/collect-api\/get_push_interval_config_wx\? 'delpaths([["data","tipContent"]])'
+http-response-jq ^https:\/\/push\.m\.youku\.com\/collect-api\/get_push_interval_config_wx\? 'delpaths([["data","tipContentNew"]])'
 
 [MITM]
 hostname = %APPEND% push.m.youku.com, un-acs.youku.com

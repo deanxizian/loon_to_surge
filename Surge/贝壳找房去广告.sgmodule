@@ -10,7 +10,8 @@
 #!date=2025-08-10 13:18:43
 
 [Body Rewrite]
-http-response-jq ^https:\/\/apps\.api\.ke\.com\/platform\/shellapp\/homepage\/initData\/mini\? 'delpaths([["data","bootpage"],["data","bottom_bar_activity"]])'
+http-response-jq ^https:\/\/apps\.api\.ke\.com\/platform\/shellapp\/homepage\/initData\/mini\? 'delpaths([["data","bootpage"]])'
+http-response-jq ^https:\/\/apps\.api\.ke\.com\/platform\/shellapp\/homepage\/initData\/mini\? 'delpaths([["data","bottom_bar_activity"]])'
 http-response-jq ^https:\/\/apps\.api\.ke\.com\/platform\/shellapp\/userCenter\/info\? 'delpaths([["data","islandModule"]])'
 http-response-jq ^https:\/\/apps\.api\.ke\.com\/platform\/shellapp\/userCenter\/info\? 'del(.data.mainIcons.list[] | select(.indexKey == "coupon"))'
 http-response-jq ^https:\/\/apps\.api\.ke\.com\/platform\/shellapp\/myhome\/pagedetail\? '.data.moduleList |= map(select(.tab != "myHomeDecorV4"))'

@@ -10,8 +10,9 @@
 #!date=2026-05-15 03:27:14
 
 [Body Rewrite]
-http-response-jq ^https:\/\/(m|www)\.kookapp\.cn\/api\/v\d\/user\/settings$ 'delpaths([["ad_banner"],["advertise_on_off"]])'
-http-response-jq ^https:\/\/(m|www)\.kookapp\.cn\/api\/v\d\/user\/settings$ 'setpath(["ios_mall_switch"]; false)'
+http-response-jq ^https:\/\/(m|www)\.kookapp\.cn\/api\/v\d\/user\/settings$ 'delpaths([["ad_banner"]])'
+http-response-jq ^https:\/\/(m|www)\.kookapp\.cn\/api\/v\d\/user\/settings$ 'delpaths([["advertise_on_off"]])'
+http-response-jq ^https:\/\/(m|www)\.kookapp\.cn\/api\/v\d\/user\/settings$ 'if (getpath([]) | has("ios_mall_switch")) then (setpath(["ios_mall_switch"]; false)) else . end'
 http-response-jq ^https:\/\/www\.kookapp\.cn\/api\/v3\/discover\/tab-list\? '.data.items |= map(select(.id == 472 or .id == 473 or .id == 475))'
 
 [Map Local]

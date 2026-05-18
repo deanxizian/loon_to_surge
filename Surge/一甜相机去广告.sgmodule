@@ -10,7 +10,8 @@
 #!date=2025-07-04 23:22:46
 
 [Body Rewrite]
-http-response-jq ^https:\/\/(m2u-api\.getkwai|api-m2u\.kuaishou)\.com\/api-server\/api\/v1\/system\/configs\? 'delpaths([["data","shouldUseLMAdFirst"],["data","incentiveCfgList"]])'
+http-response-jq ^https:\/\/(m2u-api\.getkwai|api-m2u\.kuaishou)\.com\/api-server\/api\/v1\/system\/configs\? 'delpaths([["data","shouldUseLMAdFirst"]])'
+http-response-jq ^https:\/\/(m2u-api\.getkwai|api-m2u\.kuaishou)\.com\/api-server\/api\/v1\/system\/configs\? 'delpaths([["data","incentiveCfgList"]])'
 
 [Map Local]
 ^https:\/\/(m2u-api\.getkwai|api-m2u\.kuaishou)\.com\/api-server\/api\/v1\/ad\/ data-type=text data="{}" status-code=200 header="Content-Type:application/json"

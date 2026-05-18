@@ -10,7 +10,10 @@
 #!date=2025-08-31 05:46:14
 
 [Body Rewrite]
-http-response-jq ^https:\/\/tnc\d-(bjlgy|ali[a-z]{2})\d?\.zijieapi\.com\/get_domains\/v\d\/\? 'setpath(["data","opaque_data_enabled"]; 0) | setpath(["data","ttnet_http_dns_enabled"]; 0) | setpath(["data","ttnet_quic_enabled"]; 0) | setpath(["data","ttnet_tt_http_dns"]; 0)'
+http-response-jq ^https:\/\/tnc\d-(bjlgy|ali[a-z]{2})\d?\.zijieapi\.com\/get_domains\/v\d\/\? 'if (getpath(["data"]) | has("opaque_data_enabled")) then (setpath(["data","opaque_data_enabled"]; 0)) else . end'
+http-response-jq ^https:\/\/tnc\d-(bjlgy|ali[a-z]{2})\d?\.zijieapi\.com\/get_domains\/v\d\/\? 'if (getpath(["data"]) | has("ttnet_http_dns_enabled")) then (setpath(["data","ttnet_http_dns_enabled"]; 0)) else . end'
+http-response-jq ^https:\/\/tnc\d-(bjlgy|ali[a-z]{2})\d?\.zijieapi\.com\/get_domains\/v\d\/\? 'if (getpath(["data"]) | has("ttnet_quic_enabled")) then (setpath(["data","ttnet_quic_enabled"]; 0)) else . end'
+http-response-jq ^https:\/\/tnc\d-(bjlgy|ali[a-z]{2})\d?\.zijieapi\.com\/get_domains\/v\d\/\? 'if (getpath(["data"]) | has("ttnet_tt_http_dns")) then (setpath(["data","ttnet_tt_http_dns"]; 0)) else . end'
 http-response-jq ^https:\/\/tnc\d-(bjlgy|ali[a-z]{2})\d?\.zijieapi\.com\/get_domains\/v\d\/\? '.data.ttnet_dispatch_actions |= map(select(.action != "dispatch" and .action != "tc"))'
 http-response-jq ^https:\/\/(beta-luna\.douyin|api5-lq\.qishui)\.com\/luna\/me\? 'delpaths([["reward_ad_banner"]])'
 http-response-jq ^https:\/\/(beta-luna\.douyin|api5-lq\.qishui)\.com\/luna\/feed\/song-tab\? 'del(.items[] | select(.type == "video_track_mix"))'
