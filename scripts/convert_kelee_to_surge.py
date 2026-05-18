@@ -186,22 +186,45 @@ def add_report(report: list[dict[str, str]], file: str, kind: str, message: str,
     report.append({"file": file, "kind": kind, "message": message, "line": line})
 
 
+def is_reject_policy(policy: str) -> bool:
+    return policy.upper().startswith("REJECT")
+
+
+def ensure_rule_option(parts: list[str], option: str) -> None:
+    if option not in (part.strip() for part in parts[3:]):
+        parts.append(option)
+
+
+def remove_rule_option(parts: list[str], option: str) -> None:
+    parts[:] = parts[:3] + [part for part in parts[3:] if part.strip() != option]
+
+
 def convert_rule_line(line: str) -> str:
     normalized = re.sub(r"\s*,\s*", ",", line).strip()
-    if re.match(r"^(DOMAIN|DOMAIN-SUFFIX|DOMAIN-KEYWORD),", normalized):
-        if not re.search(r",extended-matching(,|$)", normalized):
-            normalized += ",extended-matching"
-        if not re.search(r",pre-matching(,|$)", normalized):
-            normalized += ",pre-matching"
-    elif normalized.startswith("URL-REGEX,"):
-        if not re.search(r",extended-matching(,|$)", normalized):
-            normalized += ",extended-matching"
-    elif re.match(r"^(IP-CIDR|IP-CIDR6),", normalized):
-        if not re.search(r",no-resolve(,|$)", normalized):
-            normalized += ",no-resolve"
-        if not re.search(r",pre-matching(,|$)", normalized):
-            normalized += ",pre-matching"
-    return normalized
+    parts = split_top_level(normalized, ",")
+    if len(parts) < 3:
+        return normalized
+
+    rule_type = parts[0].strip().upper()
+    policy = parts[2].strip().upper()
+    reject_policy = is_reject_policy(policy)
+
+    if rule_type in ("DOMAIN", "DOMAIN-SUFFIX", "DOMAIN-KEYWORD"):
+        ensure_rule_option(parts, "extended-matching")
+        if reject_policy:
+            ensure_rule_option(parts, "pre-matching")
+        else:
+            remove_rule_option(parts, "pre-matching")
+    elif rule_type == "URL-REGEX":
+        ensure_rule_option(parts, "extended-matching")
+    elif rule_type in ("IP-CIDR", "IP-CIDR6"):
+        ensure_rule_option(parts, "no-resolve")
+        if reject_policy:
+            ensure_rule_option(parts, "pre-matching")
+        else:
+            remove_rule_option(parts, "pre-matching")
+
+    return ",".join(parts)
 
 
 def convert_rewrite_line(line: str, sections: OrderedDict[str, list[str]], report: list[dict[str, str]], file: str) -> None:

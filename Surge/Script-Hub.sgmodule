@@ -10,7 +10,7 @@
 #!date=2026-04-30 16:28:27
 
 [Rule]
-DOMAIN,scripthub.vercel.app,PROXY,extended-matching,pre-matching
+DOMAIN,scripthub.vercel.app,PROXY,extended-matching
 
 [Script]
 前端界面 = type=http-request, pattern=^https?:\/\/script\.hub\/($|edit\/|reload), script-path=https://raw.githubusercontent.com/Script-Hub-Org/Script-Hub/main/script-hub.js, timeout=300

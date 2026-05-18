@@ -13,7 +13,7 @@
 #!arguments=displayUpList:"show",purifyComment:true,optimizeRequest:true,sponsorBlock:false,logLevel:"off"
 
 [Rule]
-DOMAIN,bsbsb.top,PROXY,extended-matching,pre-matching
+DOMAIN,bsbsb.top,PROXY,extended-matching
 DOMAIN,api.biliapi.com,REJECT,extended-matching,pre-matching
 DOMAIN,app.biliapi.com,REJECT,extended-matching,pre-matching
 DOMAIN,api.biliapi.net,REJECT,extended-matching,pre-matching

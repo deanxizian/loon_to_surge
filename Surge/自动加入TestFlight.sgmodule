@@ -11,7 +11,7 @@
 #!arguments=CaptureAccountToken:false,RunTask:"false",RunMonitor:"true",TaskCron:"0 0/2 * * * ?",TaskMonitor:"0 * * * * ?"
 
 [Rule]
-DOMAIN,testflight.apple.com,PROXY,extended-matching,pre-matching
+DOMAIN,testflight.apple.com,PROXY,extended-matching
 
 [Script]
 获取账号令牌 = type=http-request, pattern=^https?:\/\/testflight\.apple\.com\/v3\/accounts\/.*\/apps$, script-path=https://kelee.one/Resource/JavaScript/TestFlight/CaptureAccountToken.js

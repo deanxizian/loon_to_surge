@@ -10,7 +10,7 @@
 #!date=2026-03-14 07:41:44
 
 [Rule]
-DOMAIN,ad.12306.cn,DIRECT,extended-matching,pre-matching
+DOMAIN,ad.12306.cn,DIRECT,extended-matching
 
 [Body Rewrite]
 http-response-jq ^https:\/\/ad\.12306\.cn\/ad\/ser\/getAdList$ 'delpaths([["materialsList"],["advertParam"]])'

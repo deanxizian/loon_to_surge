@@ -10,9 +10,9 @@
 #!date=2025-11-14 22:56:21
 
 [Rule]
-DOMAIN,push.m.youku.com,DIRECT,extended-matching,pre-matching
-DOMAIN,un-acs.youku.com,DIRECT,extended-matching,pre-matching
-DOMAIN,dorangesource.alicdn.com,DIRECT,extended-matching,pre-matching
+DOMAIN,push.m.youku.com,DIRECT,extended-matching
+DOMAIN,un-acs.youku.com,DIRECT,extended-matching
+DOMAIN,dorangesource.alicdn.com,DIRECT,extended-matching
 DOMAIN,h-adashx.ut.taobao.com,REJECT,extended-matching,pre-matching
 DOMAIN,adx-core.youku.com,REJECT,extended-matching,pre-matching
 DOMAIN,adx-open-service.youku.com,REJECT,extended-matching,pre-matching

@@ -10,9 +10,9 @@
 #!date=2025-05-13 15:17:08
 
 [Rule]
-DOMAIN,fastraw.ixnic.net,DIRECT,extended-matching,pre-matching
-DOMAIN,hub.incept.pw,DIRECT,extended-matching,pre-matching
-DOMAIN,raw.kkgithub.com,DIRECT,extended-matching,pre-matching
+DOMAIN,fastraw.ixnic.net,DIRECT,extended-matching
+DOMAIN,hub.incept.pw,DIRECT,extended-matching
+DOMAIN,raw.kkgithub.com,DIRECT,extended-matching
 
 [Script]
 GitHub加速 = type=http-request, pattern=^https:\/\/raw\.githubusercontent\.com\/, script-path=https://kelee.one/Resource/JavaScript/GitHub/Switch_github_mirror.js

@@ -10,7 +10,7 @@
 #!date=2026-05-13 18:10:34
 
 [Rule]
-DOMAIN-SUFFIX,uve.weibo.com,DIRECT,extended-matching,pre-matching
+DOMAIN-SUFFIX,uve.weibo.com,DIRECT,extended-matching
 DOMAIN,huodong.weibo.cn,REJECT,extended-matching,pre-matching
 DOMAIN-SUFFIX,biz.weibo.com,REJECT,extended-matching,pre-matching
 
