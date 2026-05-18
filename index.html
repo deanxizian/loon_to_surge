@@ -1,0 +1,609 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Loon to Surge Modules</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f7f8fb;
+      --surface: #ffffff;
+      --surface-muted: #f0f4f8;
+      --text: #16202a;
+      --muted: #667586;
+      --border: #d9e0e8;
+      --accent: #1769e0;
+      --accent-strong: #0e54ba;
+      --loon: #0f8a65;
+      --shadow: 0 12px 28px rgba(18, 32, 46, 0.08);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+      letter-spacing: 0;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .page {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 56px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      align-items: end;
+      padding: 8px 0 24px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(28px, 5vw, 44px);
+      line-height: 1.08;
+      font-weight: 760;
+      letter-spacing: 0;
+    }
+
+    .summary {
+      margin: 12px 0 0;
+      max-width: 720px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(96px, 1fr));
+      gap: 10px;
+      min-width: 330px;
+    }
+
+    .stat {
+      padding: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 22px;
+      line-height: 1.1;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      padding: 14px 0;
+      background: rgba(247, 248, 251, 0.94);
+      backdrop-filter: blur(10px);
+    }
+
+    .search {
+      width: 100%;
+      height: 44px;
+      padding: 0 14px;
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font: inherit;
+      outline: none;
+    }
+
+    .search:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(23, 105, 224, 0.14);
+    }
+
+    .tags {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .tag-filter {
+      height: 36px;
+      padding: 0 12px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--muted);
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .tag-filter[aria-pressed="true"] {
+      border-color: var(--accent);
+      color: var(--accent-strong);
+      background: #e9f2ff;
+    }
+
+    .status-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 8px 0 12px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .module-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .module-card {
+      display: grid;
+      grid-template-columns: 52px minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+      padding: 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 8px 20px rgba(18, 32, 46, 0.05);
+    }
+
+    .icon {
+      width: 52px;
+      height: 52px;
+      object-fit: cover;
+      border-radius: 12px;
+      background: var(--surface-muted);
+      border: 1px solid var(--border);
+    }
+
+    .module-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.3;
+      font-weight: 720;
+    }
+
+    .module-title span:first-child {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .date {
+      flex: 0 0 auto;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 520;
+    }
+
+    .description {
+      display: -webkit-box;
+      margin: 6px 0 0;
+      color: var(--muted);
+      overflow: hidden;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      font-size: 13px;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .chip {
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: var(--surface-muted);
+      color: #526170;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 88px;
+      height: 38px;
+      padding: 0 14px;
+      border-radius: var(--radius);
+      border: 1px solid transparent;
+      font-size: 14px;
+      font-weight: 680;
+      text-decoration: none;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .button.surge {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .button.surge:hover {
+      background: var(--accent-strong);
+    }
+
+    .button.loon {
+      background: #e8f7f1;
+      border-color: #bfe8d9;
+      color: var(--loon);
+    }
+
+    .button.loon:hover {
+      background: #d9f1e8;
+    }
+
+    .empty {
+      display: none;
+      padding: 48px 20px;
+      text-align: center;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+    }
+
+    .empty.visible {
+      display: block;
+    }
+
+    .load-error {
+      margin: 24px 0 0;
+      padding: 16px;
+      border: 1px solid #f0b8b8;
+      border-radius: var(--radius);
+      background: #fff3f3;
+      color: #8e2424;
+    }
+
+    @media (max-width: 860px) {
+      header {
+        grid-template-columns: 1fr;
+      }
+
+      .stats {
+        min-width: 0;
+      }
+
+      .toolbar {
+        grid-template-columns: 1fr;
+      }
+
+      .tags {
+        justify-content: flex-start;
+      }
+
+      .module-card {
+        grid-template-columns: 44px minmax(0, 1fr);
+      }
+
+      .icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+      }
+
+      .actions {
+        grid-column: 1 / -1;
+        justify-content: stretch;
+      }
+
+      .button {
+        flex: 1;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .page {
+        width: min(100% - 20px, 1180px);
+        padding-top: 20px;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .status-line {
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .module-title {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .module-title span:first-child {
+        white-space: normal;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <div>
+        <h1>Loon to Surge Modules</h1>
+        <p class="summary">从 Kelee PluginHub 抓取 Loon 模块并转换为 Surge 模块。选择模块后可直接唤起对应客户端导入。</p>
+      </div>
+      <section class="stats" aria-label="模块统计">
+        <div class="stat">
+          <strong id="loon-count">-</strong>
+          <span>Loon 模块</span>
+        </div>
+        <div class="stat">
+          <strong id="surge-count">-</strong>
+          <span>Surge 模块</span>
+        </div>
+        <div class="stat">
+          <strong id="warning-count">-</strong>
+          <span>转换提示</span>
+        </div>
+      </section>
+    </header>
+
+    <section class="toolbar" aria-label="筛选模块">
+      <input id="search" class="search" type="search" placeholder="搜索模块、描述、标签或文件名" autocomplete="off">
+      <div id="tags" class="tags"></div>
+    </section>
+
+    <div class="status-line">
+      <span id="result-count">正在加载模块...</span>
+      <span id="updated-at"></span>
+    </div>
+
+    <section id="module-list" class="module-list" aria-label="模块列表"></section>
+    <div id="empty" class="empty">没有匹配的模块。</div>
+  </main>
+
+  <script>
+    const state = {
+      modules: [],
+      query: "",
+      tag: "全部"
+    };
+
+    const elements = {
+      loonCount: document.querySelector("#loon-count"),
+      surgeCount: document.querySelector("#surge-count"),
+      warningCount: document.querySelector("#warning-count"),
+      resultCount: document.querySelector("#result-count"),
+      updatedAt: document.querySelector("#updated-at"),
+      search: document.querySelector("#search"),
+      tags: document.querySelector("#tags"),
+      list: document.querySelector("#module-list"),
+      empty: document.querySelector("#empty")
+    };
+
+    function fileUrl(directory, fileName) {
+      const encoded = fileName.split("/").map(encodeURIComponent).join("/");
+      return `${window.location.origin}/${directory}/${encoded}`;
+    }
+
+    function surgeInstallUrl(fileName) {
+      return `surge:///install-module?url=${encodeURIComponent(fileUrl("Surge", fileName))}`;
+    }
+
+    function loonInstallUrl(fileName) {
+      return `loon://import?plugin=${encodeURIComponent(fileUrl("Loon", fileName))}`;
+    }
+
+    function normalizeText(value) {
+      return String(value || "").toLowerCase();
+    }
+
+    function tagsOf(module) {
+      return Array.isArray(module.tags) ? module.tags : [];
+    }
+
+    function buildTagFilters(modules) {
+      const tagCounts = new Map();
+      for (const module of modules) {
+        for (const tag of tagsOf(module)) {
+          tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
+        }
+      }
+
+      const tags = ["全部", ...Array.from(tagCounts.keys()).sort((a, b) => a.localeCompare(b, "zh-CN"))];
+      elements.tags.replaceChildren(...tags.map((tag) => {
+        const button = document.createElement("button");
+        button.className = "tag-filter";
+        button.type = "button";
+        button.textContent = tag === "全部" ? "全部" : `${tag} ${tagCounts.get(tag)}`;
+        button.setAttribute("aria-pressed", String(state.tag === tag));
+        button.addEventListener("click", () => {
+          state.tag = tag;
+          document.querySelectorAll(".tag-filter").forEach((item) => {
+            item.setAttribute("aria-pressed", String(item === button));
+          });
+          render();
+        });
+        return button;
+      }));
+    }
+
+    function moduleMatches(module) {
+      const query = normalizeText(state.query).trim();
+      const tagMatch = state.tag === "全部" || tagsOf(module).includes(state.tag);
+      if (!tagMatch) return false;
+      if (!query) return true;
+
+      const searchable = [
+        module.name,
+        module.desc,
+        module.source,
+        module.surgeFile,
+        tagsOf(module).join(" "),
+        module.sections.join(" ")
+      ].map(normalizeText).join(" ");
+
+      return searchable.includes(query);
+    }
+
+    function moduleCard(module) {
+      const article = document.createElement("article");
+      article.className = "module-card";
+
+      const img = document.createElement("img");
+      img.className = "icon";
+      img.alt = "";
+      img.loading = "lazy";
+      img.src = module.icon || "";
+      img.onerror = () => {
+        img.removeAttribute("src");
+      };
+
+      const body = document.createElement("div");
+      const title = document.createElement("h2");
+      title.className = "module-title";
+      const name = document.createElement("span");
+      name.textContent = module.name;
+      const date = document.createElement("span");
+      date.className = "date";
+      date.textContent = module.date || "";
+      title.append(name, date);
+
+      const desc = document.createElement("p");
+      desc.className = "description";
+      desc.textContent = module.desc || "无描述";
+
+      const meta = document.createElement("div");
+      meta.className = "meta";
+      const chips = [...tagsOf(module), ...module.sections.slice(0, 3)];
+      meta.replaceChildren(...chips.map((value) => {
+        const chip = document.createElement("span");
+        chip.className = "chip";
+        chip.textContent = value;
+        return chip;
+      }));
+
+      body.append(title, desc, meta);
+
+      const actions = document.createElement("div");
+      actions.className = "actions";
+      const surge = document.createElement("a");
+      surge.className = "button surge";
+      surge.href = surgeInstallUrl(module.surgeFile);
+      surge.textContent = "导入 Surge";
+      const loon = document.createElement("a");
+      loon.className = "button loon";
+      loon.href = loonInstallUrl(module.source);
+      loon.textContent = "导入 Loon";
+      actions.append(surge, loon);
+
+      article.append(img, body, actions);
+      return article;
+    }
+
+    function render() {
+      const filtered = state.modules.filter(moduleMatches);
+      elements.resultCount.textContent = `显示 ${filtered.length} / ${state.modules.length} 个模块`;
+      elements.empty.classList.toggle("visible", filtered.length === 0);
+      elements.list.replaceChildren(...filtered.map(moduleCard));
+    }
+
+    function mergeModules(loonIndex, surgeIndex) {
+      const loonBySource = new Map();
+      for (const item of loonIndex.modules || []) {
+        loonBySource.set(item.file, item);
+      }
+
+      return surgeIndex.map((surgeItem) => {
+        const loonItem = loonBySource.get(surgeItem.source) || {};
+        return {
+          name: surgeItem.name || loonItem.name || surgeItem.output,
+          desc: loonItem.desc || "",
+          tags: Array.isArray(loonItem.tag) ? loonItem.tag : [],
+          icon: loonItem.icon || "",
+          date: loonItem.date || "",
+          source: surgeItem.source,
+          surgeFile: surgeItem.output,
+          sections: Array.isArray(surgeItem.sections) ? surgeItem.sections : []
+        };
+      }).sort((a, b) => a.name.localeCompare(b.name, "zh-CN"));
+    }
+
+    async function loadJson(path) {
+      const response = await fetch(path, { cache: "no-store" });
+      if (!response.ok) {
+        throw new Error(`${path} ${response.status}`);
+      }
+      return response.json();
+    }
+
+    async function init() {
+      try {
+        const [loonIndex, surgeIndex, report] = await Promise.all([
+          loadJson("/Loon/modules.index.json"),
+          loadJson("/Surge/modules.index.json"),
+          loadJson("/Surge/convert-report.json")
+        ]);
+
+        state.modules = mergeModules(loonIndex, surgeIndex);
+        elements.loonCount.textContent = String(loonIndex.downloaded || state.modules.length);
+        elements.surgeCount.textContent = String(surgeIndex.length);
+        elements.warningCount.textContent = String(report.warnings || 0);
+        elements.updatedAt.textContent = loonIndex.fetched_at ? `更新于 ${loonIndex.fetched_at}` : "";
+
+        buildTagFilters(state.modules);
+        render();
+      } catch (error) {
+        elements.resultCount.textContent = "模块索引加载失败";
+        const box = document.createElement("div");
+        box.className = "load-error";
+        box.textContent = `无法读取模块索引：${error.message}`;
+        document.querySelector(".page").append(box);
+      }
+    }
+
+    elements.search.addEventListener("input", (event) => {
+      state.query = event.target.value;
+      render();
+    });
+
+    init();
+  </script>
+</body>
+</html>
