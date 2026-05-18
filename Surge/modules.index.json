@@ -1,0 +1,2277 @@
+[
+    {
+        "source": "1.1.1.1.lpx",
+        "output": "1.1.1.1配置管理.sgmodule",
+        "name": "1.1.1.1配置管理",
+        "sections": [
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "12306_remove_ads.lpx",
+        "output": "12306去广告.sgmodule",
+        "name": "12306去广告",
+        "sections": [
+            "Rule",
+            "Body Rewrite",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "123NetWorkDisk_remove_ads.lpx",
+        "output": "123云盘去广告.sgmodule",
+        "name": "123云盘去广告",
+        "sections": [
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "2bulu_remove_ads.lpx",
+        "output": "两步路户外助手去广告.sgmodule",
+        "name": "两步路户外助手去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "360SmartCamera_remove_ads.lpx",
+        "output": "360摄像机去广告.sgmodule",
+        "name": "360摄像机去广告",
+        "sections": [
+            "Rule",
+            "Body Rewrite",
+            "MITM"
+        ]
+    },
+    {
+        "source": "36Kr_remove_ads.lpx",
+        "output": "36氪去广告.sgmodule",
+        "name": "36氪去广告",
+        "sections": [
+            "Rule",
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "51Job_remove_ads.lpx",
+        "output": "前程无忧去广告.sgmodule",
+        "name": "前程无忧去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "555DY_remove_ads.lpx",
+        "output": "555电影去广告.sgmodule",
+        "name": "555电影去广告",
+        "sections": [
+            "Body Rewrite",
+            "MITM"
+        ]
+    },
+    {
+        "source": "91160_remove_ads.lpx",
+        "output": "健康160去广告.sgmodule",
+        "name": "健康160去广告",
+        "sections": [
+            "URL Rewrite",
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Aiinquiry_remove_ads.lpx",
+        "output": "爱企查去广告.sgmodule",
+        "name": "爱企查去广告",
+        "sections": [
+            "URL Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "AliYunDrive_remove_ads.lpx",
+        "output": "阿里云盘去广告.sgmodule",
+        "name": "阿里云盘去广告",
+        "sections": [
+            "Rule",
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Amap_remove_ads.lpx",
+        "output": "高德地图去广告.sgmodule",
+        "name": "高德地图去广告",
+        "sections": [
+            "Rule",
+            "Body Rewrite",
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "AppleWeatherEnhancer.lpx",
+        "output": "Apple天气增强.sgmodule",
+        "name": "Apple天气增强",
+        "sections": [
+            "Rule",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "AutoHome_remove_ads.lpx",
+        "output": "汽车之家去广告.sgmodule",
+        "name": "汽车之家去广告",
+        "sections": [
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Auto_Join_TF.lpx",
+        "output": "自动加入TestFlight.sgmodule",
+        "name": "自动加入TestFlight",
+        "sections": [
+            "Rule",
+            "Script"
+        ]
+    },
+    {
+        "source": "BabyTree_remove_ads.lpx",
+        "output": "宝宝树孕育去广告.sgmodule",
+        "name": "宝宝树孕育去广告",
+        "sections": [
+            "Rule",
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "BaiduMap_remove_ads.lpx",
+        "output": "百度地图去广告.sgmodule",
+        "name": "百度地图去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "BaiduNetDisk_remove_ads.lpx",
+        "output": "百度网盘去广告.sgmodule",
+        "name": "百度网盘去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "BaiduPhoto_remove_ads.lpx",
+        "output": "一刻相册去广告.sgmodule",
+        "name": "一刻相册去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "BaiduSearchWebpage_remove_ads.lpx",
+        "output": "百度网页去广告.sgmodule",
+        "name": "百度网页去广告",
+        "sections": [
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "BaiduWenku_remove_ads.lpx",
+        "output": "百度文库去广告.sgmodule",
+        "name": "百度文库去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Baidu_input_method_remove_ads.lpx",
+        "output": "百度输入法去广告.sgmodule",
+        "name": "百度输入法去广告",
+        "sections": [
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Beike_remove_ads.lpx",
+        "output": "贝壳找房去广告.sgmodule",
+        "name": "贝壳找房去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "BiliComic_remove_ads.lpx",
+        "output": "哔哩哔哩漫画去广告.sgmodule",
+        "name": "哔哩哔哩漫画去广告",
+        "sections": [
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Bilibili_remove_ads.lpx",
+        "output": "哔哩哔哩去广告.sgmodule",
+        "name": "哔哩哔哩去广告",
+        "sections": [
+            "Rule",
+            "Header Rewrite",
+            "Body Rewrite",
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "BitqiuPan_remove_ads.lpx",
+        "output": "比特球云盘去广告.sgmodule",
+        "name": "比特球云盘去广告",
+        "sections": [
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "BlockAdvertisers.lpx",
+        "output": "广告平台拦截器.sgmodule",
+        "name": "广告平台拦截器",
+        "sections": [
+            "Rule",
+            "URL Rewrite",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Block_HTTPDNS.lpx",
+        "output": "HTTPDNS拦截器.sgmodule",
+        "name": "HTTPDNS拦截器",
+        "sections": [
+            "Rule",
+            "URL Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "BodianMusic_remove_ads.lpx",
+        "output": "波点音乐去广告.sgmodule",
+        "name": "波点音乐去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "BooHee_remove_ads.lpx",
+        "output": "薄荷健康去广告.sgmodule",
+        "name": "薄荷健康去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "BoxJs.lpx",
+        "output": "BoxJs.sgmodule",
+        "name": "BoxJs",
+        "sections": [
+            "Rule",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "CCLive_remove_ads.lpx",
+        "output": "CC直播去广告.sgmodule",
+        "name": "CC直播去广告",
+        "sections": [
+            "URL Rewrite",
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Cainiao_remove_ads.lpx",
+        "output": "菜鸟去广告.sgmodule",
+        "name": "菜鸟去广告",
+        "sections": [
+            "URL Rewrite",
+            "Body Rewrite",
+            "MITM"
+        ]
+    },
+    {
+        "source": "CaixinMedia_remove_ads.lpx",
+        "output": "财新去广告.sgmodule",
+        "name": "财新去广告",
+        "sections": [
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "CatEarFM_remove_ads.lpx",
+        "output": "猫耳FM去广告.sgmodule",
+        "name": "猫耳FM去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "ChengFenMiao_remove_ads.lpx",
+        "output": "成分喵去广告.sgmodule",
+        "name": "成分喵去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Chuzhan_remove_ads.lpx",
+        "output": "触站去广告.sgmodule",
+        "name": "触站去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "ColorfulClouds_remove_ads.lpx",
+        "output": "彩云天气去广告.sgmodule",
+        "name": "彩云天气去广告",
+        "sections": [
+            "Rule",
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "CoolApk_remove_ads.lpx",
+        "output": "酷安去广告.sgmodule",
+        "name": "酷安去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "CosmosPodcast_remove_ads.lpx",
+        "output": "小宇宙去广告.sgmodule",
+        "name": "小宇宙去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "DREAME_remove_ads.lpx",
+        "output": "DREAME去广告.sgmodule",
+        "name": "DREAME去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Daily_remove_ads.lpx",
+        "output": "推栏去广告.sgmodule",
+        "name": "推栏去广告",
+        "sections": [
+            "Body Rewrite",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Damai_remove_ads.lpx",
+        "output": "大麦去广告.sgmodule",
+        "name": "大麦去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Dewu_remove_ads.lpx",
+        "output": "得物去广告.sgmodule",
+        "name": "得物去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "DiDi_remove_ads.lpx",
+        "output": "滴滴出行去广告.sgmodule",
+        "name": "滴滴出行去广告",
+        "sections": [
+            "Rule",
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "DidaPincheTaxi_remove_ads.lpx",
+        "output": "滴答出行去广告.sgmodule",
+        "name": "滴答出行去广告",
+        "sections": [
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "DigitalHeartbeat_remove_ads.lpx",
+        "output": "数字心动去广告.sgmodule",
+        "name": "数字心动去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "DingdongMaicai_remove_ads.lpx",
+        "output": "叮咚买菜去广告.sgmodule",
+        "name": "叮咚买菜去广告",
+        "sections": [
+            "Rule",
+            "URL Rewrite",
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Dlabel_remove_ads.lpx",
+        "output": "Dlabel云标签去广告.sgmodule",
+        "name": "Dlabel云标签去广告",
+        "sections": [
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "DouBan_remove_ads.lpx",
+        "output": "豆瓣去广告.sgmodule",
+        "name": "豆瓣去广告",
+        "sections": [
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "DoubanRead_remove_ads.lpx",
+        "output": "豆瓣阅读去广告.sgmodule",
+        "name": "豆瓣阅读去广告",
+        "sections": [
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Douyu_remove_ads.lpx",
+        "output": "斗鱼去广告.sgmodule",
+        "name": "斗鱼去广告",
+        "sections": [
+            "Rule",
+            "Body Rewrite",
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "DragonRead_remove_ads.lpx",
+        "output": "番茄小说去广告.sgmodule",
+        "name": "番茄小说去广告",
+        "sections": [
+            "Rule"
+        ]
+    },
+    {
+        "source": "DubbingShow_remove_ads.lpx",
+        "output": "配音秀去广告.sgmodule",
+        "name": "配音秀去广告",
+        "sections": [
+            "Body Rewrite",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "DuiTang_remove_ads.lpx",
+        "output": "堆糖去广告.sgmodule",
+        "name": "堆糖去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "EcovacsHome_remove_ads.lpx",
+        "output": "ECOVACS HOME去广告.sgmodule",
+        "name": "ECOVACS HOME去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "EtouchEcalendar_remove_ads.lpx",
+        "output": "中华万年历去广告.sgmodule",
+        "name": "中华万年历去广告",
+        "sections": [
+            "Rule",
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "FC_Box_remove_ads.lpx",
+        "output": "丰巢去广告.sgmodule",
+        "name": "丰巢去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "FenBi_remove_ads.lpx",
+        "output": "粉笔去广告.sgmodule",
+        "name": "粉笔去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Fileball_mount.lpx",
+        "output": "Fileball网盘挂载.sgmodule",
+        "name": "Fileball网盘挂载",
+        "sections": [
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "FinanceNews_remove_ads.lpx",
+        "output": "华尔街见闻去广告.sgmodule",
+        "name": "华尔街见闻去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "FleaMarket_remove_ads.lpx",
+        "output": "闲鱼去广告.sgmodule",
+        "name": "闲鱼去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "FlyerTea_remove_ads.lpx",
+        "output": "飞客去广告.sgmodule",
+        "name": "飞客去广告",
+        "sections": [
+            "URL Rewrite",
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "FollowRSS_checkin.lpx",
+        "output": "Follow每日签到.sgmodule",
+        "name": "Follow每日签到",
+        "sections": [
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Foodie_remove_ads.lpx",
+        "output": "Foodie去广告.sgmodule",
+        "name": "Foodie去广告",
+        "sections": [
+            "Rule"
+        ]
+    },
+    {
+        "source": "GaoDing_remove_ads.lpx",
+        "output": "稿定设计去广告.sgmodule",
+        "name": "稿定设计去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Google.lpx",
+        "output": "Google搜索重定向.sgmodule",
+        "name": "Google搜索重定向",
+        "sections": [
+            "URL Rewrite",
+            "MITM"
+        ]
+    },
+    {
+        "source": "GuideRank_remove_ads.lpx",
+        "output": "盖得排行去广告.sgmodule",
+        "name": "盖得排行去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "HKDouYin_remove_ads.lpx",
+        "output": "香港抖音去广告.sgmodule",
+        "name": "香港抖音去广告",
+        "sections": [
+            "Rule",
+            "URL Rewrite",
+            "Body Rewrite",
+            "MITM"
+        ]
+    },
+    {
+        "source": "HUPU_remove_ads.lpx",
+        "output": "虎扑去广告.sgmodule",
+        "name": "虎扑去广告",
+        "sections": [
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "HeartideBrainWave_remove_ads.lpx",
+        "output": "小睡眠去广告.sgmodule",
+        "name": "小睡眠去广告",
+        "sections": [
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Himalaya_remove_ads.lpx",
+        "output": "喜马拉雅去广告.sgmodule",
+        "name": "喜马拉雅去广告",
+        "sections": [
+            "Rule",
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Huxiu_remove_ads.lpx",
+        "output": "虎嗅去广告.sgmodule",
+        "name": "虎嗅去广告",
+        "sections": [
+            "Rule",
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "IPATool.lpx",
+        "output": "IPA工具箱助手.sgmodule",
+        "name": "IPA工具箱助手",
+        "sections": [
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "IThome_remove_ads.lpx",
+        "output": "IT之家去广告.sgmodule",
+        "name": "IT之家去广告",
+        "sections": [
+            "URL Rewrite",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "JDWaimai_remove_ads.lpx",
+        "output": "京东外卖去广告.sgmodule",
+        "name": "京东外卖去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "JD_Price.lpx",
+        "output": "京东比价.sgmodule",
+        "name": "京东比价",
+        "sections": [
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "JD_remove_ads.lpx",
+        "output": "京东去广告.sgmodule",
+        "name": "京东去广告",
+        "sections": [
+            "Rule",
+            "Body Rewrite",
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "JiaKaoBaoDian_remove_ads.lpx",
+        "output": "驾考宝典去广告.sgmodule",
+        "name": "驾考宝典去广告",
+        "sections": [
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "JiaXiaoDrive_remove_ads.lpx",
+        "output": "驾校一点通去广告.sgmodule",
+        "name": "驾校一点通去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Jump_remove_ads.lpx",
+        "output": "Jump去广告.sgmodule",
+        "name": "Jump去广告",
+        "sections": [
+            "Rule",
+            "Body Rewrite",
+            "MITM"
+        ]
+    },
+    {
+        "source": "KGRing_remove_ads.lpx",
+        "output": "酷狗铃声去广告.sgmodule",
+        "name": "酷狗铃声去广告",
+        "sections": [
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "KOOK_remove_ads.lpx",
+        "output": "KOOK去广告.sgmodule",
+        "name": "KOOK去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "KebidaDushu_remove_ads.lpx",
+        "output": "帆书去广告.sgmodule",
+        "name": "帆书去广告",
+        "sections": [
+            "URL Rewrite",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Keep_remove_ads.lpx",
+        "output": "Keep去广告.sgmodule",
+        "name": "Keep去广告",
+        "sections": [
+            "Rule",
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "KingdeeMyMoney_remove_ads.lpx",
+        "output": "随手记去广告.sgmodule",
+        "name": "随手记去广告",
+        "sections": [
+            "URL Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "KuGouYouth_remove_ads.lpx",
+        "output": "酷狗概念版去广告.sgmodule",
+        "name": "酷狗概念版去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "KuGou_remove_ads.lpx",
+        "output": "酷狗音乐去广告.sgmodule",
+        "name": "酷狗音乐去广告",
+        "sections": [
+            "Rule",
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "KuaiDi100_remove_ads.lpx",
+        "output": "快递100去广告.sgmodule",
+        "name": "快递100去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "KuaiDuiZuoYe_remove_ads.lpx",
+        "output": "快对去广告.sgmodule",
+        "name": "快对去广告",
+        "sections": [
+            "Rule",
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "KuaiKanComic_remove_ads.lpx",
+        "output": "快看漫画去广告.sgmodule",
+        "name": "快看漫画去广告",
+        "sections": [
+            "Rule",
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "KuaiShou_remove_ads.lpx",
+        "output": "快手去广告.sgmodule",
+        "name": "快手去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "KuroBBS_remove_ads.lpx",
+        "output": "库街区去广告.sgmodule",
+        "name": "库街区去广告",
+        "sections": [
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Kuwo_remove_ads.lpx",
+        "output": "酷我音乐去广告.sgmodule",
+        "name": "酷我音乐去广告",
+        "sections": [
+            "Rule",
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "KwaiVideoeditor_remove_ads.lpx",
+        "output": "快影去广告.sgmodule",
+        "name": "快影去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "LOL_Bible_remove_ads.lpx",
+        "output": "掌上英雄联盟去广告.sgmodule",
+        "name": "掌上英雄联盟去广告",
+        "sections": [
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Line_remove_ads.lpx",
+        "output": "Line去广告.sgmodule",
+        "name": "Line去广告",
+        "sections": [
+            "Rule",
+            "URL Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "LiveLab_remove_ads.lpx",
+        "output": "纷玩岛去广告.sgmodule",
+        "name": "纷玩岛去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "LuckinCoffee_remove_ads.lpx",
+        "output": "瑞幸咖啡去广告.sgmodule",
+        "name": "瑞幸咖啡去广告",
+        "sections": [
+            "URL Rewrite",
+            "MITM"
+        ]
+    },
+    {
+        "source": "MKZ_remove_ads.lpx",
+        "output": "漫客栈去广告.sgmodule",
+        "name": "漫客栈去广告",
+        "sections": [
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "MaFengWo_remove_ads.lpx",
+        "output": "马蜂窝去广告.sgmodule",
+        "name": "马蜂窝去广告",
+        "sections": [
+            "Rule",
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "MaiMai_remove_ads.lpx",
+        "output": "脉脉去广告.sgmodule",
+        "name": "脉脉去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "MailMaster_remove_ads.lpx",
+        "output": "网易邮箱大师去广告.sgmodule",
+        "name": "网易邮箱大师去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "MangoTV_remove_ads.lpx",
+        "output": "芒果TV去广告.sgmodule",
+        "name": "芒果TV去广告",
+        "sections": [
+            "Rule",
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "MeetYou_remove_ads.lpx",
+        "output": "美柚去广告.sgmodule",
+        "name": "美柚去广告",
+        "sections": [
+            "Rule",
+            "URL Rewrite",
+            "Body Rewrite",
+            "MITM"
+        ]
+    },
+    {
+        "source": "MeiShiJie_remove_ads.lpx",
+        "output": "美食杰去广告.sgmodule",
+        "name": "美食杰去广告",
+        "sections": [
+            "Body Rewrite",
+            "MITM"
+        ]
+    },
+    {
+        "source": "MeiTu_remove_ads.lpx",
+        "output": "美图秀秀去广告.sgmodule",
+        "name": "美图秀秀去广告",
+        "sections": [
+            "Rule",
+            "Body Rewrite",
+            "MITM"
+        ]
+    },
+    {
+        "source": "MeituMYXJ_remove_ads.lpx",
+        "output": "美颜相机去广告.sgmodule",
+        "name": "美颜相机去广告",
+        "sections": [
+            "Rule",
+            "Body Rewrite",
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Meizhixiuxing_remove_ads.lpx",
+        "output": "美丽修行去广告.sgmodule",
+        "name": "美丽修行去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "MiaoRead_remove_ads.lpx",
+        "output": "小喵看书去广告.sgmodule",
+        "name": "小喵看书去广告",
+        "sections": [
+            "URL Rewrite",
+            "MITM"
+        ]
+    },
+    {
+        "source": "MoeGirlWiki_remove_ads.lpx",
+        "output": "萌娘百科去广告.sgmodule",
+        "name": "萌娘百科去广告",
+        "sections": [
+            "URL Rewrite",
+            "MITM"
+        ]
+    },
+    {
+        "source": "MojiWeather_remove_ads.lpx",
+        "output": "墨迹天气去广告.sgmodule",
+        "name": "墨迹天气去广告",
+        "sections": [
+            "URL Rewrite",
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "MrHema_remove_ads.lpx",
+        "output": "盒马去广告.sgmodule",
+        "name": "盒马去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "NarwelRobots_remove_ads.lpx",
+        "output": "云鲸智能去广告.sgmodule",
+        "name": "云鲸智能去广告",
+        "sections": [
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "NetEaseGodlike_remove_ads.lpx",
+        "output": "网易大神去广告.sgmodule",
+        "name": "网易大神去广告",
+        "sections": [
+            "URL Rewrite",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "NeteaseCloudMusic_remove_ads.lpx",
+        "output": "网易云音乐去广告.sgmodule",
+        "name": "网易云音乐去广告",
+        "sections": [
+            "Rule",
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "NeteaseNews_remove_ads.lpx",
+        "output": "网易新闻去广告.sgmodule",
+        "name": "网易新闻去广告",
+        "sections": [
+            "Rule",
+            "URL Rewrite",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "NodeLinkCheck.lpx",
+        "output": "代理链路检测.sgmodule",
+        "name": "代理链路检测",
+        "sections": [
+            "Script"
+        ]
+    },
+    {
+        "source": "Node_detection_tool.lpx",
+        "output": "节点检测工具.sgmodule",
+        "name": "节点检测工具",
+        "sections": [
+            "Script"
+        ]
+    },
+    {
+        "source": "OnTheWay_remove_ads.lpx",
+        "output": "行者户外去广告.sgmodule",
+        "name": "行者户外去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "OraySunlogin_remove_ads.lpx",
+        "output": "向日葵去广告.sgmodule",
+        "name": "向日葵去广告",
+        "sections": [
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "PICC_Insurance_remove_ads.lpx",
+        "output": "中国人保去广告.sgmodule",
+        "name": "中国人保去广告",
+        "sections": [
+            "URL Rewrite",
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "PangguaiLife_remove_ads.lpx",
+        "output": "胖乖生活去广告.sgmodule",
+        "name": "胖乖生活去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "PerfectWorldEsport_remove_ads.lpx",
+        "output": "完美世界电竞去广告.sgmodule",
+        "name": "完美世界电竞去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "PiPiXia_remove_ads.lpx",
+        "output": "皮皮虾去广告.sgmodule",
+        "name": "皮皮虾去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "PinDuoDuo_remove_ads.lpx",
+        "output": "拼多多去广告.sgmodule",
+        "name": "拼多多去广告",
+        "sections": [
+            "Rule",
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Pinterest_remove_ads.lpx",
+        "output": "Pinterest去广告.sgmodule",
+        "name": "Pinterest去广告",
+        "sections": [
+            "Body Rewrite",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Prevent_DNS_Leaks.lpx",
+        "output": "DNS防泄露.sgmodule",
+        "name": "DNS防泄露",
+        "sections": [
+            "Rule"
+        ]
+    },
+    {
+        "source": "PuPuMall_remove_ads.lpx",
+        "output": "朴朴超市去广告.sgmodule",
+        "name": "朴朴超市去广告",
+        "sections": [
+            "URL Rewrite",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "QQKSong_remove_ads.lpx",
+        "output": "全民K歌去广告.sgmodule",
+        "name": "全民K歌去广告",
+        "sections": [
+            "Rule",
+            "URL Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "QQMusic_remove_ads.lpx",
+        "output": "QQ音乐去广告.sgmodule",
+        "name": "QQ音乐去广告",
+        "sections": [
+            "Rule"
+        ]
+    },
+    {
+        "source": "QQ_Redirect.lpx",
+        "output": "QQ链接解锁.sgmodule",
+        "name": "QQ链接解锁",
+        "sections": [
+            "URL Rewrite",
+            "MITM"
+        ]
+    },
+    {
+        "source": "QiDian_remove_ads.lpx",
+        "output": "起点读书去广告.sgmodule",
+        "name": "起点读书去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "QiXinBao_remove_ads.lpx",
+        "output": "启信宝去广告.sgmodule",
+        "name": "启信宝去广告",
+        "sections": [
+            "URL Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "QtingFM_remove_ads.lpx",
+        "output": "蜻蜓FM去广告.sgmodule",
+        "name": "蜻蜓FM去广告",
+        "sections": [
+            "Rule",
+            "URL Rewrite",
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "QuarkBrowser_remove_ads.lpx",
+        "output": "夸克去广告.sgmodule",
+        "name": "夸克去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "QuarkScanking_remove_ads.lpx",
+        "output": "夸克扫描王去广告.sgmodule",
+        "name": "夸克扫描王去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "QuickSearch.lpx",
+        "output": "快捷搜索.sgmodule",
+        "name": "快捷搜索",
+        "sections": [
+            "URL Rewrite",
+            "MITM"
+        ]
+    },
+    {
+        "source": "RQrun_remove_ads.lpx",
+        "output": "RQrun去广告.sgmodule",
+        "name": "RQrun去广告",
+        "sections": [
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "RedPaper_remove_ads.lpx",
+        "output": "小红书去广告.sgmodule",
+        "name": "小红书去广告",
+        "sections": [
+            "Rule",
+            "Body Rewrite",
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Reddit_remove_ads.lpx",
+        "output": "Reddit去广告.sgmodule",
+        "name": "Reddit去广告",
+        "sections": [
+            "Body Rewrite",
+            "MITM"
+        ]
+    },
+    {
+        "source": "ReelShort_remove_ads.lpx",
+        "output": "ReelShort去广告.sgmodule",
+        "name": "ReelShort去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Remove_ads_by_keli.lpx",
+        "output": "可莉广告过滤器.sgmodule",
+        "name": "可莉广告过滤器",
+        "sections": [
+            "Rule",
+            "URL Rewrite",
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "RiskBird_remove_ads.lpx",
+        "output": "风鸟去广告.sgmodule",
+        "name": "风鸟去广告",
+        "sections": [
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "RoboTaxi_remove_ads.lpx",
+        "output": "萝卜快跑去广告.sgmodule",
+        "name": "萝卜快跑去广告",
+        "sections": [
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Roborock_remove_ads.lpx",
+        "output": "Roborock去广告.sgmodule",
+        "name": "Roborock去广告",
+        "sections": [
+            "URL Rewrite",
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "SF-Express_remove_ads.lpx",
+        "output": "顺丰速运去广告.sgmodule",
+        "name": "顺丰速运去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "SafetyHome_remove_ads.lpx",
+        "output": "360智慧生活去广告.sgmodule",
+        "name": "360智慧生活去广告",
+        "sections": [
+            "Rule",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Script-Hub.lpx",
+        "output": "Script-Hub.sgmodule",
+        "name": "Script-Hub",
+        "sections": [
+            "Rule",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "SeasunJX3_remove_ads.lpx",
+        "output": "剑网三无界去广告.sgmodule",
+        "name": "剑网三无界去广告",
+        "sections": [
+            "General",
+            "URL Rewrite",
+            "MITM"
+        ]
+    },
+    {
+        "source": "SevenCat_remove_ads.lpx",
+        "output": "七猫小说去广告.sgmodule",
+        "name": "七猫小说去广告",
+        "sections": [
+            "Rule",
+            "URL Rewrite",
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "ShopKeeperAdmin_remove_ads.lpx",
+        "output": "小店掌柜去广告.sgmodule",
+        "name": "小店掌柜去广告",
+        "sections": [
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "ShouYinTongMerchant_remove_ads.lpx",
+        "output": "收银通商户端去广告.sgmodule",
+        "name": "收银通商户端去广告",
+        "sections": [
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "ShuQiCenterReader_remove_ads.lpx",
+        "output": "书旗小说去广告.sgmodule",
+        "name": "书旗小说去广告",
+        "sections": [
+            "Rule",
+            "URL Rewrite",
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "SnailSleep_remove_ads.lpx",
+        "output": "蜗牛睡眠去广告.sgmodule",
+        "name": "蜗牛睡眠去广告",
+        "sections": [
+            "Rule"
+        ]
+    },
+    {
+        "source": "SnowCamera_remove_ads.lpx",
+        "output": "B612咔叽去广告.sgmodule",
+        "name": "B612咔叽去广告",
+        "sections": [
+            "Rule"
+        ]
+    },
+    {
+        "source": "Snowball_remove_ads.lpx",
+        "output": "雪球去广告.sgmodule",
+        "name": "雪球去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "SodaMusic_remove_ads.lpx",
+        "output": "汽水音乐去广告.sgmodule",
+        "name": "汽水音乐去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Soul_remove_ads.lpx",
+        "output": "Soul去广告.sgmodule",
+        "name": "Soul去广告",
+        "sections": [
+            "Rule",
+            "Body Rewrite",
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Spotify_lyrics_translation.lpx",
+        "output": "Spotify歌词增强.sgmodule",
+        "name": "Spotify歌词增强",
+        "sections": [
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Spotify_remove_ads.lpx",
+        "output": "Spotify去广告.sgmodule",
+        "name": "Spotify去广告",
+        "sections": [
+            "Rule",
+            "URL Rewrite",
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "SuZhouCitizenCard_remove_ads.lpx",
+        "output": "智慧苏州去广告.sgmodule",
+        "name": "智慧苏州去广告",
+        "sections": [
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Sub-Store.lpx",
+        "output": "Sub-Store.sgmodule",
+        "name": "Sub-Store",
+        "sections": [
+            "Rule",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Switch_github_mirror.lpx",
+        "output": "GitHub加速.sgmodule",
+        "name": "GitHub加速",
+        "sections": [
+            "Rule",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "TV_Assistant_remove_ads.lpx",
+        "output": "乐播投屏去广告.sgmodule",
+        "name": "乐播投屏去广告",
+        "sections": [
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "TXDocs_remove_ads.lpx",
+        "output": "腾讯文档去广告.sgmodule",
+        "name": "腾讯文档去广告",
+        "sections": [
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "TaobaoTravel_remove_ads.lpx",
+        "output": "飞猪旅行去广告.sgmodule",
+        "name": "飞猪旅行去广告",
+        "sections": [
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Taobao_remove_ads.lpx",
+        "output": "淘宝去广告.sgmodule",
+        "name": "淘宝去广告",
+        "sections": [
+            "Rule",
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Taopiaopiao_remove_ads.lpx",
+        "output": "淘票票去广告.sgmodule",
+        "name": "淘票票去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Taqu_remove_ads.lpx",
+        "output": "他趣去广告.sgmodule",
+        "name": "他趣去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Tencent_Video_remove_ads.lpx",
+        "output": "腾讯视频去广告.sgmodule",
+        "name": "腾讯视频去广告",
+        "sections": [
+            "Rule",
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "TeraBox_remove_ads.lpx",
+        "output": "TeraBox去广告.sgmodule",
+        "name": "TeraBox去广告",
+        "sections": [
+            "Rule",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "TestFlightRegionUnlock.lpx",
+        "output": "TestFlight地区解锁.sgmodule",
+        "name": "TestFlight地区解锁",
+        "sections": [
+            "Rule",
+            "Body Rewrite",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Tieba_remove_ads.lpx",
+        "output": "百度贴吧去广告.sgmodule",
+        "name": "百度贴吧去广告",
+        "sections": [
+            "Rule",
+            "Body Rewrite",
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "TuGuaiShou_remove_ads.lpx",
+        "output": "图怪兽去广告.sgmodule",
+        "name": "图怪兽去广告",
+        "sections": [
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "TubeMax_remove_ads.lpx",
+        "output": "TubeMax去广告.sgmodule",
+        "name": "TubeMax去广告",
+        "sections": [
+            "Rule",
+            "URL Rewrite",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Tumblr_remove_ads.lpx",
+        "output": "Tumblr去广告.sgmodule",
+        "name": "Tumblr去广告",
+        "sections": [
+            "Body Rewrite",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Uki_remove_ads.lpx",
+        "output": "Uki去广告.sgmodule",
+        "name": "Uki去广告",
+        "sections": [
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Umetrip_remove_ads.lpx",
+        "output": "航旅纵横去广告.sgmodule",
+        "name": "航旅纵横去广告",
+        "sections": [
+            "Rule",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "UnnooQuan_remove_watermark.lpx",
+        "output": "知识星球去水印.sgmodule",
+        "name": "知识星球去水印",
+        "sections": [
+            "Body Rewrite",
+            "MITM"
+        ]
+    },
+    {
+        "source": "VVebo_repair.lpx",
+        "output": "VVebo时间线修复.sgmodule",
+        "name": "VVebo时间线修复",
+        "sections": [
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "ValorantBible_remove_ads.lpx",
+        "output": "掌上无畏契约去广告.sgmodule",
+        "name": "掌上无畏契约去广告",
+        "sections": [
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "VideoGo_remove_ads.lpx",
+        "output": "萤石云视频去广告.sgmodule",
+        "name": "萤石云视频去广告",
+        "sections": [
+            "URL Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "WARP_Node_Query.lpx",
+        "output": "WARP节点查询.sgmodule",
+        "name": "WARP节点查询",
+        "sections": [
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "WPForum_remove_ads.lpx",
+        "output": "威锋去广告.sgmodule",
+        "name": "威锋去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "WPS_Documents_remove_ads.lpx",
+        "output": "金山文档去广告.sgmodule",
+        "name": "金山文档去广告",
+        "sections": [
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "WPS_checkin.lpx",
+        "output": "WPS每日签到.sgmodule",
+        "name": "WPS每日签到",
+        "sections": [
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "WaCaiJiZhang_remove_ads.lpx",
+        "output": "挖财记账去广告.sgmodule",
+        "name": "挖财记账去广告",
+        "sections": [
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Weibo_intl_remove_ads.lpx",
+        "output": "微博轻享版去广告.sgmodule",
+        "name": "微博轻享版去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Weibo_remove_ads.lpx",
+        "output": "微博去广告.sgmodule",
+        "name": "微博去广告",
+        "sections": [
+            "Rule",
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Weimai_remove_ads.lpx",
+        "output": "微脉圈去广告.sgmodule",
+        "name": "微脉圈去广告",
+        "sections": [
+            "Body Rewrite",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Weixin_Official_Accounts_remove_ads.lpx",
+        "output": "微信公众号去广告.sgmodule",
+        "name": "微信公众号去广告",
+        "sections": [
+            "Rule",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Weixin_external_links_unlock.lpx",
+        "output": "微信外部链接解锁.sgmodule",
+        "name": "微信外部链接解锁",
+        "sections": [
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "WexinMiniPrograms_Remove_ads.lpx",
+        "output": "微信小程序去广告.sgmodule",
+        "name": "微信小程序去广告",
+        "sections": [
+            "Rule",
+            "URL Rewrite",
+            "Body Rewrite",
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "WutaCamera_remove_ads.lpx",
+        "output": "无他相机去广告.sgmodule",
+        "name": "无他相机去广告",
+        "sections": [
+            "Body Rewrite",
+            "MITM"
+        ]
+    },
+    {
+        "source": "XFuse_remove_ads.lpx",
+        "output": "磁力宅播放器去广告.sgmodule",
+        "name": "磁力宅播放器去广告",
+        "sections": [
+            "URL Rewrite",
+            "MITM"
+        ]
+    },
+    {
+        "source": "XiaChuFang_remove_ads.lpx",
+        "output": "下厨房去广告.sgmodule",
+        "name": "下厨房去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "XiaoCan_remove_ads.lpx",
+        "output": "小蚕霸王餐去广告.sgmodule",
+        "name": "小蚕霸王餐去广告",
+        "sections": [
+            "Header Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "XiaoHeiHe_remove_ads.lpx",
+        "output": "小黑盒去广告.sgmodule",
+        "name": "小黑盒去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "XiaojukejiCharge_remove_ads.lpx",
+        "output": "小桔充电去广告.sgmodule",
+        "name": "小桔充电去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "XiaomiSpeaker_remove_ads.lpx",
+        "output": "小米音箱去广告.sgmodule",
+        "name": "小米音箱去广告",
+        "sections": [
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "XunLei_remove_ads.lpx",
+        "output": "迅雷去广告.sgmodule",
+        "name": "迅雷去广告",
+        "sections": [
+            "Body Rewrite",
+            "MITM"
+        ]
+    },
+    {
+        "source": "YYVoiceTool_remove_ads.lpx",
+        "output": "YY语音去广告.sgmodule",
+        "name": "YY语音去广告",
+        "sections": [
+            "URL Rewrite",
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "YY_Voice_remove_ads.lpx",
+        "output": "YY去广告.sgmodule",
+        "name": "YY去广告",
+        "sections": [
+            "Rule",
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "YiKaoBang_remove_ads.lpx",
+        "output": "医考帮去广告.sgmodule",
+        "name": "医考帮去广告",
+        "sections": [
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Yitian_remove_ads.lpx",
+        "output": "一甜相机去广告.sgmodule",
+        "name": "一甜相机去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "YouKu_Video_remove_ads.lpx",
+        "output": "优酷视频去广告.sgmodule",
+        "name": "优酷视频去广告",
+        "sections": [
+            "Rule",
+            "Body Rewrite",
+            "MITM"
+        ]
+    },
+    {
+        "source": "YouTubeSubtitlesTranslation.lpx",
+        "output": "YouTube双语翻译.sgmodule",
+        "name": "YouTube双语翻译",
+        "sections": [
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "YouTube_remove_ads.lpx",
+        "output": "YouTube去广告.sgmodule",
+        "name": "YouTube去广告",
+        "sections": [
+            "Rule",
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "YoudaoDict_remove_ads.lpx",
+        "output": "网易有道词典去广告.sgmodule",
+        "name": "网易有道词典去广告",
+        "sections": [
+            "Rule",
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "YoudaoNote_remove_ads.lpx",
+        "output": "有道云笔记去广告.sgmodule",
+        "name": "有道云笔记去广告",
+        "sections": [
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "YoudaoTrans_remove_ads.lpx",
+        "output": "有道翻译官去广告.sgmodule",
+        "name": "有道翻译官去广告",
+        "sections": [
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "YueDanBa_remove_ads.lpx",
+        "output": "省钱快报去广告.sgmodule",
+        "name": "省钱快报去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Yueyou_remove_ads.lpx",
+        "output": "阅友去广告.sgmodule",
+        "name": "阅友去广告",
+        "sections": [
+            "Rule",
+            "Body Rewrite",
+            "MITM"
+        ]
+    },
+    {
+        "source": "ZAKER_remove_ads.lpx",
+        "output": "ZAKER去广告.sgmodule",
+        "name": "ZAKER去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "ZhiLianZhaoPin_remove_ads.lpx",
+        "output": "智联招聘去广告.sgmodule",
+        "name": "智联招聘去广告",
+        "sections": [
+            "Rule",
+            "URL Rewrite",
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Zhihu_remove_ads.lpx",
+        "output": "知乎去广告.sgmodule",
+        "name": "知乎去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "ZhuanZhuan_remove_ads.lpx",
+        "output": "转转去广告.sgmodule",
+        "name": "转转去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "ZongHeng_remove_ads.lpx",
+        "output": "纵横小说去广告.sgmodule",
+        "name": "纵横小说去广告",
+        "sections": [
+            "URL Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "ZuiYou_remove_ads.lpx",
+        "output": "最右去广告.sgmodule",
+        "name": "最右去广告",
+        "sections": [
+            "Rule",
+            "URL Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "iMaiCai_remove_ads.lpx",
+        "output": "小象超市去广告.sgmodule",
+        "name": "小象超市去广告",
+        "sections": [
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "iQiYi_Video_remove_ads.lpx",
+        "output": "爱奇艺去广告.sgmodule",
+        "name": "爱奇艺去广告",
+        "sections": [
+            "Rule",
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "iReaderDejian_remove_ads.lpx",
+        "output": "得间小说去广告.sgmodule",
+        "name": "得间小说去广告",
+        "sections": [
+            "Rule",
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "iReader_remove_ads.lpx",
+        "output": "掌阅去广告.sgmodule",
+        "name": "掌阅去广告",
+        "sections": [
+            "Rule",
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "miHoYoBBS_remove_ads.lpx",
+        "output": "米游社去广告.sgmodule",
+        "name": "米游社去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "mobileClouds_remove_ads.lpx",
+        "output": "中国移动云盘去广告.sgmodule",
+        "name": "中国移动云盘去广告",
+        "sections": [
+            "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "smzdm_remove_ads.lpx",
+        "output": "什么值得买去广告.sgmodule",
+        "name": "什么值得买去广告",
+        "sections": [
+            "Rule",
+            "URL Rewrite",
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    }
+]

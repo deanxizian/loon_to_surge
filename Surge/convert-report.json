@@ -1,0 +1,219 @@
+{
+    "generated_at": "2026-05-18 11:20:42 +08:00",
+    "input_dir": "Loon",
+    "output_dir": "Surge",
+    "total": 227,
+    "warnings": 35,
+    "items": [
+        {
+            "file": "Auto_Join_TF.lpx",
+            "kind": "external-policy",
+            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "line": "DOMAIN, testflight.apple.com, PROXY"
+        },
+        {
+            "file": "Auto_Join_TF.lpx",
+            "kind": "script-enable-dropped",
+            "message": "Loon enable option was not emitted because Surge module support is not equivalent.",
+            "line": "http-request ^https?:\\/\\/testflight\\.apple\\.com\\/v3\\/accounts\\/.*\\/apps$ script-path=https://kelee.one/Resource/JavaScript/TestFlight/CaptureAccountToken.js, tag=获取账号令牌, enable={CaptureAccountToken}"
+        },
+        {
+            "file": "Auto_Join_TF.lpx",
+            "kind": "script-enable-dropped",
+            "message": "Loon enable option was not emitted because Surge module support is not equivalent.",
+            "line": "cron {TaskCron} script-path=https://kelee.one/Resource/JavaScript/TestFlight/AutoJoinTF.js, tag=自动加入TF, timeout=600, enable={RunTask}"
+        },
+        {
+            "file": "Auto_Join_TF.lpx",
+            "kind": "script-enable-dropped",
+            "message": "Loon enable option was not emitted because Surge module support is not equivalent.",
+            "line": "cron {TaskMonitor} script-path=https://kelee.one/Resource/JavaScript/TestFlight/AutoMonitorTF.js, tag=监控TF位置, timeout=30, enable={RunMonitor}"
+        },
+        {
+            "file": "Bilibili_remove_ads.lpx",
+            "kind": "external-policy",
+            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "line": "DOMAIN, bsbsb.top, PROXY"
+        },
+        {
+            "file": "Bilibili_remove_ads.lpx",
+            "kind": "script-enable-dropped",
+            "message": "Loon enable option was not emitted because Surge module support is not equivalent.",
+            "line": "http-request ^https:\\/\\/(?:grpc\\.biliapi\\.net|app\\.bilibili\\.com)\\/bilibili\\.community\\.service\\.dm\\.v1\\.DM\\/DmSegMobile$ script-path=https://kelee.one/Resource/JavaScript/Bilibili/Bilibili_proto_request_kokoryh.js, argument=[{logLevel}], requires-body=true, binary-body-mode=true, timeout=10, enable={sponsorBlock}, tag=空降助手"
+        },
+        {
+            "file": "Bilibili_remove_ads.lpx",
+            "kind": "script-enable-dropped",
+            "message": "Loon enable option was not emitted because Surge module support is not equivalent.",
+            "line": "http-request ^https:\\/\\/(?:grpc\\.biliapi\\.net|app\\.bilibili\\.com)\\/bilibili\\.(?:app\\.viewunite\\.v1\\.View\\/View|main\\.community\\.reply\\.v1\\.Reply\\/MainList)$ script-path=https://kelee.one/Resource/JavaScript/Bilibili/Bilibili_proto_request_kokoryh.js, argument=[{purifyComment}, {logLevel}], requires-body=true, binary-body-mode=true, timeout=10, enable={optimizeRequest}, tag=请求处理"
+        },
+        {
+            "file": "BoxJs.lpx",
+            "kind": "external-policy",
+            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "line": "DOMAIN-SUFFIX, jsdelivr.net, PROXY"
+        },
+        {
+            "file": "Prevent_DNS_Leaks.lpx",
+            "kind": "external-policy",
+            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "line": "DOMAIN-SUFFIX, dnsleaktest.com, PROXY"
+        },
+        {
+            "file": "Prevent_DNS_Leaks.lpx",
+            "kind": "external-policy",
+            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "line": "DOMAIN-SUFFIX, dnsleak.com, PROXY"
+        },
+        {
+            "file": "Prevent_DNS_Leaks.lpx",
+            "kind": "external-policy",
+            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "line": "DOMAIN-SUFFIX, expressvpn.com, PROXY"
+        },
+        {
+            "file": "Prevent_DNS_Leaks.lpx",
+            "kind": "external-policy",
+            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "line": "DOMAIN-SUFFIX, nordvpn.com, PROXY"
+        },
+        {
+            "file": "Prevent_DNS_Leaks.lpx",
+            "kind": "external-policy",
+            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "line": "DOMAIN-SUFFIX, surfshark.com, PROXY"
+        },
+        {
+            "file": "Prevent_DNS_Leaks.lpx",
+            "kind": "external-policy",
+            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "line": "DOMAIN-SUFFIX, ipleak.net, PROXY"
+        },
+        {
+            "file": "Prevent_DNS_Leaks.lpx",
+            "kind": "external-policy",
+            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "line": "DOMAIN-SUFFIX, perfect-privacy.com, PROXY"
+        },
+        {
+            "file": "Prevent_DNS_Leaks.lpx",
+            "kind": "external-policy",
+            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "line": "DOMAIN-SUFFIX, browserleaks.com, PROXY"
+        },
+        {
+            "file": "Prevent_DNS_Leaks.lpx",
+            "kind": "external-policy",
+            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "line": "DOMAIN-SUFFIX, browserleaks.org, PROXY"
+        },
+        {
+            "file": "Prevent_DNS_Leaks.lpx",
+            "kind": "external-policy",
+            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "line": "DOMAIN-SUFFIX, vpnunlimited.com, PROXY"
+        },
+        {
+            "file": "Prevent_DNS_Leaks.lpx",
+            "kind": "external-policy",
+            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "line": "DOMAIN-SUFFIX, whoer.net, PROXY"
+        },
+        {
+            "file": "Prevent_DNS_Leaks.lpx",
+            "kind": "external-policy",
+            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "line": "DOMAIN-SUFFIX, whrq.net, PROXY"
+        },
+        {
+            "file": "Prevent_DNS_Leaks.lpx",
+            "kind": "external-policy",
+            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "line": "DOMAIN-SUFFIX, astrill.com, PROXY"
+        },
+        {
+            "file": "Prevent_DNS_Leaks.lpx",
+            "kind": "external-policy",
+            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "line": "DOMAIN-SUFFIX, astrill.org, PROXY"
+        },
+        {
+            "file": "Prevent_DNS_Leaks.lpx",
+            "kind": "external-policy",
+            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "line": "DOMAIN-SUFFIX, dnsleak.asn247.net, PROXY"
+        },
+        {
+            "file": "Prevent_DNS_Leaks.lpx",
+            "kind": "external-policy",
+            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "line": "DOMAIN-SUFFIX, surfshark.com, PROXY"
+        },
+        {
+            "file": "Prevent_DNS_Leaks.lpx",
+            "kind": "external-policy",
+            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "line": "DOMAIN-SUFFIX, surfsharkdns.com, PROXY"
+        },
+        {
+            "file": "Prevent_DNS_Leaks.lpx",
+            "kind": "external-policy",
+            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "line": "DOMAIN-SUFFIX, pixelscan.net, PROXY"
+        },
+        {
+            "file": "Prevent_DNS_Leaks.lpx",
+            "kind": "external-policy",
+            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "line": "DOMAIN, ipv4.ping0.cc, PROXY"
+        },
+        {
+            "file": "Prevent_DNS_Leaks.lpx",
+            "kind": "external-policy",
+            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "line": "DOMAIN, ipv6.ping0.cc, PROXY"
+        },
+        {
+            "file": "Prevent_DNS_Leaks.lpx",
+            "kind": "external-policy",
+            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "line": "DOMAIN-SUFFIX, ipapi.co, PROXY"
+        },
+        {
+            "file": "Prevent_DNS_Leaks.lpx",
+            "kind": "external-policy",
+            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "line": "DOMAIN, ip-scan.adspower.net, PROXY"
+        },
+        {
+            "file": "Script-Hub.lpx",
+            "kind": "external-policy",
+            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "line": "DOMAIN, scripthub.vercel.app, PROXY"
+        },
+        {
+            "file": "Sub-Store.lpx",
+            "kind": "external-policy",
+            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "line": "DOMAIN, sub-store.vercel.app, PROXY"
+        },
+        {
+            "file": "TestFlightRegionUnlock.lpx",
+            "kind": "external-policy",
+            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "line": "DOMAIN, testflight.apple.com, PROXY"
+        },
+        {
+            "file": "TubeMax_remove_ads.lpx",
+            "kind": "external-policy",
+            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "line": "DOMAIN, app.tubemaxapp.com, PROXY"
+        },
+        {
+            "file": "WPS_checkin.lpx",
+            "kind": "script-enable-dropped",
+            "message": "Loon enable option was not emitted because Surge module support is not equivalent.",
+            "line": "http-request ^https:\\/\\/moapi\\.wps\\.cn\\/app\\/ios\\/v1\\/app$ script-path=https://kelee.one/Resource/JavaScript/WPS/WPS_checkin.js, requires-body=true, tag=捕获Cookie, enable={CaptureCookie}"
+        }
+    ]
+}

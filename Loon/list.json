@@ -1,0 +1,4039 @@
+{
+    "name": "插件中心",
+    "notice": [
+        "本站内容由可莉个人维护，与Loon官方无关。",
+        "所有插件均为Loon专用，不建议其他工具转换使用。",
+        "禁止在中国境内平台公开传播或售卖本站及本仓库内容，如有发现请向平台举报。"
+    ],
+    "banners": [
+        {
+            "name": "PluginHub",
+            "img": "IMG/Banner/PluginHub.png",
+            "url": "https://github.com/luestr/IconResource",
+            "index": 0
+        },
+        {
+            "name": "Loon",
+            "img": "IMG/Banner/Loon_ad.png",
+            "url": "https://apps.apple.com/app/loon/id1373567447",
+            "index": 1
+        }
+    ],
+    "lists": [
+        {
+            "name": "HTTPDNS拦截器",
+            "desc": "拦截常见的HTTPDNS服务，以确保这些请求都能够在Loon的DNS框架下工作。",
+            "tag": [
+                "去广告",
+                "依赖"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/Other_icon/120px/HTTPDNS.png",
+            "date": "2026-05-17 17:24:28",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Block_HTTPDNS.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                },
+                {
+                    "name": "VirgilClyne",
+                    "homepage": "https://github.com/VirgilClyne"
+                }
+            ],
+            "index": 0
+        },
+        {
+            "name": "广告平台拦截器",
+            "desc": "此插件是所有去广告插件的基础，只针对广告平台处理。你依然需要安装其他去广告插件来搭配使用，并确保此插件始终排序在顶部。\\n\\n支持拦截腾讯、字节跳动、快手、百度、邑盟、倍孜、艾狄墨搏、袤博、极光、个推、友盟、阿里巴巴、阿里妈妈、阿里百川、超级汇川、优比客思、秒针、网易、美团、小米、京东、天目、讯飞、泛连、锐讯灵通、聚次方、美数、嗨量、维快网络、变现猫、章鱼、分秒、泰之菩、翼信、快易、数萤技术、方麟、益起、上量优选、新义互联、腾云天下、布里奇、塔酷、丽声、推啊、旺脉、新度博望、新多广告、快易科技、封狐信息、互裕科技、旺脉信息、佳量动力、享点科技、游昆信息、小川科技、旺脉科技、萃弈、泛为、米漫、易量跃动、秒针、贵士移动、星讯、倍业科技、创聚科技、硬核聚视、数因科技、芒拓网络、上海领页、神蓍科技、酷盈、Google、SupersonicAds、APPSAD、Adjust、Sigmob、TradPlus、Fancy、MedPro、AppLovin、Unity3D、Tapjoy、Liftoff、Vungle、Moloco、Smadex、Tapad、Appier、InMobi、AppsFlyer、AppLovin、Moloco、RayJump、RixEngine、Amazon、Skarb、Amplitude等广告平台的广告请求，更适合iOS平台的应用。",
+            "tag": [
+                "去广告",
+                "依赖"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/Website_icon/120px/TencentAd.png",
+            "date": "2026-05-16 17:11:57",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/BlockAdvertisers.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 1
+        },
+        {
+            "name": "1.1.1.1配置管理",
+            "desc": "提取1.1.1.1应用的配置并生成Loon可用的节点配置，点击下面署名前往配置1.1.1.1的BoxJs配置。",
+            "tag": [
+                "配置管理"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/1.1.1.1.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/1.1.1.1.lpx",
+            "author": [
+                {
+                    "name": "VirgilClyne",
+                    "homepage": "https://github.com/VirgilClyne"
+                },
+                {
+                    "name": "I-am-R-E",
+                    "homepage": "https://github.com/I-am-R-E"
+                }
+            ],
+            "index": 2
+        },
+        {
+            "name": "36氪去广告",
+            "desc": "移除开屏广告、首页右上角运营位、信息流广告、文末广告，移除相关文章推荐、大家都在看及皮肤配置，精简搜索页面、我的页面及底栏。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/36Kr.png",
+            "date": "2026-05-15 01:42:13",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/36Kr_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 3
+        },
+        {
+            "name": "123云盘去广告",
+            "desc": "移除开屏广告、应用内横幅广告。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/123NetWorkDisk.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/123NetWorkDisk_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 4
+        },
+        {
+            "name": "360摄像机去广告",
+            "desc": "移除开屏广告、首页推广、底栏商城入口及我的页面推广。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/360SmartCamera.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/360SmartCamera_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 5
+        },
+        {
+            "name": "360智慧生活去广告",
+            "desc": "移除开屏广告、首页推广横幅、商城入口及我的页面推广。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/SafetyHome.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/SafetyHome_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 6
+        },
+        {
+            "name": "555电影去广告",
+            "desc": "移除开屏广告和各类横幅广告，支持iPadOS。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/555DY.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/555DY_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 7
+        },
+        {
+            "name": "12306去广告",
+            "desc": "过滤12306应用内广告及开屏广告",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/12306.png",
+            "date": "2026-03-14 07:41:44",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/12306_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "RuCu6",
+                    "homepage": "https://github.com/RuCu6"
+                },
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 8
+        },
+        {
+            "name": "Apple天气增强",
+            "desc": "解锁Apple天气的全部功能、替换空气质量数据源、添加下一小时降水数据、添加天气数据。",
+            "tag": [
+                "功能增强"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/AppleWeather.png",
+            "date": "2026-05-13 18:22:25",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/AppleWeatherEnhancer.lpx",
+            "author": [
+                {
+                    "name": "VirgilClyne",
+                    "homepage": "https://github.com/VirgilClyne"
+                },
+                {
+                    "name": "WordlessEcho",
+                    "homepage": "https://github.com/WordlessEcho"
+                },
+                {
+                    "name": "001",
+                    "homepage": "https://github.com/001ProMax"
+                }
+            ],
+            "index": 9
+        },
+        {
+            "name": "B612咔叽去广告",
+            "desc": "移除开屏广告、弹窗及拍摄页面底部横幅广告。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/SnowCamera.png",
+            "date": "2025-07-05 01:31:35",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/SnowCamera_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 10
+        },
+        {
+            "name": "BoxJs",
+            "desc": "JavaScript数据管理器，用于管理脚本储存的数据。使用前请在本插件的详情页面为[PROXY]项分配代理策略。",
+            "tag": [
+                "数据管理"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/Other_icon/120px/BoxJS.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/BoxJs.lpx",
+            "author": [
+                {
+                    "name": "chavyleung",
+                    "homepage": "https://github.com/chavyleung"
+                }
+            ],
+            "index": 11
+        },
+        {
+            "name": "CC直播去广告",
+            "desc": "移除信息流推广和横幅，精简顶部标签。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/CCLive.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/CCLive_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 12
+        },
+        {
+            "name": "Dlabel云标签去广告",
+            "desc": "移除开屏广告及首页横幅。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Dlabel.png",
+            "date": "2025-07-22 04:45:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Dlabel_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 13
+        },
+        {
+            "name": "DNS防泄露",
+            "desc": "专为小白设计的DNS防泄露",
+            "tag": [
+                "DNS"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/Other_icon/120px/Prevent_DNS_Leaks.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Prevent_DNS_Leaks.lpx",
+            "author": [
+                {
+                    "name": "非正常人类研究中心",
+                    "homepage": null
+                }
+            ],
+            "index": 14
+        },
+        {
+            "name": "DREAME去广告",
+            "desc": "移除开屏广告、首页大图推广、横幅推广，精简底栏，阻止桌面图标替换。仅支持2.5.1版。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/DREAME.png",
+            "date": "2026-02-27 11:38:55",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/DREAME_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 15
+        },
+        {
+            "name": "ECOVACS HOME去广告",
+            "desc": "移除横幅推广，精简底栏。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/EcovacsHome.png",
+            "date": "2026-02-27 11:15:32",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/EcovacsHome_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 16
+        },
+        {
+            "name": "Fileball网盘挂载",
+            "desc": "支持挂载阿里云盘、夸克网盘和PikPak网盘，点击下方署名查看使用方法。",
+            "tag": [
+                "功能增强"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Fileball.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Fileball_mount.lpx",
+            "author": [
+                {
+                    "name": "小白脸",
+                    "homepage": null
+                }
+            ],
+            "index": 17
+        },
+        {
+            "name": "Follow每日签到",
+            "desc": "Follow每日签到，需要进入此插件的主页链接，阅读使用说明操作。",
+            "tag": [
+                "签到"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/FollowRSS.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/FollowRSS_checkin.lpx",
+            "author": [
+                {
+                    "name": "gideonsenku",
+                    "homepage": "https://github.com/gideonsenku"
+                },
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 18
+        },
+        {
+            "name": "Foodie去广告",
+            "desc": "移除开屏广告和弹窗广告",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Foodie.png",
+            "date": "2025-09-28 00:17:10",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Foodie_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 19
+        },
+        {
+            "name": "GitHub加速",
+            "desc": "此插件通过重定向至镜像站的方式解决GitHub的RAW资源下载困难的问题，使用前需要配置此插件的镜像源。由于镜像站均为热心网友提供，可能无法保证服务的长期可用性。若开启此插件后无法下载RAW资源，可尝试切换镜像源，或者禁用此插件。",
+            "tag": [
+                "反代加速"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/GitHub.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Switch_github_mirror.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 20
+        },
+        {
+            "name": "Google搜索重定向",
+            "desc": "将Google搜索重定向至.com域名，如遇频繁跳转请禁用本插件。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Google.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Google.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 21
+        },
+        {
+            "name": "IPA工具箱助手",
+            "desc": "这是IPA工具箱的辅助插件，用于下载IPA包和应用降级。IPA工具箱是运行在Scripting应用中的脚本，需要购买Scripting的Pro版本才能运行。",
+            "tag": [
+                "功能增强"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/Other_icon/120px/IPATool.png",
+            "date": "2025-12-20 22:21:24",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/IPATool.lpx",
+            "author": [
+                {
+                    "name": "小白脸",
+                    "homepage": null
+                }
+            ],
+            "index": 22
+        },
+        {
+            "name": "IT之家去广告",
+            "desc": "过滤IT之家信息流广告和文末广告，自定义移除置顶和轮播图，自定义移除项需在插件配置。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/IThome.png",
+            "date": "2025-12-01 01:25:27",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/IThome_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 23
+        },
+        {
+            "name": "Jump去广告",
+            "desc": "移除Jump开屏广告",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Jump.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Jump_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "MoonYuki",
+                    "homepage": "https://github.com/MoonYuki"
+                }
+            ],
+            "index": 24
+        },
+        {
+            "name": "Keep去广告",
+            "desc": "移除开屏广告、搜索推荐和弹窗广告，精简底栏和首页标签。移除关注推荐、文章相关推荐和信息流中的课程推广。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Keep.png",
+            "date": "2025-09-18 15:59:53",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Keep_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 25
+        },
+        {
+            "name": "KOOK去广告",
+            "desc": "移除开屏广告、房间横幅推广、促销活动、精简发现页面频道及我的页面，移除底栏商城入口。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/KOOK.png",
+            "date": "2026-05-15 03:27:14",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/KOOK_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 26
+        },
+        {
+            "name": "Line去广告",
+            "desc": "移除Line各类广告",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Line.png",
+            "date": "2026-02-12 21:20:43",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Line_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "jkgtw",
+                    "homepage": "https://github.com/jkgtw"
+                }
+            ],
+            "index": 27
+        },
+        {
+            "name": "Pinterest去广告",
+            "desc": "移除瀑布流广告",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Pinterest.png",
+            "date": "2026-05-13 00:20:48",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Pinterest_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 28
+        },
+        {
+            "name": "QQ链接解锁",
+            "desc": "解除QQ内访问非白名单之外的地址提示停止访问该页面的限制，并移除跟踪参数，使用前需要清除QQ的缓存数据。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/QQ.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/QQ_Redirect.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 29
+        },
+        {
+            "name": "QQ音乐去广告",
+            "desc": "过滤QQ音乐广告",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/QQMusic.png",
+            "date": "2025-11-10 18:30:29",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/QQMusic_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 30
+        },
+        {
+            "name": "Reddit去广告",
+            "desc": "过滤应用内推广，阻止NSFW提示。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Reddit.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Reddit_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "xream",
+                    "homepage": "https://github.com/xream"
+                }
+            ],
+            "index": 31
+        },
+        {
+            "name": "ReelShort去广告",
+            "desc": "移除开屏广告、为你推荐及各类弹窗，移除搜索栏填充词。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/ReelShort.png",
+            "date": "2025-07-31 06:11:54",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/ReelShort_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 32
+        },
+        {
+            "name": "Roborock去广告",
+            "desc": "移除横幅、活动推广、机器人图标，精简服务中心。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Roborock.png",
+            "date": "2026-03-06 14:51:35",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Roborock_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 33
+        },
+        {
+            "name": "RQrun去广告",
+            "desc": "移除开屏广告",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/RQrun.png",
+            "date": "2025-12-28 17:49:45",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/RQrun_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 34
+        },
+        {
+            "name": "Script-Hub",
+            "desc": "将其他工具的Rewrite、Rule和JavaScript资源转换为Loon能识别的格式，使用前请在本插件的详情页面为[PROXY]项分配代理策略。在插件列表中点击此插件上的链接查看使用方法。",
+            "tag": [
+                "资源转换"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/Other_icon/120px/Script-Hub.png",
+            "date": "2026-04-30 16:28:27",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Script-Hub.lpx",
+            "author": [
+                {
+                    "name": "xream",
+                    "homepage": "https://github.com/xream"
+                },
+                {
+                    "name": "Keywos",
+                    "homepage": "https://github.com/Keywos"
+                },
+                {
+                    "name": "CKYB",
+                    "homepage": "https://github.com/CKYB"
+                },
+                {
+                    "name": "小白脸",
+                    "homepage": null
+                }
+            ],
+            "index": 35
+        },
+        {
+            "name": "Soul去广告",
+            "desc": "移除开屏广告、移除话题页面热Soul话题、移除评论区礼物榜、移除更新提示、移除青少年弹窗、移除我的页面推广、移除悬浮部件。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Soul.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Soul_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "ZenmoFeiShi",
+                    "homepage": "https://github.com/ZenmoFeiShi"
+                },
+                {
+                    "name": "RuCu6",
+                    "homepage": "https://github.com/RuCu6"
+                },
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 36
+        },
+        {
+            "name": "Spotify去广告",
+            "desc": "移除播放广告，恢复歌手和专辑列表的正常展示。修改插件自定义配置项需要重新登陆方可生效。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Spotify.png",
+            "date": "2025-08-10 15:30:17",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Spotify_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "001ProMax",
+                    "homepage": "https://github.com/001ProMax"
+                }
+            ],
+            "index": 37
+        },
+        {
+            "name": "Spotify歌词增强",
+            "desc": "将Spotify的外语歌词翻译为简体中文，并提供双语翻译支持。",
+            "tag": [
+                "功能增强"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Spotify.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Spotify_lyrics_translation.lpx",
+            "author": [
+                {
+                    "name": "VirgilClyne",
+                    "homepage": "https://github.com/VirgilClyne"
+                }
+            ],
+            "index": 38
+        },
+        {
+            "name": "Sub-Store",
+            "desc": "高级订阅管理工具，定时任务默认为每天23点55分，可在插件设置中自定义。使用前请在本插件的详情页面为[PROXY]项分配代理策略。",
+            "tag": [
+                "订阅管理"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/Other_icon/120px/Sub-Store.png",
+            "date": "2026-02-18 13:39:04",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Sub-Store.lpx",
+            "author": [
+                {
+                    "name": "Peng-YM",
+                    "homepage": "https://github.com/Peng-YM"
+                }
+            ],
+            "index": 39
+        },
+        {
+            "name": "TeraBox去广告",
+            "desc": "移除开屏广告、应用内悬浮窗、弹窗广告及横幅广告。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/TeraBox.png",
+            "date": "2025-11-12 06:09:13",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/TeraBox_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 40
+        },
+        {
+            "name": "TestFlight地区解锁",
+            "desc": "解除TestFlight的区域限制，支持tvOS。",
+            "tag": [
+                "功能增强"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/TestFlight.png",
+            "date": "2025-09-02 23:42:06",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/TestFlightRegionUnlock.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 41
+        },
+        {
+            "name": "TubeMax去广告",
+            "desc": "过滤TubeMax广告",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/TubeMax.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/TubeMax_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 42
+        },
+        {
+            "name": "Tumblr去广告",
+            "desc": "移除信息流广告",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Tumblr.png",
+            "date": "2026-05-09 19:47:07",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Tumblr_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 43
+        },
+        {
+            "name": "Uki去广告",
+            "desc": "移除开屏广告、应用内悬浮窗，各类横幅、信息流广告、搜索填充词、我的页面广告。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Uki.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Uki_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 44
+        },
+        {
+            "name": "VVebo时间线修复",
+            "desc": "修复失效的用户时间线和我的页面。使用此插件前需要禁用微博去广告插件，避免插件冲突导致失效。",
+            "tag": [
+                "功能增强"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/VVebo.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/VVebo_repair.lpx",
+            "author": [
+                {
+                    "name": "suiyuran",
+                    "homepage": "https://github.com/suiyuran"
+                },
+                {
+                    "name": "androidcn",
+                    "homepage": "https://github.com/androidcn"
+                }
+            ],
+            "index": 45
+        },
+        {
+            "name": "WARP节点查询",
+            "desc": "显示WARP节点的详细信息，请在所有节点页面选择一个节点长按，出现菜单后进行测试。",
+            "tag": [
+                "节点检测"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/1.1.1.1.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/WARP_Node_Query.lpx",
+            "author": [
+                {
+                    "name": "VirgilClyne",
+                    "homepage": "https://github.com/VirgilClyne"
+                },
+                {
+                    "name": "I-am-R-E",
+                    "homepage": "https://github.com/I-am-R-E"
+                }
+            ],
+            "index": 46
+        },
+        {
+            "name": "WPS每日签到",
+            "desc": "WPS每日签到并兑换会员，需要进入此插件的主页链接，阅读使用说明操作。",
+            "tag": [
+                "签到"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/WPS.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/WPS_checkin.lpx",
+            "author": [
+                {
+                    "name": "小白脸",
+                    "homepage": null
+                }
+            ],
+            "index": 47
+        },
+        {
+            "name": "YouTube去广告",
+            "desc": "移除YouTube视频、瀑布流、搜索和Shorts中的广告，移除底栏的Shorts按钮和上传按钮，增加画中画及字幕翻译功能。移除YouTube Music底栏的上传、选段和升级按钮，增加歌词翻译，支持二者的后台播放。此插件需要启用MitM over HTTP/2和QUIC回退保护。支持Premium订阅用户使用，不支持tvOS设备。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/YouTube.png",
+            "date": "2025-08-24 22:03:19",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/YouTube_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "Maasea",
+                    "homepage": "https://github.com/Maasea"
+                },
+                {
+                    "name": "VirgilClyne",
+                    "homepage": "https://github.com/VirgilClyne"
+                },
+                {
+                    "name": "Choler",
+                    "homepage": "https://github.com/Choler"
+                },
+                {
+                    "name": "DivineEngine",
+                    "homepage": "https://github.com/DivineEngine"
+                },
+                {
+                    "name": "app2smile",
+                    "homepage": "https://github.com/app2smile"
+                }
+            ],
+            "index": 48
+        },
+        {
+            "name": "YouTube双语翻译",
+            "desc": "字幕增强及双语翻译，支持Youtube Music歌词翻译。此插件需要置于YouTube去广告插件之下，且和YouTube去广告插件的歌词翻译冲突，不支持tvOS设备。",
+            "tag": [
+                "功能增强"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/YouTube.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/YouTubeSubtitlesTranslation.lpx",
+            "author": [
+                {
+                    "name": "VirgilClyne",
+                    "homepage": "https://github.com/VirgilClyne"
+                }
+            ],
+            "index": 49
+        },
+        {
+            "name": "YY去广告",
+            "desc": "移除开屏广告、应用内弹窗，精简底栏和我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/YY_Voice.png",
+            "date": "2025-06-02 01:02:42",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/YY_Voice_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 50
+        },
+        {
+            "name": "YY语音去广告",
+            "desc": "移除开屏广告、应用内弹窗、任务推广、频道横幅推广，精简广场顶部标签。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/YYVoiceTool.png",
+            "date": "2025-11-23 23:03:22",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/YYVoiceTool_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 51
+        },
+        {
+            "name": "ZAKER去广告",
+            "desc": "移除开屏广告、置顶轮播图广告和文末广告。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/ZAKER.png",
+            "date": "2025-06-30 23:34:19",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/ZAKER_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 52
+        },
+        {
+            "name": "爱企查去广告",
+            "desc": "移除开屏广告、应用内弹窗、首页轮播图、悬浮部件、信息流和搜索填充词。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Aiinquiry.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Aiinquiry_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 53
+        },
+        {
+            "name": "爱奇艺去广告",
+            "desc": "移除开屏广告、焦点图广告、瀑布流广告、搜索页面广告、移除青少年弹窗，精简底栏和我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/iQiYi_Video.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/iQiYi_Video_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 54
+        },
+        {
+            "name": "阿里云盘去广告",
+            "desc": "移除首页广告横幅、弹窗和顶部奖励。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/AliYunDrive.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/AliYunDrive_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "RuCu6",
+                    "homepage": "https://github.com/RuCu6"
+                }
+            ],
+            "index": 55
+        },
+        {
+            "name": "百度地图去广告",
+            "desc": "移除开屏广告、出行页面推广、周边页面推广、打车页面推广，精简我的页面。此插件需要IPA签名方可使用，App Store用户请勿使用此插件，务必点击下方主页链接查看详细教程。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/BaiduMap.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/BaiduMap_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://getupnote.com/share/notes/zSn1ShBmzNYISKcTgjXE5oHMrNf2/34bf3aad-7872-497d-b239-198e27e8c84c"
+                }
+            ],
+            "index": 56
+        },
+        {
+            "name": "百度输入法去广告",
+            "desc": "过滤百度输入法广告，替换个人主页随机图。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Baidu_input_method.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Baidu_input_method_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "Keywos",
+                    "homepage": "https://github.com/Keywos"
+                }
+            ],
+            "index": 57
+        },
+        {
+            "name": "百度贴吧去广告",
+            "desc": "移除开屏广告、信息流广告和帖内广告，精简侧拉抽屉及我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Tieba.png",
+            "date": "2026-01-01 15:45:01",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Tieba_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                },
+                {
+                    "name": "app2smile",
+                    "homepage": "https://github.com/app2smile"
+                }
+            ],
+            "index": 58
+        },
+        {
+            "name": "百度网盘去广告",
+            "desc": "移除开屏广告、首页卡片广告、传输页面广告、各类弹窗，精简侧拉抽屉和我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/BaiduNetDisk.png",
+            "date": "2026-01-02 06:40:04",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/BaiduNetDisk_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 59
+        },
+        {
+            "name": "百度网页去广告",
+            "desc": "移除百度搜索移动端网页的首页广告信息流",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Baidu.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/BaiduSearchWebpage_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "Keywos",
+                    "homepage": "https://github.com/Keywos"
+                }
+            ],
+            "index": 60
+        },
+        {
+            "name": "百度文库去广告",
+            "desc": "移除开屏广告、横幅广告、弹窗广告、信息流推广、搜索发现、热门搜索、资料库搜索推荐，精简我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/BaiduWenku.png",
+            "date": "2025-12-07 05:57:46",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/BaiduWenku_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 61
+        },
+        {
+            "name": "宝宝树孕育去广告",
+            "desc": "过滤宝宝树孕育广告",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/BabyTree.png",
+            "date": "2025-12-05 04:21:05",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/BabyTree_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "RuCu6",
+                    "homepage": "https://github.com/RuCu6"
+                }
+            ],
+            "index": 62
+        },
+        {
+            "name": "贝壳找房去广告",
+            "desc": "移除开屏广告、弹窗广告、悬浮广告、信息流推广、我家页面的装修推荐。移除我的页面的专属推荐、游戏入口、钱包入口。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Beike.png",
+            "date": "2025-08-10 13:18:43",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Beike_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 63
+        },
+        {
+            "name": "哔哩哔哩漫画去广告",
+            "desc": "移除开屏广告、应用内悬浮窗、各类横幅广告、你可能喜欢、小说推荐、首页弹窗，精简首页标签、底栏活动按钮和我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/BiliComic.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/BiliComic_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 64
+        },
+        {
+            "name": "哔哩哔哩去广告",
+            "desc": "过滤哔哩哔哩广告、移除青少年模式弹窗和交互式弹幕、移除无用功能和链接跟踪参数，增加空降助手以便跳过视频中插入的广告。此插件仅建议iOS 15以上设备使用，且必须启用MitM-over-HTTP/2功能。\\n\\n空降助手是第三方提供的功能，依赖于Android版空降助手的服务器数据运作，可能会存在不准确或者失效的问题，此功能与哔哩哔哩官方无关。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Bilibili.png",
+            "date": "2026-04-30 16:24:57",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Bilibili_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "kokoryh",
+                    "homepage": "https://github.com/kokoryh"
+                }
+            ],
+            "index": 65
+        },
+        {
+            "name": "比特球云盘去广告",
+            "desc": "移除开屏广告和各类横幅推广。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/BitqiuPan.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/BitqiuPan_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 66
+        },
+        {
+            "name": "波点音乐去广告",
+            "desc": "精简应用配置，禁用P2P传输。移除开屏广告、横幅推广、悬浮广告、歌曲广告、商城入口、搜索推广、评论区推广、试听语音提醒。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/BodianMusic.png",
+            "date": "2025-08-31 03:36:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/BodianMusic_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 67
+        },
+        {
+            "name": "薄荷健康去广告",
+            "desc": "移除记录页大家都在看、移除各类弹窗，移除广场横幅推广，精简代谢中心页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/BooHee.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/BooHee_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 68
+        },
+        {
+            "name": "菜鸟去广告",
+            "desc": "过滤菜鸟广告",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Cainiao.png",
+            "date": "2025-12-31 12:41:25",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Cainiao_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "小白脸",
+                    "homepage": null
+                }
+            ],
+            "index": 69
+        },
+        {
+            "name": "财新去广告",
+            "desc": "过滤财新广告",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/CaixinMedia.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/CaixinMedia_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "RuCu6",
+                    "homepage": "https://github.com/RuCu6"
+                }
+            ],
+            "index": 70
+        },
+        {
+            "name": "彩云天气去广告",
+            "desc": "移除首页推广、弹窗、悬浮窗、底栏天气助手和工具箱入口，移除我的页面广告横幅。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/ColorfulClouds.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/ColorfulClouds_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "RuCu6",
+                    "homepage": "https://github.com/RuCu6"
+                }
+            ],
+            "index": 71
+        },
+        {
+            "name": "成分喵去广告",
+            "desc": "移除首页推广活动、广告组件请求、移除被查商品购买链接、搜索发现。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/ChengFenMiao.png",
+            "date": "2025-11-21 13:02:33",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/ChengFenMiao_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 72
+        },
+        {
+            "name": "触站去广告",
+            "desc": "移除开屏广告、弹窗广告、各页面横幅推广，移除首页悬浮挂件。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Chuzhan.png",
+            "date": "2026-01-31 01:14:42",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Chuzhan_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 73
+        },
+        {
+            "name": "磁力宅播放器去广告",
+            "desc": "移除开屏广告、弹窗和文件列表广告。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/XFuse.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/XFuse_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 74
+        },
+        {
+            "name": "代理链路检测",
+            "desc": "查看目标节点的代理走向，在插件列表中点击此插件上的链接查看使用方法。",
+            "tag": [
+                "节点检测"
+            ],
+            "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Stack.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/NodeLinkCheck.lpx",
+            "author": [
+                {
+                    "name": "I-am-R-E",
+                    "homepage": "https://github.com/I-am-R-E"
+                }
+            ],
+            "index": 75
+        },
+        {
+            "name": "大麦去广告",
+            "desc": "移除开屏广告、轮播图广告和弹窗广告，移除搜索填充词和专属推荐。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Damai.png",
+            "date": "2025-11-09 00:15:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Damai_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 76
+        },
+        {
+            "name": "得间小说去广告",
+            "desc": "移除开屏广告、章末广告，移除扉页广告提示、听书界面广告提示、搜索栏填充词。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/iReaderDejian.png",
+            "date": "2025-09-04 22:36:17",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/iReaderDejian_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 77
+        },
+        {
+            "name": "得物去广告",
+            "desc": "移除开屏广告、弹窗、搜索词填充、热搜榜、猜你想搜、推荐关注、推荐信息流，精简消息中心和我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Dewu.png",
+            "date": "2025-12-05 02:57:36",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Dewu_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 78
+        },
+        {
+            "name": "滴答出行去广告",
+            "desc": "移除开屏广告、弹窗广告、横幅广告，精简底栏和我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/DidaPincheTaxi.png",
+            "date": "2025-12-07 06:51:00",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/DidaPincheTaxi_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 79
+        },
+        {
+            "name": "滴滴出行去广告",
+            "desc": "移除开屏广告、弹窗广告、横幅推广，精简底栏和我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/DiDi.png",
+            "date": "2025-12-29 17:07:29",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/DiDi_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 80
+        },
+        {
+            "name": "叮咚买菜去广告",
+            "desc": "移除开屏广告、弹窗推广、搜索推荐、信息流广告、悬浮广告、各页面购物推荐、精简我的页面，移除底栏和各页面AI入口。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/DingdongMaicai.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/DingdongMaicai_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "zirawell",
+                    "homepage": "https://github.com/zirawell"
+                },
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                },
+                {
+                    "name": "wish",
+                    "homepage": null
+                }
+            ],
+            "index": 81
+        },
+        {
+            "name": "豆瓣去广告",
+            "desc": "移除开屏广告、各页面信息流广告、首页横幅、搜索填充词。此插件需要IPA签名方可使用，App Store用户请勿使用此插件，务必点击下方主页链接查看详细教程。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/DouBan.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/DouBan_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 82
+        },
+        {
+            "name": "豆瓣阅读去广告",
+            "desc": "移除开屏广告、弹窗广告、热门搜索、热搜榜。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/DoubanRead.png",
+            "date": "2025-11-24 22:51:51",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/DoubanRead_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 83
+        },
+        {
+            "name": "斗鱼去广告",
+            "desc": "移除开屏、首页视频流、首页轮播图广告，移除直播间悬浮窗。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Douyu.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Douyu_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 84
+        },
+        {
+            "name": "堆糖去广告",
+            "desc": "移除开屏广告、信息流广告、热搜排行榜广告、我的页面横幅广告，移除关注推荐，精简底部导航栏。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/DuiTang.png",
+            "date": "2025-11-20 02:07:17",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/DuiTang_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 85
+        },
+        {
+            "name": "番茄小说去广告",
+            "desc": "移除番茄小说开屏广告、移除文章底部和章末广告、移除听书页面广告、移除悬浮部件和底栏多余的福利标签。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/DragonRead.png",
+            "date": "2025-11-12 19:57:44",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/DragonRead_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 86
+        },
+        {
+            "name": "帆书去广告",
+            "desc": "移除弹窗和会员任务，精简首页、听书页面、课程菜单和我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/KebidaDushu.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/KebidaDushu_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "Yuheng0101",
+                    "homepage": "https://github.com/Yuheng0101"
+                }
+            ],
+            "index": 87
+        },
+        {
+            "name": "飞客去广告",
+            "desc": "移除开屏广告、首页广告、板块广告、帖内广告和我的页面广告。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/FlyerTea.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/FlyerTea_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 88
+        },
+        {
+            "name": "飞猪旅行去广告",
+            "desc": "移除开屏广告、精简我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/TaobaoTravel.png",
+            "date": "2025-11-25 02:03:39",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/TaobaoTravel_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 89
+        },
+        {
+            "name": "粉笔去广告",
+            "desc": "移除开屏广告、弹窗广告、悬浮广告、热门搜索，移除底栏皮肤，精简我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/FenBi.png",
+            "date": "2025-11-27 20:44:18",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/FenBi_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 90
+        },
+        {
+            "name": "丰巢去广告",
+            "desc": "移除弹窗，精简首页和生活服务。此插件需要IPA签名方可使用，App Store用户请勿使用此插件，务必点击下方主页链接查看详细教程。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/FC_Box.png",
+            "date": "2026-02-23 01:17:31",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/FC_Box_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 91
+        },
+        {
+            "name": "风鸟去广告",
+            "desc": "移除首页信息流和轮播图",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/RiskBird.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/RiskBird_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 92
+        },
+        {
+            "name": "纷玩岛去广告",
+            "desc": "移除开屏广告、弹窗广告、信息横幅推广、票夹页面横幅广告。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/LiveLab.png",
+            "date": "2026-05-12 23:07:24",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/LiveLab_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 93
+        },
+        {
+            "name": "盖得排行去广告",
+            "desc": "精简首页、移除分类横幅推广、单单返猜你喜欢和编辑精选，移除我的页面推广。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/GuideRank.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/GuideRank_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 94
+        },
+        {
+            "name": "高德地图去广告",
+            "desc": "过滤高德地图开屏广告、各页面推广，精简我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Amap.png",
+            "date": "2026-03-10 19:47:26",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Amap_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "RuCu6",
+                    "homepage": "https://github.com/RuCu6"
+                },
+                {
+                    "name": "kelv1n1n",
+                    "homepage": "https://github.com/kelv1n1n"
+                },
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 95
+        },
+        {
+            "name": "稿定设计去广告",
+            "desc": "移除稿定设计开屏广告、首页轮播图和弹窗，移除功能入口角标。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/GaoDing.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/GaoDing_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 96
+        },
+        {
+            "name": "航旅纵横去广告",
+            "desc": "过滤航旅纵横广告",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Umetrip.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Umetrip_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "佚名",
+                    "homepage": null
+                }
+            ],
+            "index": 97
+        },
+        {
+            "name": "盒马去广告",
+            "desc": "移除开屏广告、首页信息流广告及推广、弹窗广告、悬浮挂件、商品及购物车推荐，精简底栏及我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/MrHema.png",
+            "date": "2026-03-18 22:26:57",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/MrHema_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 98
+        },
+        {
+            "name": "华尔街见闻去广告",
+            "desc": "移除开屏广告、文末广告、信息流广告，精简底栏。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/FinanceNews.png",
+            "date": "2026-05-14 23:18:27",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/FinanceNews_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 99
+        },
+        {
+            "name": "虎扑去广告",
+            "desc": "移除虎扑开屏广告、首页顶部推广、我的页面多余模块及各类横幅推广。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/HUPU.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/HUPU_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "ZenmoFeiShi",
+                    "homepage": "https://github.com/ZenmoFeiShi"
+                }
+            ],
+            "index": 100
+        },
+        {
+            "name": "虎嗅去广告",
+            "desc": "移除广告配置、信息流直播预约横幅、相关文章推荐、48小时热文推荐，精简搜索页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Huxiu.png",
+            "date": "2026-05-15 02:34:00",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Huxiu_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 101
+        },
+        {
+            "name": "驾考宝典去广告",
+            "desc": "移除开屏广告、横幅广告、悬浮窗广告、社区帖子广告，精简我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/JiaKaoBaoDian.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/JiaKaoBaoDian_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 102
+        },
+        {
+            "name": "健康160去广告",
+            "desc": "移除开屏广告、应用内悬浮窗、弹窗广告、横幅广告，精简我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/91160.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/91160_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 103
+        },
+        {
+            "name": "剑网三无界去广告",
+            "desc": "移除热门推送活动，并解决无法在Loon运行时更新和登录的问题。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/SeasunJX3.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/SeasunJX3_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 104
+        },
+        {
+            "name": "驾校一点通去广告",
+            "desc": "移除开屏广告、各页面广告横幅、弹窗广告，移除社区广告。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/JiaXiaoDrive.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/JiaXiaoDrive_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 105
+        },
+        {
+            "name": "节点检测工具",
+            "desc": "适用于Loon的节点检测工具，可进行地理位置、节点解锁、入口落地等查询。请在所有节点页面选择一个节点长按，出现菜单后进行测试。",
+            "tag": [
+                "节点检测"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/Other_icon/120px/Node_detection_tool.png",
+            "date": "2026-03-01 20:36:46",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Node_detection_tool.lpx",
+            "author": [
+                {
+                    "name": "xream",
+                    "homepage": "https://github.com/xream"
+                },
+                {
+                    "name": "Keywos",
+                    "homepage": "https://github.com/Keywos"
+                },
+                {
+                    "name": "KOP-XIAO",
+                    "homepage": "https://github.com/KOP-XIAO"
+                },
+                {
+                    "name": "dcpengx",
+                    "homepage": "https://github.com/dcpengx"
+                }
+            ],
+            "index": 106
+        },
+        {
+            "name": "京东比价",
+            "desc": "首次使用需安装慢慢买应用，之后点击进入[我的]页面以捕获Cookie，捕获成功后方可在商品详情页面查看比价内容。",
+            "tag": [
+                "功能增强"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/JD.png",
+            "date": "2025-05-15 05:41:50",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/JD_Price.lpx",
+            "author": [
+                {
+                    "name": "wf021325",
+                    "homepage": "https://github.com/wf021325"
+                },
+                {
+                    "name": "githubdulong",
+                    "homepage": "https://github.com/githubdulong"
+                },
+                {
+                    "name": "mw418",
+                    "homepage": "https://github.com/mw418"
+                }
+            ],
+            "index": 107
+        },
+        {
+            "name": "京东去广告",
+            "desc": "移除京东开屏广告，精简我的页面产品推广。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/JD.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/JD_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "RuCu6",
+                    "homepage": "https://github.com/RuCu6"
+                },
+                {
+                    "name": "Maasea",
+                    "homepage": "https://github.com/Maasea"
+                }
+            ],
+            "index": 108
+        },
+        {
+            "name": "京东外卖去广告",
+            "desc": "移除首页推广、点评页面非美食内容、购物车及我的页面推荐、搜索发现、搜索榜单，精简我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/JDWaimai.png",
+            "date": "2025-11-28 02:52:04",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/JDWaimai_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 109
+        },
+        {
+            "name": "金山文档去广告",
+            "desc": "移除首页横幅推广、表单收集页面推广和我的页面推广。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/WPS_Documents.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/WPS_Documents_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 110
+        },
+        {
+            "name": "可莉广告过滤器",
+            "desc": "可莉自用的广告过滤器",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/Other_icon/120px/KeLee.png",
+            "date": "2025-07-16 02:25:05",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Remove_ads_by_keli.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 111
+        },
+        {
+            "name": "快递100去广告",
+            "desc": "移除横幅广告、弹窗广告，精简首页。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/KuaiDi100.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/KuaiDi100_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 112
+        },
+        {
+            "name": "快对去广告",
+            "desc": "移除开屏广告、横幅推广，精简我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/KuaiDuiZuoYe.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/KuaiDuiZuoYe_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 113
+        },
+        {
+            "name": "快捷搜索",
+            "desc": "为Safari提供快速切换搜索引擎的能力，在插件列表中点击此插件上的链接查看使用方法。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Safari.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/QuickSearch.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 114
+        },
+        {
+            "name": "快看漫画去广告",
+            "desc": "移除开屏广告、悬浮窗、漫画广告、社区广告、各类弹窗，精简顶部标签、我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/KuaiKanComic.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/KuaiKanComic_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 115
+        },
+        {
+            "name": "快手去广告",
+            "desc": "移除开屏广告、视频流广告、底栏皮肤、右下角悬浮推广，精简我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/KuaiShou.png",
+            "date": "2025-09-16 12:09:59",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/KuaiShou_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 116
+        },
+        {
+            "name": "快影去广告",
+            "desc": "移除开屏广告、信息流推广、横幅推广，移除悬浮部件。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/KwaiVideoeditor.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/KwaiVideoeditor_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 117
+        },
+        {
+            "name": "夸克去广告",
+            "desc": "移除阅读广告、各页面弹窗及横幅，精简我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/QuarkBrowser.png",
+            "date": "2025-12-29 22:55:29",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/QuarkBrowser_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 118
+        },
+        {
+            "name": "夸克扫描王去广告",
+            "desc": "移除弹窗广告、横幅广告，精简我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/QuarkScanking.png",
+            "date": "2026-01-30 00:56:47",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/QuarkScanking_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 119
+        },
+        {
+            "name": "酷安去广告",
+            "desc": "过滤酷安广告",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/CoolApk.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/CoolApk_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "RuCu6",
+                    "homepage": "https://github.com/RuCu6"
+                },
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 120
+        },
+        {
+            "name": "酷狗概念版去广告",
+            "desc": "移除广告服务模块、播放器广告，精简乐库及搜索页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/KuGouYouth.png",
+            "date": "2026-02-27 01:30:16",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/KuGouYouth_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 121
+        },
+        {
+            "name": "酷狗铃声去广告",
+            "desc": "移除开屏广告，移除歌曲列表、播放器、搜索界面广告，移除悬浮广告和弹窗广告。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/KGRing.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/KGRing_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 122
+        },
+        {
+            "name": "酷狗音乐去广告",
+            "desc": "移除开屏广告、应用各类弹窗、各类横幅广告、评论区广告和播放器界面广告。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/KuGou.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/KuGou_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 123
+        },
+        {
+            "name": "库街区去广告",
+            "desc": "移除开屏广告、弹窗广告、搜索页面的热搜及话题热榜。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/KuroBBS.png",
+            "date": "2025-11-23 18:56:41",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/KuroBBS_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 124
+        },
+        {
+            "name": "酷我音乐去广告",
+            "desc": "移除开屏广告、各类弹窗、悬浮窗、各类横幅广告、信息流广告、歌词评论区广告和播放器界面广告，精简侧边栏。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Kuwo.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Kuwo_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 125
+        },
+        {
+            "name": "乐播投屏去广告",
+            "desc": "移除开屏广告、首页横幅推广、全网全网热投榜，移除我的页面横幅推广。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/TV_Assistant.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/TV_Assistant_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 126
+        },
+        {
+            "name": "两步路户外助手去广告",
+            "desc": "移除开屏广告、弹窗广告，精简我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/2bulu.png",
+            "date": "2026-05-16 14:43:15",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/2bulu_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 127
+        },
+        {
+            "name": "萝卜快跑去广告",
+            "desc": "移除开屏广告、弹窗广告、横幅广告、新用户活动皮肤，保留优惠活动。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/RoboTaxi.png",
+            "date": "2025-12-07 06:26:48",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/RoboTaxi_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 128
+        },
+        {
+            "name": "马蜂窝去广告",
+            "desc": "移除首页信息流广告、商城横幅推广、我的页面弹窗。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/MaFengWo.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/MaFengWo_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 129
+        },
+        {
+            "name": "芒果TV去广告",
+            "desc": "移除开屏广告、信息流广告、播放页广告，精简我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Mango_TV.png",
+            "date": "2025-11-09 07:45:13",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/MangoTV_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                },
+                {
+                    "name": "RuCu6",
+                    "homepage": "https://github.com/RuCu6"
+                }
+            ],
+            "index": 130
+        },
+        {
+            "name": "漫客栈去广告",
+            "desc": "移除开屏广告、漫画广告、小说章末广告，精简我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/MKZ.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/MKZ_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 131
+        },
+        {
+            "name": "猫耳FM去广告",
+            "desc": "移除开屏广告、青少年模式弹窗、首页顶部入口，替换底栏的直播入口为发现入口。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/CatEarFM.png",
+            "date": "2025-05-17 13:50:41",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/CatEarFM_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 132
+        },
+        {
+            "name": "美丽修行去广告",
+            "desc": "移除开屏广告、首页广告、发现页广告、美修盒页面广告、下拉广告、弹窗广告、搜索推广、版本更新弹窗及我的页面广告。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Meizhixiuxing.png",
+            "date": "2025-11-26 23:28:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Meizhixiuxing_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 133
+        },
+        {
+            "name": "美食杰去广告",
+            "desc": "移除开屏广告和信息流广告。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/MeiShiJie.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/MeiShiJie_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 134
+        },
+        {
+            "name": "美图秀秀去广告",
+            "desc": "移除开屏广告、横幅推广，精简我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/MeiTu.png",
+            "date": "2025-08-31 18:06:06",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/MeiTu_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 135
+        },
+        {
+            "name": "美颜相机去广告",
+            "desc": "移除开屏广告、应用内弹窗，精简首页和我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/MeituMYXJ.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/MeituMYXJ_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 136
+        },
+        {
+            "name": "美柚去广告",
+            "desc": "移除开屏广告、弹窗推广和信息流推广，移除青少年模式弹窗和我的页面推广。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/MeetYou.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/MeetYou_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 137
+        },
+        {
+            "name": "萌娘百科去广告",
+            "desc": "移除开屏广告、弹窗、首页横幅。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/MoeGirlWiki.png",
+            "date": "2026-01-30 00:26:51",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/MoeGirlWiki_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 138
+        },
+        {
+            "name": "米游社去广告",
+            "desc": "移除开屏广告、搜索栏热搜及资讯、青少年模式弹窗。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/miHoYoBBS.png",
+            "date": "2025-11-20 01:12:36",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/miHoYoBBS_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 139
+        },
+        {
+            "name": "墨迹天气去广告",
+            "desc": "移除天气页面横幅、工具栏，移除时景关注页面推荐，精简我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/MojiWeather.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/MojiWeather_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 140
+        },
+        {
+            "name": "脉脉去广告",
+            "desc": "移除开屏广告、信息流广告、横幅推广、相关帖子推荐。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/MaiMai.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/MaiMai_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 141
+        },
+        {
+            "name": "胖乖生活去广告",
+            "desc": "移除开屏广告、横幅轮播图、网格广告、信息流广告、浮窗广告，精简我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/PangguaiLife.png",
+            "date": "2025-09-15 21:51:48",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/PangguaiLife_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 142
+        },
+        {
+            "name": "配音秀去广告",
+            "desc": "移除开屏广告、弹窗、横幅、各类关注推荐。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/DubbingShow.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/DubbingShow_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 143
+        },
+        {
+            "name": "拼多多去广告",
+            "desc": "移除开屏广告、底栏多多视频、会场入口、聊天页面精选推荐及推广，精简首页和个人中心。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/PinDuoDuo.png",
+            "date": "2026-02-28 20:52:18",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/PinDuoDuo_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "ZenmoFeiShi",
+                    "homepage": "https://github.com/ZenmoFeiShi"
+                },
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 144
+        },
+        {
+            "name": "皮皮虾去广告",
+            "desc": "移除开屏广告、评论区广告、视频流广告，精简我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/PiPiXia.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/PiPiXia_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 145
+        },
+        {
+            "name": "朴朴超市去广告",
+            "desc": "移除超市去开屏广告，移除首页顶部轮播图和图标广告、启动小弹图广告、首页右下角悬浮动画、搜索热搜榜、搜索建议词、搜索发现热词、订单页面商，精简我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/PuPuMall.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/PuPuMall_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "kelv1n1n",
+                    "homepage": "https://github.com/kelv1n1n"
+                },
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 146
+        },
+        {
+            "name": "前程无忧去广告",
+            "desc": "移除开屏广告、弹窗、信息流推广、职位页面推广和各类横幅推广。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/51Job.png",
+            "date": "2025-07-11 17:40:27",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/51Job_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 147
+        },
+        {
+            "name": "汽车之家去广告",
+            "desc": "移除开屏广告、各类广告横幅、各类信息流广告、各类弹窗推广、各类浮窗、我的页面广告。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/AutoHome.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/AutoHome_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 148
+        },
+        {
+            "name": "起点读书去广告",
+            "desc": "移除起点读书开屏广告、每日导读、各类弹窗、文末广告、搜索填充词，精简我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/QiDian.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/QiDian_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 149
+        },
+        {
+            "name": "七猫小说去广告",
+            "desc": "移除大部分七猫小说广告，但受限于七猫小说自身对MitM和VPN状态的检测，部分页面广告无法移除。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/SevenCat.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/SevenCat_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 150
+        },
+        {
+            "name": "蜻蜓FM去广告",
+            "desc": "移除开屏广告、信息流广告、各类相关内容推荐，精简我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/QtingFM.png",
+            "date": "2026-02-27 02:47:52",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/QtingFM_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 151
+        },
+        {
+            "name": "汽水音乐去广告",
+            "desc": "移除开屏广告、弹窗广告、播放器推广、歌曲详情界面视频推广、播放页面的歌曲视频，精简首页和我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/SodaMusic.png",
+            "date": "2025-08-31 05:46:14",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/SodaMusic_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 152
+        },
+        {
+            "name": "启信宝去广告",
+            "desc": "移除开屏广告、应用内弹窗、首页轮播图、悬浮部件和个性化推荐信息流。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/QiXinBao.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/QiXinBao_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 153
+        },
+        {
+            "name": "全民K歌去广告",
+            "desc": "移除开屏广告、歌房页面弹窗广告、消息页广告和我的页面广告。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/QQKSong.png",
+            "date": "2025-12-29 23:11:06",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/QQKSong_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 154
+        },
+        {
+            "name": "瑞幸咖啡去广告",
+            "desc": "移除开屏广告、弹窗和各类横幅推广。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/LuckinCoffee.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/LuckinCoffee_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "Sliverkiss",
+                    "homepage": "https://github.com/Sliverkiss"
+                }
+            ],
+            "index": 155
+        },
+        {
+            "name": "省钱快报去广告",
+            "desc": "移除开屏广告、横幅广告、商品推荐，精简我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/YueDanBa.png",
+            "date": "2025-06-01 19:49:56",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/YueDanBa_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 156
+        },
+        {
+            "name": "什么值得买去广告",
+            "desc": "移除开屏广告、信息流广告、各类横幅广告、搜索页广告、文章内广告，移除活动皮肤、精简我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/smzdm.png",
+            "date": "2026-05-16 00:09:01",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/smzdm_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 157
+        },
+        {
+            "name": "收银通商户端去广告",
+            "desc": "移除开屏广告和首页推广",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/ShouYinTongMerchant.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/ShouYinTongMerchant_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 158
+        },
+        {
+            "name": "顺丰速运去广告",
+            "desc": "移除开屏广告、首页下拉抽屉、首页推广、应用内悬浮窗、横幅广告，移除主题，精简我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/SF-Express.png",
+            "date": "2026-02-23 03:35:22",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/SF-Express_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 159
+        },
+        {
+            "name": "书旗小说去广告",
+            "desc": "移除书城横幅广告、听书广告、阅读广告、章末推荐、福利入口、悬浮窗、推荐搜索词，精简我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/ShuQiCenterReader.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/ShuQiCenterReader_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 160
+        },
+        {
+            "name": "数字心动去广告",
+            "desc": "移除开屏广告、首页顶部标签、轮播图、悬浮挂件、热门搜索、信息流广告。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/DigitalHeartbeat.png",
+            "date": "2025-12-28 22:51:40",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/DigitalHeartbeat_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 161
+        },
+        {
+            "name": "随手记去广告",
+            "desc": "移除开屏广告、神象云账本内部广告、我的页面广告，移除社区入口。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/KingdeeMyMoney.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/KingdeeMyMoney_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 162
+        },
+        {
+            "name": "淘宝去广告",
+            "desc": "过滤淘宝开屏广告",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Taobao.png",
+            "date": "2025-12-28 18:55:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Taobao_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "RuCu6",
+                    "homepage": "https://github.com/RuCu6"
+                }
+            ],
+            "index": 163
+        },
+        {
+            "name": "淘票票去广告",
+            "desc": "移除开屏广告、悬浮广告、轮播图广告和弹窗广告，移除搜索填充词和为你推荐。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Taopiaopiao.png",
+            "date": "2025-11-08 23:45:23",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Taopiaopiao_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 164
+        },
+        {
+            "name": "他趣去广告",
+            "desc": "移除各类弹窗、横幅，精简我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Taqu.png",
+            "date": "2026-05-15 05:22:42",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Taqu_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 165
+        },
+        {
+            "name": "腾讯视频去广告",
+            "desc": "过滤腾讯视频客户端广告，如遇失效，则需要重新安装腾讯视频客户端。由于此插件不再维护，客户端版本高于8.9.40可能会导致此插件失效，请勿升级客户端。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Tencent_Video.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Tencent_Video_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "RuCu6",
+                    "homepage": "https://github.com/RuCu6"
+                }
+            ],
+            "index": 166
+        },
+        {
+            "name": "腾讯文档去广告",
+            "desc": "移除开屏广告、首页横幅推广。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/TXDocs.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/TXDocs_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 167
+        },
+        {
+            "name": "图怪兽去广告",
+            "desc": "移除开屏广告、弹窗广告、各页面横幅推广。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/TuGuaiShou.png",
+            "date": "2026-01-31 01:54:20",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/TuGuaiShou_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 168
+        },
+        {
+            "name": "推栏去广告",
+            "desc": "过滤推栏广告",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Daily.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Daily_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 169
+        },
+        {
+            "name": "挖财记账去广告",
+            "desc": "移除弹窗广告、推广语横幅和右下角悬浮广告。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/WaCaiJiZhang.png",
+            "date": "2025-06-30 21:53:43",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/WaCaiJiZhang_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 170
+        },
+        {
+            "name": "网易大神去广告",
+            "desc": "移除开屏广告，精简大量冗余的配置文件，精简我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/NetEaseGodlike.png",
+            "date": "2025-09-18 01:42:22",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/NetEaseGodlike_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 171
+        },
+        {
+            "name": "网易新闻去广告",
+            "desc": "移除开屏广告、置顶新闻、热搜列表和搜索栏填充词。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/NeteaseNews.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/NeteaseNews_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "RuCu6",
+                    "homepage": "https://github.com/RuCu6"
+                }
+            ],
+            "index": 172
+        },
+        {
+            "name": "网易有道词典去广告",
+            "desc": "移除开屏广告、弹窗广告、右上角推广。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/YoudaoDict.png",
+            "date": "2026-05-15 21:46:51",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/YoudaoDict_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 173
+        },
+        {
+            "name": "网易邮箱大师去广告",
+            "desc": "移除网易邮箱大师开屏广告、签到任务提醒，精简侧拉抽屉和我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/MailMaster.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/MailMaster_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 174
+        },
+        {
+            "name": "网易云音乐去广告",
+            "desc": "过滤网易云音乐广告，并允许自定义界面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/NeteaseCloudMusic.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/NeteaseCloudMusic_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "RuCu6",
+                    "homepage": "https://github.com/RuCu6"
+                },
+                {
+                    "name": "Keywos",
+                    "homepage": "https://github.com/Keywos"
+                }
+            ],
+            "index": 175
+        },
+        {
+            "name": "完美世界电竞去广告",
+            "desc": "移除开屏广告，精简搜索页。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/PerfectWorldEsport.png",
+            "date": "2026-05-13 00:54:14",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/PerfectWorldEsport_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 176
+        },
+        {
+            "name": "微博轻享版去广告",
+            "desc": "移除开屏广告、时间线广告及评论区广告，移除发现页面横幅推广、最常访问、主页访客及热门视频，移除搜索填充词。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Weibo_intl.png",
+            "date": "2026-05-15 22:35:54",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Weibo_intl_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 177
+        },
+        {
+            "name": "微博去广告",
+            "desc": "过滤微博广告及去除各部分推广模块",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Weibo.png",
+            "date": "2026-05-13 18:10:34",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Weibo_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "RuCu6",
+                    "homepage": "https://github.com/RuCu6"
+                },
+                {
+                    "name": "zmqcherish",
+                    "homepage": "https://github.com/zmqcherish"
+                }
+            ],
+            "index": 178
+        },
+        {
+            "name": "威锋去广告",
+            "desc": "移除开屏广告、信息流广告、文末广告、首页轮播图推广。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/WPForum.png",
+            "date": "2025-07-16 02:49:51",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/WPForum_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 179
+        },
+        {
+            "name": "微脉圈去广告",
+            "desc": "移除开屏广告、聊天页横幅提示及发现页面的横幅广告。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Weimai.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Weimai_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 180
+        },
+        {
+            "name": "微信公众号去广告",
+            "desc": "过滤微信公众号广告",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Weixin.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Weixin_Official_Accounts_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "RuCu6",
+                    "homepage": "https://github.com/RuCu6"
+                }
+            ],
+            "index": 181
+        },
+        {
+            "name": "微信外部链接解锁",
+            "desc": "解锁微信外部链接访问限制，跳过中间界面。支付宝链接、被封禁链接进行通知弹窗跳转，在微信中用快照显示被封禁的链接（可选），在微信中进行强制重定向（可选），群聊及扫码均可使用，可选项可在脚本的2~3行更改，也可在BoxJs中更改。",
+            "tag": [
+                "功能增强"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Weixin.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Weixin_external_links_unlock.lpx",
+            "author": [
+                {
+                    "name": "zZPiglet",
+                    "homepage": "https://github.com/zZPiglet"
+                }
+            ],
+            "index": 182
+        },
+        {
+            "name": "微信小程序去广告",
+            "desc": "收录常用小程序的去广告，作者署名在插件内。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/WeixinMiniPrograms.png",
+            "date": "2025-10-02 21:29:46",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/WexinMiniPrograms_Remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 183
+        },
+        {
+            "name": "蜗牛睡眠去广告",
+            "desc": "移除音乐页面横幅、日报告解决方案商品推广，移除我的页面服务推广。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/SnailSleep.png",
+            "date": "2026-05-16 16:58:57",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/SnailSleep_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 184
+        },
+        {
+            "name": "无他相机去广告",
+            "desc": "移除开屏广告、拍摄页面广告、右小角广告，精简底栏。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/WutaCamera.png",
+            "date": "2025-07-05 02:22:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/WutaCamera_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 185
+        },
+        {
+            "name": "下厨房去广告",
+            "desc": "移除开屏广告、页面推广及横幅，精简首页标签。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/XiaChuFang.png",
+            "date": "2026-02-22 04:07:10",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/XiaChuFang_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 186
+        },
+        {
+            "name": "香港抖音去广告",
+            "desc": "精简左右侧边栏、移除底栏切换，其余内容后续再完善。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/TikTok.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/HKDouYin_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 187
+        },
+        {
+            "name": "向日葵去广告",
+            "desc": "移除开屏广告、广告横幅。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/OraySunlogin.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/OraySunlogin_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 188
+        },
+        {
+            "name": "闲鱼去广告",
+            "desc": "移除开屏广告、商品信息流广告、关注推荐、搜索栏填充词、首页签到入口及悬浮广告，精简我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/FleaMarket.png",
+            "date": "2026-05-13 12:29:00",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/FleaMarket_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 189
+        },
+        {
+            "name": "小蚕霸王餐去广告",
+            "desc": "移除开屏广告、首页横幅推广、红包推广、更新弹窗。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/XiaoCan.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/XiaoCan_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "Sliverkiss",
+                    "homepage": "https://github.com/Sliverkiss"
+                },
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 190
+        },
+        {
+            "name": "小店掌柜去广告",
+            "desc": "移除开屏广告、活动推广和页面跳转。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/ShopKeeperAdmin.png",
+            "date": "2025-05-28 21:48:03",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/ShopKeeperAdmin_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 191
+        },
+        {
+            "name": "小黑盒去广告",
+            "desc": "移除开屏广告和热点板块信息流广告",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/XiaoHeiHe.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/XiaoHeiHe_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 192
+        },
+        {
+            "name": "小红书去广告",
+            "desc": "过滤信息流推广，移除图片及视频水印，如有异常，请先清除缓存再尝试。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/RedPaper.png",
+            "date": "2026-05-13 18:12:29",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/RedPaper_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "RuCu6",
+                    "homepage": "https://github.com/RuCu6"
+                },
+                {
+                    "name": "fmz200",
+                    "homepage": "https://github.com/fmz200"
+                }
+            ],
+            "index": 193
+        },
+        {
+            "name": "小桔充电去广告",
+            "desc": "移除横幅广告、弹窗广告，精简我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/XiaojukejiCharge.png",
+            "date": "2025-12-08 00:24:31",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/XiaojukejiCharge_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 194
+        },
+        {
+            "name": "小喵看书去广告",
+            "desc": "移除小喵看书章末广告",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/MiaoRead.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/MiaoRead_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 195
+        },
+        {
+            "name": "小米音箱去广告",
+            "desc": "移除开屏广告、应用内横幅广告及弹窗广告。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/XiaomiSpeaker.png",
+            "date": "2025-07-09 08:04:43",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/XiaomiSpeaker_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 196
+        },
+        {
+            "name": "小睡眠去广告",
+            "desc": "移除开屏广告、信息流广告、弹窗广告、轮播图广告、侧边栏横幅广告，精简搜索页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/HeartideBrainWave.png",
+            "date": "2026-05-11 03:08:03",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/HeartideBrainWave_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 197
+        },
+        {
+            "name": "小象超市去广告",
+            "desc": "移除开屏广告、应用内弹窗、猜你想买、横幅推广和悬浮窗。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/iMaiCai.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/iMaiCai_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 198
+        },
+        {
+            "name": "小宇宙去广告",
+            "desc": "移除开屏广告、搜索框推荐词和AI总结。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/CosmosPodcast.png",
+            "date": "2025-07-21 18:21:13",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/CosmosPodcast_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "wish",
+                    "homepage": null
+                }
+            ],
+            "index": 199
+        },
+        {
+            "name": "喜马拉雅去广告",
+            "desc": "移除开屏广告、播放器广告、各类推荐内容，精简频道和我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Himalaya.png",
+            "date": "2025-07-11 17:53:22",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Himalaya_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 200
+        },
+        {
+            "name": "行者户外去广告",
+            "desc": "移除弹窗广告、发现页面横幅推广的推广金刚位，移除我的页面横幅推广。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/OnTheWay.png",
+            "date": "2026-05-16 15:25:53",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/OnTheWay_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 201
+        },
+        {
+            "name": "雪球去广告",
+            "desc": "移除开屏广告、各类横幅广告、信息流广告、帖内广告、新用户定向广告、各类弹窗、股票精选推荐、基金精选推荐、聪明的投资者推荐、私募推荐、直播推荐。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Snowball.png",
+            "date": "2025-11-25 03:30:07",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Snowball_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 202
+        },
+        {
+            "name": "迅雷去广告",
+            "desc": "移除开屏广告、首页横幅广告、左上角广告入口，精简我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/XunLei.png",
+            "date": "2025-07-10 21:25:29",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/XunLei_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 203
+        },
+        {
+            "name": "医考帮去广告",
+            "desc": "移除横幅推广、弹窗、首页悬浮挂件。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/YiKaoBang.png",
+            "date": "2026-02-27 23:29:18",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/YiKaoBang_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 204
+        },
+        {
+            "name": "一刻相册去广告",
+            "desc": "移除开屏广告、横幅广告和弹窗推广。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/BaiduPhoto.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/BaiduPhoto_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 205
+        },
+        {
+            "name": "萤石云视频去广告",
+            "desc": "移除开屏广告、首页推广、我的页面推广。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/VideoGo.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/VideoGo_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 206
+        },
+        {
+            "name": "一甜相机去广告",
+            "desc": "移除开屏广告、悬浮广告及图片选择器横幅广告。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Yitian.png",
+            "date": "2025-07-04 23:22:46",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Yitian_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 207
+        },
+        {
+            "name": "有道翻译官去广告",
+            "desc": "移除开屏广告、横幅推广，精简首页。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/YoudaoTrans.png",
+            "date": "2026-05-15 21:07:52",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/YoudaoTrans_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 208
+        },
+        {
+            "name": "有道云笔记去广告",
+            "desc": "移除开屏广告、弹窗广告及横幅广告。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/YoudaoNote.png",
+            "date": "2025-09-21 16:43:19",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/YoudaoNote_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 209
+        },
+        {
+            "name": "优酷视频去广告",
+            "desc": "移除开屏广告、视频广告、信息流广告。其余广告由于请求已加密，故无法移除。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/YouKu_Video.png",
+            "date": "2025-11-14 22:56:21",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/YouKu_Video_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                },
+                {
+                    "name": "RuCu6",
+                    "homepage": "https://github.com/RuCu6"
+                }
+            ],
+            "index": 210
+        },
+        {
+            "name": "阅友去广告",
+            "desc": "移除开屏广告、弹窗广告和阅读页面广告，移除底栏福利按钮。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Yueyou.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Yueyou_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 211
+        },
+        {
+            "name": "云鲸智能去广告",
+            "desc": "移除开屏广告、横幅推广，禁用商城。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/NarwelRobots.png",
+            "date": "2026-02-27 22:23:04",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/NarwelRobots_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 212
+        },
+        {
+            "name": "掌上无畏契约去广告",
+            "desc": "移除开屏广告、弹窗推广、搜索热搜、搜索热榜。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/ValorantBible.png",
+            "date": "2025-11-14 02:04:54",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/ValorantBible_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 213
+        },
+        {
+            "name": "掌上英雄联盟去广告",
+            "desc": "移除开屏广告、弹窗推广、搜索热搜、搜索热榜、底栏推广图标。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/LOL_Bible.png",
+            "date": "2025-11-14 02:24:43",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/LOL_Bible_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 214
+        },
+        {
+            "name": "掌阅去广告",
+            "desc": "移除开屏广告、悬浮广告、弹窗广告、朗读音色广告及我的页面广告，移除各页面的横幅轮播图。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/iReader.png",
+            "date": "2025-10-11 08:34:06",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/iReader_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 215
+        },
+        {
+            "name": "智慧苏州去广告",
+            "desc": "移除开屏广告、横幅，移除信息流推广。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/SuZhouCitizenCard.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/SuZhouCitizenCard_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "xream",
+                    "homepage": "https://github.com/xream"
+                }
+            ],
+            "index": 216
+        },
+        {
+            "name": "知乎去广告",
+            "desc": "移除HTTPDNS和QUIC传输配置，移除开屏广告、信息流广告、回答页广告，移除回答页下的相关回答、专栏卡片及圈子卡片，移除直答页面推荐知识库和提问推荐，移除评论区评论氛围满意度调查，精简首页顶部标签及我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Zhihu.png",
+            "date": "2026-05-17 22:16:03",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Zhihu_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 217
+        },
+        {
+            "name": "智联招聘去广告",
+            "desc": "移除开屏广告、弹窗、职位页面推广和各类横幅推广。此插件需要IPA签名方可使用，App Store用户请勿使用此插件，务必点击下方主页链接查看详细教程。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/ZhiLianZhaoPin.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/ZhiLianZhaoPin_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 218
+        },
+        {
+            "name": "知识星球去水印",
+            "desc": "移除内容的水印编号",
+            "tag": [],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/UnnooQuan.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/UnnooQuan_remove_watermark.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 219
+        },
+        {
+            "name": "中国人保去广告",
+            "desc": "移除中国人保开屏广告和应用内广告",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/PICC_Insurance.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/PICC_Insurance_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "Sliverkiss",
+                    "homepage": "https://github.com/Sliverkiss"
+                }
+            ],
+            "index": 220
+        },
+        {
+            "name": "中国移动云盘去广告",
+            "desc": "移除中国移动云盘开屏广告及应用内广告，首页的多余卡片可滑到最底部自定义隐藏掉，插件对此不做处理。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/mobileClouds.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/mobileClouds_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "RuCu6",
+                    "homepage": "https://github.com/RuCu6"
+                }
+            ],
+            "index": 221
+        },
+        {
+            "name": "中华万年历去广告",
+            "desc": "移除开屏广告、弹窗、信息流推广，精简我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/EtouchEcalendar.png",
+            "date": "2025-09-06 20:56:43",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/EtouchEcalendar_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 222
+        },
+        {
+            "name": "转转去广告",
+            "desc": "移除开屏广告、应用内悬浮窗、信息流推广、商品推荐、首页弹窗，精简我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/ZhuanZhuan.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/ZhuanZhuan_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 223
+        },
+        {
+            "name": "自动加入TestFlight",
+            "desc": "自动监控TestFlight名额，一旦有新的名额即刻加入。",
+            "tag": [
+                "定时任务"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/TestFlight.png",
+            "date": "2025-11-08 03:27:30",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Auto_Join_TF.lpx",
+            "author": [
+                {
+                    "name": "奶思",
+                    "homepage": "https://github.com/fmz200"
+                },
+                {
+                    "name": "DecoAri",
+                    "homepage": "https://github.com/DecoAri"
+                },
+                {
+                    "name": "xream",
+                    "homepage": "https://github.com/xream"
+                }
+            ],
+            "index": 224
+        },
+        {
+            "name": "纵横小说去广告",
+            "desc": "移除纵横小说开屏广告和弹窗",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/ZongHeng.png",
+            "date": "2025-05-13 15:17:08",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/ZongHeng_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 225
+        },
+        {
+            "name": "最右去广告",
+            "desc": "移除开屏广告、信息流广告和广告轮播图。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/ZuiYou.png",
+            "date": "2026-02-22 01:28:27",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/ZuiYou_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 226
+        }
+    ]
+}
