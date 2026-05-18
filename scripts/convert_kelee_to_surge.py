@@ -108,6 +108,30 @@ def split_top_level(text: str | None, delimiter: str = ",") -> list[str]:
     return items
 
 
+def strip_rule_inline_comment(text: str) -> str:
+    quote = ""
+    previous = ""
+
+    for index, char in enumerate(text):
+        if quote:
+            if char == quote and previous != "\\":
+                quote = ""
+        else:
+            if char in ("'", '"'):
+                quote = char
+            elif (
+                char == "/"
+                and index + 1 < len(text)
+                and text[index + 1] == "/"
+                and (index == 0 or text[index - 1].isspace())
+            ):
+                return text[:index].rstrip()
+
+        previous = char
+
+    return text.strip()
+
+
 def split_first(text: str | None, delimiter: str) -> tuple[str, str]:
     if text is None:
         return "", ""
@@ -647,7 +671,11 @@ def convert_file(path: Path, output_root: Path, report: list[dict[str, str]], se
             sections["General"].append(line)
             add_report(report, path.name, "general-pass-through", "General line passed through without conversion.", line)
 
-    for line in section_lines(source_sections, "Rule"):
+    for raw_rule_line in section_lines(source_sections, "Rule"):
+        line = strip_rule_inline_comment(raw_rule_line)
+        if not line:
+            continue
+
         rewrite_match = re.match(r"^(\S+)\s+(\d{3})\s+(.+)$", line)
         if rewrite_match:
             pattern, status_code, replacement = rewrite_match.groups()

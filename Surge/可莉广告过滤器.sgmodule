@@ -28,8 +28,8 @@ DOMAIN,admarket.21cn.com,REJECT,extended-matching,pre-matching
 DOMAIN,adshows.21cn.com,REJECT,extended-matching,pre-matching
 IP-CIDR,122.229.8.47/32,REJECT,no-resolve,pre-matching
 IP-CIDR,122.229.29.89/32,REJECT,no-resolve,pre-matching
-DOMAIN,mall-dsp2.qinlinkeji.com,REJECT // 首页商品信息流,extended-matching,pre-matching
-DOMAIN,mallapi2.qinlinkeji.com,REJECT // 商城页面,extended-matching,pre-matching
+DOMAIN,mall-dsp2.qinlinkeji.com,REJECT,extended-matching,pre-matching
+DOMAIN,mallapi2.qinlinkeji.com,REJECT,extended-matching,pre-matching
 DOMAIN,open-pixon.ads-pixiv.net,REJECT,extended-matching,pre-matching
 
 [URL Rewrite]
