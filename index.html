@@ -45,11 +45,7 @@
     }
 
     header {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 24px;
-      align-items: end;
-      padding: 8px 0 24px;
+      padding: 8px 0 12px;
     }
 
     h1 {
@@ -67,41 +63,21 @@
       font-size: 15px;
     }
 
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(96px, 1fr));
-      gap: 10px;
-      min-width: 330px;
-    }
-
-    .stat {
-      padding: 12px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-    }
-
-    .stat strong {
-      display: block;
-      font-size: 22px;
-      line-height: 1.1;
-    }
-
-    .stat span {
+    .status-line {
+      display: flex;
+      justify-content: flex-start;
+      gap: 16px;
+      margin: 8px 0 12px;
       color: var(--muted);
-      font-size: 12px;
+      font-size: 13px;
+      text-align: left;
     }
 
     .toolbar {
       position: sticky;
       top: 0;
       z-index: 10;
-      display: grid;
-      grid-template-columns: minmax(220px, 1fr) auto;
-      gap: 12px;
-      align-items: center;
-      padding: 14px 0;
+      padding: 6px 0 14px;
       background: rgba(247, 248, 251, 0.94);
       backdrop-filter: blur(10px);
     }
@@ -121,40 +97,6 @@
     .search:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 3px rgba(23, 105, 224, 0.14);
-    }
-
-    .tags {
-      display: flex;
-      gap: 8px;
-      justify-content: flex-end;
-      flex-wrap: wrap;
-    }
-
-    .tag-filter {
-      height: 36px;
-      padding: 0 12px;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      background: var(--surface);
-      color: var(--muted);
-      font: inherit;
-      font-size: 13px;
-      cursor: pointer;
-    }
-
-    .tag-filter[aria-pressed="true"] {
-      border-color: var(--accent);
-      color: var(--accent-strong);
-      background: #e9f2ff;
-    }
-
-    .status-line {
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      margin: 8px 0 12px;
-      color: var(--muted);
-      font-size: 13px;
     }
 
     .module-list {
@@ -298,22 +240,6 @@
     }
 
     @media (max-width: 860px) {
-      header {
-        grid-template-columns: 1fr;
-      }
-
-      .stats {
-        min-width: 0;
-      }
-
-      .toolbar {
-        grid-template-columns: 1fr;
-      }
-
-      .tags {
-        justify-content: flex-start;
-      }
-
       .module-card {
         grid-template-columns: 44px minmax(0, 1fr);
       }
@@ -340,11 +266,8 @@
         padding-top: 20px;
       }
 
-      .stats {
-        grid-template-columns: 1fr;
-      }
-
       .status-line {
+        align-items: flex-start;
         flex-direction: column;
         gap: 4px;
       }
@@ -368,51 +291,31 @@
         <h1>Loon to Surge Modules</h1>
         <p class="summary">从 Kelee PluginHub 抓取 Loon 模块并转换为 Surge 模块。选择模块后可直接唤起对应客户端导入。</p>
       </div>
-      <section class="stats" aria-label="模块统计">
-        <div class="stat">
-          <strong id="loon-count">-</strong>
-          <span>Loon 模块</span>
-        </div>
-        <div class="stat">
-          <strong id="surge-count">-</strong>
-          <span>Surge 模块</span>
-        </div>
-        <div class="stat">
-          <strong id="warning-count">-</strong>
-          <span>转换提示</span>
-        </div>
-      </section>
     </header>
-
-    <section class="toolbar" aria-label="筛选模块">
-      <input id="search" class="search" type="search" placeholder="搜索模块、描述、标签或文件名" autocomplete="off">
-      <div id="tags" class="tags"></div>
-    </section>
 
     <div class="status-line">
       <span id="result-count">正在加载模块...</span>
       <span id="updated-at"></span>
     </div>
 
+    <section class="toolbar" aria-label="搜索模块">
+      <input id="search" class="search" type="search" placeholder="搜索模块、描述、标签或文件名" autocomplete="off">
+    </section>
+
     <section id="module-list" class="module-list" aria-label="模块列表"></section>
-    <div id="empty" class="empty">没有匹配的模块。</div>
+    <div id="empty" class="empty">没有可显示的模块。</div>
   </main>
 
   <script>
     const state = {
       modules: [],
-      query: "",
-      tag: "全部"
+      query: ""
     };
 
     const elements = {
-      loonCount: document.querySelector("#loon-count"),
-      surgeCount: document.querySelector("#surge-count"),
-      warningCount: document.querySelector("#warning-count"),
+      search: document.querySelector("#search"),
       resultCount: document.querySelector("#result-count"),
       updatedAt: document.querySelector("#updated-at"),
-      search: document.querySelector("#search"),
-      tags: document.querySelector("#tags"),
       list: document.querySelector("#module-list"),
       empty: document.querySelector("#empty")
     };
@@ -438,36 +341,12 @@
       return Array.isArray(module.tags) ? module.tags : [];
     }
 
-    function buildTagFilters(modules) {
-      const tagCounts = new Map();
-      for (const module of modules) {
-        for (const tag of tagsOf(module)) {
-          tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
-        }
-      }
-
-      const tags = ["全部", ...Array.from(tagCounts.keys()).sort((a, b) => a.localeCompare(b, "zh-CN"))];
-      elements.tags.replaceChildren(...tags.map((tag) => {
-        const button = document.createElement("button");
-        button.className = "tag-filter";
-        button.type = "button";
-        button.textContent = tag === "全部" ? "全部" : `${tag} ${tagCounts.get(tag)}`;
-        button.setAttribute("aria-pressed", String(state.tag === tag));
-        button.addEventListener("click", () => {
-          state.tag = tag;
-          document.querySelectorAll(".tag-filter").forEach((item) => {
-            item.setAttribute("aria-pressed", String(item === button));
-          });
-          render();
-        });
-        return button;
-      }));
+    function formatTimestamp(value) {
+      return String(value || "").replace(/\s+[+-]\d{2}:\d{2}$/, "");
     }
 
     function moduleMatches(module) {
       const query = normalizeText(state.query).trim();
-      const tagMatch = state.tag === "全部" || tagsOf(module).includes(state.tag);
-      if (!tagMatch) return false;
       if (!query) return true;
 
       const searchable = [
@@ -540,6 +419,7 @@
     function render() {
       const filtered = state.modules.filter(moduleMatches);
       elements.resultCount.textContent = `显示 ${filtered.length} / ${state.modules.length} 个模块`;
+      elements.empty.textContent = state.query ? "没有匹配的模块。" : "没有可显示的模块。";
       elements.empty.classList.toggle("visible", filtered.length === 0);
       elements.list.replaceChildren(...filtered.map(moduleCard));
     }
@@ -575,19 +455,13 @@
 
     async function init() {
       try {
-        const [loonIndex, surgeIndex, report] = await Promise.all([
+        const [loonIndex, surgeIndex] = await Promise.all([
           loadJson("/Loon/modules.index.json"),
-          loadJson("/Surge/modules.index.json"),
-          loadJson("/Surge/convert-report.json")
+          loadJson("/Surge/modules.index.json")
         ]);
 
         state.modules = mergeModules(loonIndex, surgeIndex);
-        elements.loonCount.textContent = String(loonIndex.downloaded || state.modules.length);
-        elements.surgeCount.textContent = String(surgeIndex.length);
-        elements.warningCount.textContent = String(report.warnings || 0);
-        elements.updatedAt.textContent = loonIndex.fetched_at ? `更新于 ${loonIndex.fetched_at}` : "";
-
-        buildTagFilters(state.modules);
+        elements.updatedAt.textContent = loonIndex.fetched_at ? `更新于 ${formatTimestamp(loonIndex.fetched_at)}` : "";
         render();
       } catch (error) {
         elements.resultCount.textContent = "模块索引加载失败";
