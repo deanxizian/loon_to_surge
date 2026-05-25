@@ -1,6 +1,6 @@
 {
     "source": "https://hub.kelee.one",
-    "fetched_at": "2026-05-18 16:59:38 +00:00",
+    "fetched_at": "2026-05-25 16:43:23 +00:00",
     "total": 227,
     "downloaded": 227,
     "failed": 0,
@@ -566,12 +566,12 @@
         {
             "index": 28,
             "name": "Pinterest去广告",
-            "desc": "移除瀑布流广告",
+            "desc": "移除瀑布流、更多探索内容中的广告",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Pinterest.png",
-            "date": "2026-05-13 00:20:48",
+            "date": "2026-05-25 16:37:50",
             "author": [
                 {
                     "name": "可莉🅥",
