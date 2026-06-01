@@ -1,9 +1,9 @@
 {
-    "generated_at": "2026-05-25 16:43:24 +00:00",
+    "generated_at": "2026-06-01 18:02:22 +00:00",
     "input_dir": "Loon",
     "output_dir": "Surge",
-    "total": 227,
-    "warnings": 35,
+    "total": 229,
+    "warnings": 36,
     "items": [
         {
             "file": "Auto_Join_TF.lpx",
@@ -52,6 +52,12 @@
             "kind": "external-policy",
             "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
             "line": "DOMAIN-SUFFIX, jsdelivr.net, PROXY"
+        },
+        {
+            "file": "Cece_remove_ads.lpx",
+            "kind": "unsupported-rewrite",
+            "message": "Unsupported rewrite action: mock-response-body-replace",
+            "line": "^https:\\/\\/api\\.cece\\.com\\/live\\/user\\/coupon_tab\\? mock-response-body-replace data-type=json data=\"{\"code\":0,\"msg\":\"\"}\" status-code=200"
         },
         {
             "file": "Prevent_DNS_Leaks.lpx",

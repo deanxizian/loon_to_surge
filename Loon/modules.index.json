@@ -1,8 +1,8 @@
 {
     "source": "https://hub.kelee.one",
-    "fetched_at": "2026-05-25 16:43:23 +00:00",
-    "total": 227,
-    "downloaded": 227,
+    "fetched_at": "2026-06-01 18:02:22 +00:00",
+    "total": 229,
+    "downloaded": 229,
     "failed": 0,
     "modules": [
         {
@@ -14,7 +14,7 @@
                 "依赖"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/Other_icon/120px/HTTPDNS.png",
-            "date": "2026-05-17 17:24:28",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -38,7 +38,7 @@
                 "依赖"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/Website_icon/120px/TencentAd.png",
-            "date": "2026-05-16 17:11:57",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -57,7 +57,7 @@
                 "配置管理"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/1.1.1.1.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "VirgilClyne",
@@ -80,7 +80,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/36Kr.png",
-            "date": "2026-05-15 01:42:13",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -99,7 +99,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/123NetWorkDisk.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -118,7 +118,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/360SmartCamera.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -137,7 +137,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/SafetyHome.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -156,7 +156,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/555DY.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -175,7 +175,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/12306.png",
-            "date": "2026-03-14 07:41:44",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "RuCu6",
@@ -198,7 +198,7 @@
                 "功能增强"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/AppleWeather.png",
-            "date": "2026-05-13 18:22:25",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "VirgilClyne",
@@ -225,7 +225,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/SnowCamera.png",
-            "date": "2025-07-05 01:31:35",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -244,7 +244,7 @@
                 "数据管理"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/Other_icon/120px/BoxJS.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "chavyleung",
@@ -263,7 +263,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/CCLive.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -282,7 +282,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Dlabel.png",
-            "date": "2025-07-22 04:45:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -301,7 +301,7 @@
                 "DNS"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/Other_icon/120px/Prevent_DNS_Leaks.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "非正常人类研究中心",
@@ -320,7 +320,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/DREAME.png",
-            "date": "2026-02-27 11:38:55",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -339,7 +339,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/EcovacsHome.png",
-            "date": "2026-02-27 11:15:32",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -358,7 +358,7 @@
                 "功能增强"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Fileball.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "小白脸",
@@ -377,7 +377,7 @@
                 "签到"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/FollowRSS.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "gideonsenku",
@@ -400,7 +400,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Foodie.png",
-            "date": "2025-09-28 00:17:10",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -419,7 +419,7 @@
                 "反代加速"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/GitHub.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -438,7 +438,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Google.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -457,7 +457,7 @@
                 "功能增强"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/Other_icon/120px/IPATool.png",
-            "date": "2025-12-20 22:21:24",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "小白脸",
@@ -476,7 +476,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/IThome.png",
-            "date": "2025-12-01 01:25:27",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -495,7 +495,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Jump.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "MoonYuki",
@@ -514,7 +514,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Keep.png",
-            "date": "2025-09-18 15:59:53",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -533,7 +533,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/KOOK.png",
-            "date": "2026-05-15 03:27:14",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -552,7 +552,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Line.png",
-            "date": "2026-02-12 21:20:43",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "jkgtw",
@@ -571,7 +571,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Pinterest.png",
-            "date": "2026-05-25 16:37:50",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -590,7 +590,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/QQ.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -609,7 +609,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/QQMusic.png",
-            "date": "2025-11-10 18:30:29",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -628,7 +628,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Reddit.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "xream",
@@ -647,7 +647,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/ReelShort.png",
-            "date": "2025-07-31 06:11:54",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -666,7 +666,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Roborock.png",
-            "date": "2026-03-06 14:51:35",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -685,7 +685,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/RQrun.png",
-            "date": "2025-12-28 17:49:45",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -704,7 +704,7 @@
                 "资源转换"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/Other_icon/120px/Script-Hub.png",
-            "date": "2026-04-30 16:28:27",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "xream",
@@ -735,7 +735,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Soul.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "ZenmoFeiShi",
@@ -762,7 +762,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Spotify.png",
-            "date": "2025-08-10 15:30:17",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "001ProMax",
@@ -781,7 +781,7 @@
                 "功能增强"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Spotify.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "VirgilClyne",
@@ -800,7 +800,7 @@
                 "订阅管理"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/Other_icon/120px/Sub-Store.png",
-            "date": "2026-02-18 13:39:04",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "Peng-YM",
@@ -819,7 +819,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/TeraBox.png",
-            "date": "2025-11-12 06:09:13",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -838,7 +838,7 @@
                 "功能增强"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/TestFlight.png",
-            "date": "2025-09-02 23:42:06",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -857,7 +857,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/TubeMax.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -876,7 +876,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Tumblr.png",
-            "date": "2026-05-09 19:47:07",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -895,7 +895,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Uki.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -914,7 +914,7 @@
                 "功能增强"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/VVebo.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "suiyuran",
@@ -937,7 +937,7 @@
                 "节点检测"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/1.1.1.1.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "VirgilClyne",
@@ -960,7 +960,7 @@
                 "签到"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/WPS.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "小白脸",
@@ -979,7 +979,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/YouTube.png",
-            "date": "2025-08-24 22:03:19",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "Maasea",
@@ -1014,7 +1014,7 @@
                 "功能增强"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/YouTube.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "VirgilClyne",
@@ -1033,7 +1033,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/YY_Voice.png",
-            "date": "2025-06-02 01:02:42",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1052,7 +1052,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/YYVoiceTool.png",
-            "date": "2025-11-23 23:03:22",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1071,7 +1071,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/ZAKER.png",
-            "date": "2025-06-30 23:34:19",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1090,7 +1090,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Aiinquiry.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1109,7 +1109,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/iQiYi_Video.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1128,7 +1128,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/AliYunDrive.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "RuCu6",
@@ -1147,7 +1147,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/BaiduMap.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1166,7 +1166,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Baidu_input_method.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "Keywos",
@@ -1185,7 +1185,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Tieba.png",
-            "date": "2026-01-01 15:45:01",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1208,7 +1208,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/BaiduNetDisk.png",
-            "date": "2026-01-02 06:40:04",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1227,7 +1227,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Baidu.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "Keywos",
@@ -1246,7 +1246,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/BaiduWenku.png",
-            "date": "2025-12-07 05:57:46",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1265,7 +1265,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/BabyTree.png",
-            "date": "2025-12-05 04:21:05",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "RuCu6",
@@ -1284,7 +1284,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Beike.png",
-            "date": "2025-08-10 13:18:43",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1303,7 +1303,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/BiliComic.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1322,7 +1322,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Bilibili.png",
-            "date": "2026-04-30 16:24:57",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "kokoryh",
@@ -1341,7 +1341,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/BitqiuPan.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1360,7 +1360,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/BodianMusic.png",
-            "date": "2025-08-31 03:36:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1379,7 +1379,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/BooHee.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1398,7 +1398,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Cainiao.png",
-            "date": "2025-12-31 12:41:25",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "小白脸",
@@ -1417,7 +1417,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/CaixinMedia.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "RuCu6",
@@ -1436,7 +1436,7 @@
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/ColorfulClouds.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "RuCu6",
@@ -1449,13 +1449,32 @@
         },
         {
             "index": 72,
+            "name": "测测去广告",
+            "desc": "移除瀑布流广告",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Cece.png",
+            "date": "2026-06-01 20:15:37",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "install_url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Cece_remove_ads.lpx",
+            "source_url": "https://kelee.one/Tool/Loon/Lpx/Cece_remove_ads.lpx",
+            "file": "Cece_remove_ads.lpx"
+        },
+        {
+            "index": 73,
             "name": "成分喵去广告",
             "desc": "移除首页推广活动、广告组件请求、移除被查商品购买链接、搜索发现。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/ChengFenMiao.png",
-            "date": "2025-11-21 13:02:33",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1467,14 +1486,14 @@
             "file": "ChengFenMiao_remove_ads.lpx"
         },
         {
-            "index": 73,
+            "index": 74,
             "name": "触站去广告",
             "desc": "移除开屏广告、弹窗广告、各页面横幅推广，移除首页悬浮挂件。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Chuzhan.png",
-            "date": "2026-01-31 01:14:42",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1486,14 +1505,14 @@
             "file": "Chuzhan_remove_ads.lpx"
         },
         {
-            "index": 74,
+            "index": 75,
             "name": "磁力宅播放器去广告",
             "desc": "移除开屏广告、弹窗和文件列表广告。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/XFuse.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1505,14 +1524,14 @@
             "file": "XFuse_remove_ads.lpx"
         },
         {
-            "index": 75,
+            "index": 76,
             "name": "代理链路检测",
             "desc": "查看目标节点的代理走向，在插件列表中点击此插件上的链接查看使用方法。",
             "tag": [
                 "节点检测"
             ],
             "icon": "https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Stack.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "I-am-R-E",
@@ -1524,14 +1543,14 @@
             "file": "NodeLinkCheck.lpx"
         },
         {
-            "index": 76,
+            "index": 77,
             "name": "大麦去广告",
             "desc": "移除开屏广告、轮播图广告和弹窗广告，移除搜索填充词和专属推荐。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Damai.png",
-            "date": "2025-11-09 00:15:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1543,14 +1562,14 @@
             "file": "Damai_remove_ads.lpx"
         },
         {
-            "index": 77,
+            "index": 78,
             "name": "得间小说去广告",
             "desc": "移除开屏广告、章末广告，移除扉页广告提示、听书界面广告提示、搜索栏填充词。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/iReaderDejian.png",
-            "date": "2025-09-04 22:36:17",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1562,14 +1581,14 @@
             "file": "iReaderDejian_remove_ads.lpx"
         },
         {
-            "index": 78,
+            "index": 79,
             "name": "得物去广告",
             "desc": "移除开屏广告、弹窗、搜索词填充、热搜榜、猜你想搜、推荐关注、推荐信息流，精简消息中心和我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Dewu.png",
-            "date": "2025-12-05 02:57:36",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1581,14 +1600,14 @@
             "file": "Dewu_remove_ads.lpx"
         },
         {
-            "index": 79,
+            "index": 80,
             "name": "滴答出行去广告",
             "desc": "移除开屏广告、弹窗广告、横幅广告，精简底栏和我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/DidaPincheTaxi.png",
-            "date": "2025-12-07 06:51:00",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1600,14 +1619,14 @@
             "file": "DidaPincheTaxi_remove_ads.lpx"
         },
         {
-            "index": 80,
+            "index": 81,
             "name": "滴滴出行去广告",
             "desc": "移除开屏广告、弹窗广告、横幅推广，精简底栏和我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/DiDi.png",
-            "date": "2025-12-29 17:07:29",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1619,14 +1638,14 @@
             "file": "DiDi_remove_ads.lpx"
         },
         {
-            "index": 81,
+            "index": 82,
             "name": "叮咚买菜去广告",
             "desc": "移除开屏广告、弹窗推广、搜索推荐、信息流广告、悬浮广告、各页面购物推荐、精简我的页面，移除底栏和各页面AI入口。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/DingdongMaicai.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "zirawell",
@@ -1646,14 +1665,14 @@
             "file": "DingdongMaicai_remove_ads.lpx"
         },
         {
-            "index": 82,
+            "index": 83,
             "name": "豆瓣去广告",
             "desc": "移除开屏广告、各页面信息流广告、首页横幅、搜索填充词。此插件需要IPA签名方可使用，App Store用户请勿使用此插件，务必点击下方主页链接查看详细教程。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/DouBan.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1665,14 +1684,14 @@
             "file": "DouBan_remove_ads.lpx"
         },
         {
-            "index": 83,
+            "index": 84,
             "name": "豆瓣阅读去广告",
             "desc": "移除开屏广告、弹窗广告、热门搜索、热搜榜。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/DoubanRead.png",
-            "date": "2025-11-24 22:51:51",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1684,14 +1703,14 @@
             "file": "DoubanRead_remove_ads.lpx"
         },
         {
-            "index": 84,
+            "index": 85,
             "name": "斗鱼去广告",
             "desc": "移除开屏、首页视频流、首页轮播图广告，移除直播间悬浮窗。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Douyu.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1703,14 +1722,14 @@
             "file": "Douyu_remove_ads.lpx"
         },
         {
-            "index": 85,
+            "index": 86,
             "name": "堆糖去广告",
             "desc": "移除开屏广告、信息流广告、热搜排行榜广告、我的页面横幅广告，移除关注推荐，精简底部导航栏。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/DuiTang.png",
-            "date": "2025-11-20 02:07:17",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1722,14 +1741,14 @@
             "file": "DuiTang_remove_ads.lpx"
         },
         {
-            "index": 86,
+            "index": 87,
             "name": "番茄小说去广告",
             "desc": "移除番茄小说开屏广告、移除文章底部和章末广告、移除听书页面广告、移除悬浮部件和底栏多余的福利标签。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/DragonRead.png",
-            "date": "2025-11-12 19:57:44",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1741,14 +1760,14 @@
             "file": "DragonRead_remove_ads.lpx"
         },
         {
-            "index": 87,
+            "index": 88,
             "name": "帆书去广告",
             "desc": "移除弹窗和会员任务，精简首页、听书页面、课程菜单和我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/KebidaDushu.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "Yuheng0101",
@@ -1760,14 +1779,14 @@
             "file": "KebidaDushu_remove_ads.lpx"
         },
         {
-            "index": 88,
+            "index": 89,
             "name": "飞客去广告",
             "desc": "移除开屏广告、首页广告、板块广告、帖内广告和我的页面广告。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/FlyerTea.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1779,14 +1798,14 @@
             "file": "FlyerTea_remove_ads.lpx"
         },
         {
-            "index": 89,
+            "index": 90,
             "name": "飞猪旅行去广告",
             "desc": "移除开屏广告、精简我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/TaobaoTravel.png",
-            "date": "2025-11-25 02:03:39",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1798,14 +1817,14 @@
             "file": "TaobaoTravel_remove_ads.lpx"
         },
         {
-            "index": 90,
+            "index": 91,
             "name": "粉笔去广告",
             "desc": "移除开屏广告、弹窗广告、悬浮广告、热门搜索，移除底栏皮肤，精简我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/FenBi.png",
-            "date": "2025-11-27 20:44:18",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1817,14 +1836,14 @@
             "file": "FenBi_remove_ads.lpx"
         },
         {
-            "index": 91,
+            "index": 92,
             "name": "丰巢去广告",
             "desc": "移除弹窗，精简首页和生活服务。此插件需要IPA签名方可使用，App Store用户请勿使用此插件，务必点击下方主页链接查看详细教程。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/FC_Box.png",
-            "date": "2026-02-23 01:17:31",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1836,14 +1855,14 @@
             "file": "FC_Box_remove_ads.lpx"
         },
         {
-            "index": 92,
+            "index": 93,
             "name": "风鸟去广告",
             "desc": "移除首页信息流和轮播图",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/RiskBird.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1855,14 +1874,14 @@
             "file": "RiskBird_remove_ads.lpx"
         },
         {
-            "index": 93,
+            "index": 94,
             "name": "纷玩岛去广告",
             "desc": "移除开屏广告、弹窗广告、信息横幅推广、票夹页面横幅广告。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/LiveLab.png",
-            "date": "2026-05-12 23:07:24",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1874,14 +1893,14 @@
             "file": "LiveLab_remove_ads.lpx"
         },
         {
-            "index": 94,
+            "index": 95,
             "name": "盖得排行去广告",
             "desc": "精简首页、移除分类横幅推广、单单返猜你喜欢和编辑精选，移除我的页面推广。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/GuideRank.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1893,14 +1912,14 @@
             "file": "GuideRank_remove_ads.lpx"
         },
         {
-            "index": 95,
+            "index": 96,
             "name": "高德地图去广告",
             "desc": "过滤高德地图开屏广告、各页面推广，精简我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Amap.png",
-            "date": "2026-03-10 19:47:26",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "RuCu6",
@@ -1920,14 +1939,14 @@
             "file": "Amap_remove_ads.lpx"
         },
         {
-            "index": 96,
+            "index": 97,
             "name": "稿定设计去广告",
             "desc": "移除稿定设计开屏广告、首页轮播图和弹窗，移除功能入口角标。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/GaoDing.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1939,14 +1958,14 @@
             "file": "GaoDing_remove_ads.lpx"
         },
         {
-            "index": 97,
+            "index": 98,
             "name": "航旅纵横去广告",
             "desc": "过滤航旅纵横广告",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Umetrip.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "佚名",
@@ -1958,14 +1977,14 @@
             "file": "Umetrip_remove_ads.lpx"
         },
         {
-            "index": 98,
+            "index": 99,
             "name": "盒马去广告",
             "desc": "移除开屏广告、首页信息流广告及推广、弹窗广告、悬浮挂件、商品及购物车推荐，精简底栏及我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/MrHema.png",
-            "date": "2026-03-18 22:26:57",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1977,14 +1996,14 @@
             "file": "MrHema_remove_ads.lpx"
         },
         {
-            "index": 99,
+            "index": 100,
             "name": "华尔街见闻去广告",
             "desc": "移除开屏广告、文末广告、信息流广告，精简底栏。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/FinanceNews.png",
-            "date": "2026-05-14 23:18:27",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -1996,14 +2015,14 @@
             "file": "FinanceNews_remove_ads.lpx"
         },
         {
-            "index": 100,
+            "index": 101,
             "name": "虎扑去广告",
             "desc": "移除虎扑开屏广告、首页顶部推广、我的页面多余模块及各类横幅推广。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/HUPU.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "ZenmoFeiShi",
@@ -2015,14 +2034,14 @@
             "file": "HUPU_remove_ads.lpx"
         },
         {
-            "index": 101,
+            "index": 102,
             "name": "虎嗅去广告",
             "desc": "移除广告配置、信息流直播预约横幅、相关文章推荐、48小时热文推荐，精简搜索页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Huxiu.png",
-            "date": "2026-05-15 02:34:00",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2034,14 +2053,14 @@
             "file": "Huxiu_remove_ads.lpx"
         },
         {
-            "index": 102,
+            "index": 103,
             "name": "驾考宝典去广告",
             "desc": "移除开屏广告、横幅广告、悬浮窗广告、社区帖子广告，精简我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/JiaKaoBaoDian.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2053,14 +2072,14 @@
             "file": "JiaKaoBaoDian_remove_ads.lpx"
         },
         {
-            "index": 103,
+            "index": 104,
             "name": "健康160去广告",
             "desc": "移除开屏广告、应用内悬浮窗、弹窗广告、横幅广告，精简我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/91160.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2072,14 +2091,14 @@
             "file": "91160_remove_ads.lpx"
         },
         {
-            "index": 104,
+            "index": 105,
             "name": "剑网三无界去广告",
             "desc": "移除热门推送活动，并解决无法在Loon运行时更新和登录的问题。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/SeasunJX3.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2091,14 +2110,14 @@
             "file": "SeasunJX3_remove_ads.lpx"
         },
         {
-            "index": 105,
+            "index": 106,
             "name": "驾校一点通去广告",
             "desc": "移除开屏广告、各页面广告横幅、弹窗广告，移除社区广告。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/JiaXiaoDrive.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2110,14 +2129,14 @@
             "file": "JiaXiaoDrive_remove_ads.lpx"
         },
         {
-            "index": 106,
+            "index": 107,
             "name": "节点检测工具",
             "desc": "适用于Loon的节点检测工具，可进行地理位置、节点解锁、入口落地等查询。请在所有节点页面选择一个节点长按，出现菜单后进行测试。",
             "tag": [
                 "节点检测"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/Other_icon/120px/Node_detection_tool.png",
-            "date": "2026-03-01 20:36:46",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "xream",
@@ -2141,14 +2160,14 @@
             "file": "Node_detection_tool.lpx"
         },
         {
-            "index": 107,
+            "index": 108,
             "name": "京东比价",
             "desc": "首次使用需安装慢慢买应用，之后点击进入[我的]页面以捕获Cookie，捕获成功后方可在商品详情页面查看比价内容。",
             "tag": [
                 "功能增强"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/JD.png",
-            "date": "2025-05-15 05:41:50",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "wf021325",
@@ -2168,14 +2187,14 @@
             "file": "JD_Price.lpx"
         },
         {
-            "index": 108,
+            "index": 109,
             "name": "京东去广告",
             "desc": "移除京东开屏广告，精简我的页面产品推广。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/JD.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "RuCu6",
@@ -2191,14 +2210,14 @@
             "file": "JD_remove_ads.lpx"
         },
         {
-            "index": 109,
+            "index": 110,
             "name": "京东外卖去广告",
             "desc": "移除首页推广、点评页面非美食内容、购物车及我的页面推荐、搜索发现、搜索榜单，精简我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/JDWaimai.png",
-            "date": "2025-11-28 02:52:04",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2210,14 +2229,14 @@
             "file": "JDWaimai_remove_ads.lpx"
         },
         {
-            "index": 110,
+            "index": 111,
             "name": "金山文档去广告",
             "desc": "移除首页横幅推广、表单收集页面推广和我的页面推广。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/WPS_Documents.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2229,14 +2248,14 @@
             "file": "WPS_Documents_remove_ads.lpx"
         },
         {
-            "index": 111,
+            "index": 112,
             "name": "可莉广告过滤器",
             "desc": "可莉自用的广告过滤器",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/Other_icon/120px/KeLee.png",
-            "date": "2025-07-16 02:25:05",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2248,14 +2267,14 @@
             "file": "Remove_ads_by_keli.lpx"
         },
         {
-            "index": 112,
+            "index": 113,
             "name": "快递100去广告",
             "desc": "移除横幅广告、弹窗广告，精简首页。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/KuaiDi100.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2267,14 +2286,14 @@
             "file": "KuaiDi100_remove_ads.lpx"
         },
         {
-            "index": 113,
+            "index": 114,
             "name": "快对去广告",
             "desc": "移除开屏广告、横幅推广，精简我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/KuaiDuiZuoYe.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2286,14 +2305,14 @@
             "file": "KuaiDuiZuoYe_remove_ads.lpx"
         },
         {
-            "index": 114,
+            "index": 115,
             "name": "快捷搜索",
             "desc": "为Safari提供快速切换搜索引擎的能力，在插件列表中点击此插件上的链接查看使用方法。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Safari.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2305,14 +2324,14 @@
             "file": "QuickSearch.lpx"
         },
         {
-            "index": 115,
+            "index": 116,
             "name": "快看漫画去广告",
             "desc": "移除开屏广告、悬浮窗、漫画广告、社区广告、各类弹窗，精简顶部标签、我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/KuaiKanComic.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2324,14 +2343,14 @@
             "file": "KuaiKanComic_remove_ads.lpx"
         },
         {
-            "index": 116,
+            "index": 117,
             "name": "快手去广告",
             "desc": "移除开屏广告、视频流广告、底栏皮肤、右下角悬浮推广，精简我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/KuaiShou.png",
-            "date": "2025-09-16 12:09:59",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2343,14 +2362,14 @@
             "file": "KuaiShou_remove_ads.lpx"
         },
         {
-            "index": 117,
+            "index": 118,
             "name": "快影去广告",
             "desc": "移除开屏广告、信息流推广、横幅推广，移除悬浮部件。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/KwaiVideoeditor.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2362,14 +2381,14 @@
             "file": "KwaiVideoeditor_remove_ads.lpx"
         },
         {
-            "index": 118,
+            "index": 119,
             "name": "夸克去广告",
             "desc": "移除阅读广告、各页面弹窗及横幅，精简我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/QuarkBrowser.png",
-            "date": "2025-12-29 22:55:29",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2381,14 +2400,14 @@
             "file": "QuarkBrowser_remove_ads.lpx"
         },
         {
-            "index": 119,
+            "index": 120,
             "name": "夸克扫描王去广告",
             "desc": "移除弹窗广告、横幅广告，精简我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/QuarkScanking.png",
-            "date": "2026-01-30 00:56:47",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2400,14 +2419,14 @@
             "file": "QuarkScanking_remove_ads.lpx"
         },
         {
-            "index": 120,
+            "index": 121,
             "name": "酷安去广告",
             "desc": "过滤酷安广告",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/CoolApk.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "RuCu6",
@@ -2423,14 +2442,14 @@
             "file": "CoolApk_remove_ads.lpx"
         },
         {
-            "index": 121,
+            "index": 122,
             "name": "酷狗概念版去广告",
             "desc": "移除广告服务模块、播放器广告，精简乐库及搜索页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/KuGouYouth.png",
-            "date": "2026-02-27 01:30:16",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2442,14 +2461,14 @@
             "file": "KuGouYouth_remove_ads.lpx"
         },
         {
-            "index": 122,
+            "index": 123,
             "name": "酷狗铃声去广告",
             "desc": "移除开屏广告，移除歌曲列表、播放器、搜索界面广告，移除悬浮广告和弹窗广告。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/KGRing.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2461,14 +2480,14 @@
             "file": "KGRing_remove_ads.lpx"
         },
         {
-            "index": 123,
+            "index": 124,
             "name": "酷狗音乐去广告",
             "desc": "移除开屏广告、应用各类弹窗、各类横幅广告、评论区广告和播放器界面广告。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/KuGou.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2480,14 +2499,14 @@
             "file": "KuGou_remove_ads.lpx"
         },
         {
-            "index": 124,
+            "index": 125,
             "name": "库街区去广告",
             "desc": "移除开屏广告、弹窗广告、搜索页面的热搜及话题热榜。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/KuroBBS.png",
-            "date": "2025-11-23 18:56:41",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2499,14 +2518,14 @@
             "file": "KuroBBS_remove_ads.lpx"
         },
         {
-            "index": 125,
+            "index": 126,
             "name": "酷我音乐去广告",
             "desc": "移除开屏广告、各类弹窗、悬浮窗、各类横幅广告、信息流广告、歌词评论区广告和播放器界面广告，精简侧边栏。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Kuwo.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2518,14 +2537,14 @@
             "file": "Kuwo_remove_ads.lpx"
         },
         {
-            "index": 126,
+            "index": 127,
             "name": "乐播投屏去广告",
             "desc": "移除开屏广告、首页横幅推广、全网全网热投榜，移除我的页面横幅推广。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/TV_Assistant.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2537,14 +2556,14 @@
             "file": "TV_Assistant_remove_ads.lpx"
         },
         {
-            "index": 127,
+            "index": 128,
             "name": "两步路户外助手去广告",
             "desc": "移除开屏广告、弹窗广告，精简我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/2bulu.png",
-            "date": "2026-05-16 14:43:15",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2556,14 +2575,14 @@
             "file": "2bulu_remove_ads.lpx"
         },
         {
-            "index": 128,
+            "index": 129,
             "name": "萝卜快跑去广告",
             "desc": "移除开屏广告、弹窗广告、横幅广告、新用户活动皮肤，保留优惠活动。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/RoboTaxi.png",
-            "date": "2025-12-07 06:26:48",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2575,14 +2594,14 @@
             "file": "RoboTaxi_remove_ads.lpx"
         },
         {
-            "index": 129,
+            "index": 130,
             "name": "马蜂窝去广告",
             "desc": "移除首页信息流广告、商城横幅推广、我的页面弹窗。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/MaFengWo.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2594,14 +2613,14 @@
             "file": "MaFengWo_remove_ads.lpx"
         },
         {
-            "index": 130,
+            "index": 131,
             "name": "芒果TV去广告",
             "desc": "移除开屏广告、信息流广告、播放页广告，精简我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Mango_TV.png",
-            "date": "2025-11-09 07:45:13",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2617,14 +2636,14 @@
             "file": "MangoTV_remove_ads.lpx"
         },
         {
-            "index": 131,
+            "index": 132,
             "name": "漫客栈去广告",
             "desc": "移除开屏广告、漫画广告、小说章末广告，精简我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/MKZ.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2636,14 +2655,14 @@
             "file": "MKZ_remove_ads.lpx"
         },
         {
-            "index": 132,
+            "index": 133,
             "name": "猫耳FM去广告",
             "desc": "移除开屏广告、青少年模式弹窗、首页顶部入口，替换底栏的直播入口为发现入口。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/CatEarFM.png",
-            "date": "2025-05-17 13:50:41",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2655,14 +2674,14 @@
             "file": "CatEarFM_remove_ads.lpx"
         },
         {
-            "index": 133,
+            "index": 134,
             "name": "美丽修行去广告",
             "desc": "移除开屏广告、首页广告、发现页广告、美修盒页面广告、下拉广告、弹窗广告、搜索推广、版本更新弹窗及我的页面广告。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Meizhixiuxing.png",
-            "date": "2025-11-26 23:28:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2674,14 +2693,14 @@
             "file": "Meizhixiuxing_remove_ads.lpx"
         },
         {
-            "index": 134,
+            "index": 135,
             "name": "美食杰去广告",
             "desc": "移除开屏广告和信息流广告。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/MeiShiJie.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2693,14 +2712,14 @@
             "file": "MeiShiJie_remove_ads.lpx"
         },
         {
-            "index": 135,
+            "index": 136,
             "name": "美图秀秀去广告",
             "desc": "移除开屏广告、横幅推广，精简我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/MeiTu.png",
-            "date": "2025-08-31 18:06:06",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2712,14 +2731,14 @@
             "file": "MeiTu_remove_ads.lpx"
         },
         {
-            "index": 136,
+            "index": 137,
             "name": "美颜相机去广告",
             "desc": "移除开屏广告、应用内弹窗，精简首页和我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/MeituMYXJ.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2731,14 +2750,14 @@
             "file": "MeituMYXJ_remove_ads.lpx"
         },
         {
-            "index": 137,
+            "index": 138,
             "name": "美柚去广告",
             "desc": "移除开屏广告、弹窗推广和信息流推广，移除青少年模式弹窗和我的页面推广。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/MeetYou.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2750,14 +2769,14 @@
             "file": "MeetYou_remove_ads.lpx"
         },
         {
-            "index": 138,
+            "index": 139,
             "name": "萌娘百科去广告",
             "desc": "移除开屏广告、弹窗、首页横幅。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/MoeGirlWiki.png",
-            "date": "2026-01-30 00:26:51",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2769,14 +2788,14 @@
             "file": "MoeGirlWiki_remove_ads.lpx"
         },
         {
-            "index": 139,
+            "index": 140,
             "name": "米游社去广告",
             "desc": "移除开屏广告、搜索栏热搜及资讯、青少年模式弹窗。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/miHoYoBBS.png",
-            "date": "2025-11-20 01:12:36",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2788,14 +2807,14 @@
             "file": "miHoYoBBS_remove_ads.lpx"
         },
         {
-            "index": 140,
+            "index": 141,
             "name": "墨迹天气去广告",
             "desc": "移除天气页面横幅、工具栏，移除时景关注页面推荐，精简我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/MojiWeather.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2807,14 +2826,14 @@
             "file": "MojiWeather_remove_ads.lpx"
         },
         {
-            "index": 141,
+            "index": 142,
             "name": "脉脉去广告",
             "desc": "移除开屏广告、信息流广告、横幅推广、相关帖子推荐。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/MaiMai.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2826,14 +2845,33 @@
             "file": "MaiMai_remove_ads.lpx"
         },
         {
-            "index": 142,
+            "index": 143,
+            "name": "南网在线去广告",
+            "desc": "移除首页推广，精简搜索页和我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/CSG.png",
+            "date": "2026-06-01 17:11:35",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "install_url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/CSG_remove_ads.lpx",
+            "source_url": "https://kelee.one/Tool/Loon/Lpx/CSG_remove_ads.lpx",
+            "file": "CSG_remove_ads.lpx"
+        },
+        {
+            "index": 144,
             "name": "胖乖生活去广告",
             "desc": "移除开屏广告、横幅轮播图、网格广告、信息流广告、浮窗广告，精简我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/PangguaiLife.png",
-            "date": "2025-09-15 21:51:48",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2845,14 +2883,14 @@
             "file": "PangguaiLife_remove_ads.lpx"
         },
         {
-            "index": 143,
+            "index": 145,
             "name": "配音秀去广告",
             "desc": "移除开屏广告、弹窗、横幅、各类关注推荐。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/DubbingShow.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2864,14 +2902,14 @@
             "file": "DubbingShow_remove_ads.lpx"
         },
         {
-            "index": 144,
+            "index": 146,
             "name": "拼多多去广告",
             "desc": "移除开屏广告、底栏多多视频、会场入口、聊天页面精选推荐及推广，精简首页和个人中心。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/PinDuoDuo.png",
-            "date": "2026-02-28 20:52:18",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "ZenmoFeiShi",
@@ -2887,14 +2925,14 @@
             "file": "PinDuoDuo_remove_ads.lpx"
         },
         {
-            "index": 145,
+            "index": 147,
             "name": "皮皮虾去广告",
             "desc": "移除开屏广告、评论区广告、视频流广告，精简我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/PiPiXia.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2906,14 +2944,14 @@
             "file": "PiPiXia_remove_ads.lpx"
         },
         {
-            "index": 146,
+            "index": 148,
             "name": "朴朴超市去广告",
             "desc": "移除超市去开屏广告，移除首页顶部轮播图和图标广告、启动小弹图广告、首页右下角悬浮动画、搜索热搜榜、搜索建议词、搜索发现热词、订单页面商，精简我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/PuPuMall.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "kelv1n1n",
@@ -2929,14 +2967,14 @@
             "file": "PuPuMall_remove_ads.lpx"
         },
         {
-            "index": 147,
+            "index": 149,
             "name": "前程无忧去广告",
             "desc": "移除开屏广告、弹窗、信息流推广、职位页面推广和各类横幅推广。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/51Job.png",
-            "date": "2025-07-11 17:40:27",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2948,14 +2986,14 @@
             "file": "51Job_remove_ads.lpx"
         },
         {
-            "index": 148,
+            "index": 150,
             "name": "汽车之家去广告",
             "desc": "移除开屏广告、各类广告横幅、各类信息流广告、各类弹窗推广、各类浮窗、我的页面广告。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/AutoHome.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2967,14 +3005,14 @@
             "file": "AutoHome_remove_ads.lpx"
         },
         {
-            "index": 149,
+            "index": 151,
             "name": "起点读书去广告",
             "desc": "移除起点读书开屏广告、每日导读、各类弹窗、文末广告、搜索填充词，精简我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/QiDian.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -2986,14 +3024,14 @@
             "file": "QiDian_remove_ads.lpx"
         },
         {
-            "index": 150,
+            "index": 152,
             "name": "七猫小说去广告",
             "desc": "移除大部分七猫小说广告，但受限于七猫小说自身对MitM和VPN状态的检测，部分页面广告无法移除。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/SevenCat.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3005,14 +3043,14 @@
             "file": "SevenCat_remove_ads.lpx"
         },
         {
-            "index": 151,
+            "index": 153,
             "name": "蜻蜓FM去广告",
             "desc": "移除开屏广告、信息流广告、各类相关内容推荐，精简我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/QtingFM.png",
-            "date": "2026-02-27 02:47:52",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3024,14 +3062,14 @@
             "file": "QtingFM_remove_ads.lpx"
         },
         {
-            "index": 152,
+            "index": 154,
             "name": "汽水音乐去广告",
             "desc": "移除开屏广告、弹窗广告、播放器推广、歌曲详情界面视频推广、播放页面的歌曲视频，精简首页和我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/SodaMusic.png",
-            "date": "2025-08-31 05:46:14",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3043,14 +3081,14 @@
             "file": "SodaMusic_remove_ads.lpx"
         },
         {
-            "index": 153,
+            "index": 155,
             "name": "启信宝去广告",
             "desc": "移除开屏广告、应用内弹窗、首页轮播图、悬浮部件和个性化推荐信息流。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/QiXinBao.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3062,14 +3100,14 @@
             "file": "QiXinBao_remove_ads.lpx"
         },
         {
-            "index": 154,
+            "index": 156,
             "name": "全民K歌去广告",
             "desc": "移除开屏广告、歌房页面弹窗广告、消息页广告和我的页面广告。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/QQKSong.png",
-            "date": "2025-12-29 23:11:06",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3081,14 +3119,14 @@
             "file": "QQKSong_remove_ads.lpx"
         },
         {
-            "index": 155,
+            "index": 157,
             "name": "瑞幸咖啡去广告",
             "desc": "移除开屏广告、弹窗和各类横幅推广。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/LuckinCoffee.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "Sliverkiss",
@@ -3100,14 +3138,14 @@
             "file": "LuckinCoffee_remove_ads.lpx"
         },
         {
-            "index": 156,
+            "index": 158,
             "name": "省钱快报去广告",
             "desc": "移除开屏广告、横幅广告、商品推荐，精简我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/YueDanBa.png",
-            "date": "2025-06-01 19:49:56",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3119,14 +3157,14 @@
             "file": "YueDanBa_remove_ads.lpx"
         },
         {
-            "index": 157,
+            "index": 159,
             "name": "什么值得买去广告",
             "desc": "移除开屏广告、信息流广告、各类横幅广告、搜索页广告、文章内广告，移除活动皮肤、精简我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/smzdm.png",
-            "date": "2026-05-16 00:09:01",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3138,14 +3176,14 @@
             "file": "smzdm_remove_ads.lpx"
         },
         {
-            "index": 158,
+            "index": 160,
             "name": "收银通商户端去广告",
             "desc": "移除开屏广告和首页推广",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/ShouYinTongMerchant.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3157,14 +3195,14 @@
             "file": "ShouYinTongMerchant_remove_ads.lpx"
         },
         {
-            "index": 159,
+            "index": 161,
             "name": "顺丰速运去广告",
             "desc": "移除开屏广告、首页下拉抽屉、首页推广、应用内悬浮窗、横幅广告，移除主题，精简我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/SF-Express.png",
-            "date": "2026-02-23 03:35:22",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3176,14 +3214,14 @@
             "file": "SF-Express_remove_ads.lpx"
         },
         {
-            "index": 160,
+            "index": 162,
             "name": "书旗小说去广告",
             "desc": "移除书城横幅广告、听书广告、阅读广告、章末推荐、福利入口、悬浮窗、推荐搜索词，精简我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/ShuQiCenterReader.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3195,14 +3233,14 @@
             "file": "ShuQiCenterReader_remove_ads.lpx"
         },
         {
-            "index": 161,
+            "index": 163,
             "name": "数字心动去广告",
             "desc": "移除开屏广告、首页顶部标签、轮播图、悬浮挂件、热门搜索、信息流广告。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/DigitalHeartbeat.png",
-            "date": "2025-12-28 22:51:40",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3214,14 +3252,14 @@
             "file": "DigitalHeartbeat_remove_ads.lpx"
         },
         {
-            "index": 162,
+            "index": 164,
             "name": "随手记去广告",
             "desc": "移除开屏广告、神象云账本内部广告、我的页面广告，移除社区入口。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/KingdeeMyMoney.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3233,14 +3271,14 @@
             "file": "KingdeeMyMoney_remove_ads.lpx"
         },
         {
-            "index": 163,
+            "index": 165,
             "name": "淘宝去广告",
             "desc": "过滤淘宝开屏广告",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Taobao.png",
-            "date": "2025-12-28 18:55:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "RuCu6",
@@ -3252,14 +3290,14 @@
             "file": "Taobao_remove_ads.lpx"
         },
         {
-            "index": 164,
+            "index": 166,
             "name": "淘票票去广告",
             "desc": "移除开屏广告、悬浮广告、轮播图广告和弹窗广告，移除搜索填充词和为你推荐。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Taopiaopiao.png",
-            "date": "2025-11-08 23:45:23",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3271,14 +3309,14 @@
             "file": "Taopiaopiao_remove_ads.lpx"
         },
         {
-            "index": 165,
+            "index": 167,
             "name": "他趣去广告",
             "desc": "移除各类弹窗、横幅，精简我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Taqu.png",
-            "date": "2026-05-15 05:22:42",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3290,14 +3328,14 @@
             "file": "Taqu_remove_ads.lpx"
         },
         {
-            "index": 166,
+            "index": 168,
             "name": "腾讯视频去广告",
             "desc": "过滤腾讯视频客户端广告，如遇失效，则需要重新安装腾讯视频客户端。由于此插件不再维护，客户端版本高于8.9.40可能会导致此插件失效，请勿升级客户端。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Tencent_Video.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "RuCu6",
@@ -3309,14 +3347,14 @@
             "file": "Tencent_Video_remove_ads.lpx"
         },
         {
-            "index": 167,
+            "index": 169,
             "name": "腾讯文档去广告",
             "desc": "移除开屏广告、首页横幅推广。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/TXDocs.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3328,14 +3366,14 @@
             "file": "TXDocs_remove_ads.lpx"
         },
         {
-            "index": 168,
+            "index": 170,
             "name": "图怪兽去广告",
             "desc": "移除开屏广告、弹窗广告、各页面横幅推广。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/TuGuaiShou.png",
-            "date": "2026-01-31 01:54:20",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3347,14 +3385,14 @@
             "file": "TuGuaiShou_remove_ads.lpx"
         },
         {
-            "index": 169,
+            "index": 171,
             "name": "推栏去广告",
             "desc": "过滤推栏广告",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Daily.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3366,14 +3404,14 @@
             "file": "Daily_remove_ads.lpx"
         },
         {
-            "index": 170,
+            "index": 172,
             "name": "挖财记账去广告",
             "desc": "移除弹窗广告、推广语横幅和右下角悬浮广告。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/WaCaiJiZhang.png",
-            "date": "2025-06-30 21:53:43",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3385,14 +3423,14 @@
             "file": "WaCaiJiZhang_remove_ads.lpx"
         },
         {
-            "index": 171,
+            "index": 173,
             "name": "网易大神去广告",
             "desc": "移除开屏广告，精简大量冗余的配置文件，精简我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/NetEaseGodlike.png",
-            "date": "2025-09-18 01:42:22",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3404,14 +3442,14 @@
             "file": "NetEaseGodlike_remove_ads.lpx"
         },
         {
-            "index": 172,
+            "index": 174,
             "name": "网易新闻去广告",
             "desc": "移除开屏广告、置顶新闻、热搜列表和搜索栏填充词。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/NeteaseNews.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "RuCu6",
@@ -3423,14 +3461,14 @@
             "file": "NeteaseNews_remove_ads.lpx"
         },
         {
-            "index": 173,
+            "index": 175,
             "name": "网易有道词典去广告",
             "desc": "移除开屏广告、弹窗广告、右上角推广。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/YoudaoDict.png",
-            "date": "2026-05-15 21:46:51",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3442,14 +3480,14 @@
             "file": "YoudaoDict_remove_ads.lpx"
         },
         {
-            "index": 174,
+            "index": 176,
             "name": "网易邮箱大师去广告",
             "desc": "移除网易邮箱大师开屏广告、签到任务提醒，精简侧拉抽屉和我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/MailMaster.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3461,14 +3499,14 @@
             "file": "MailMaster_remove_ads.lpx"
         },
         {
-            "index": 175,
+            "index": 177,
             "name": "网易云音乐去广告",
             "desc": "过滤网易云音乐广告，并允许自定义界面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/NeteaseCloudMusic.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "RuCu6",
@@ -3484,14 +3522,14 @@
             "file": "NeteaseCloudMusic_remove_ads.lpx"
         },
         {
-            "index": 176,
+            "index": 178,
             "name": "完美世界电竞去广告",
             "desc": "移除开屏广告，精简搜索页。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/PerfectWorldEsport.png",
-            "date": "2026-05-13 00:54:14",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3503,14 +3541,14 @@
             "file": "PerfectWorldEsport_remove_ads.lpx"
         },
         {
-            "index": 177,
+            "index": 179,
             "name": "微博轻享版去广告",
             "desc": "移除开屏广告、时间线广告及评论区广告，移除发现页面横幅推广、最常访问、主页访客及热门视频，移除搜索填充词。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Weibo_intl.png",
-            "date": "2026-05-15 22:35:54",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3522,14 +3560,14 @@
             "file": "Weibo_intl_remove_ads.lpx"
         },
         {
-            "index": 178,
+            "index": 180,
             "name": "微博去广告",
             "desc": "过滤微博广告及去除各部分推广模块",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Weibo.png",
-            "date": "2026-05-13 18:10:34",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "RuCu6",
@@ -3545,14 +3583,14 @@
             "file": "Weibo_remove_ads.lpx"
         },
         {
-            "index": 179,
+            "index": 181,
             "name": "威锋去广告",
             "desc": "移除开屏广告、信息流广告、文末广告、首页轮播图推广。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/WPForum.png",
-            "date": "2025-07-16 02:49:51",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3564,14 +3602,14 @@
             "file": "WPForum_remove_ads.lpx"
         },
         {
-            "index": 180,
+            "index": 182,
             "name": "微脉圈去广告",
             "desc": "移除开屏广告、聊天页横幅提示及发现页面的横幅广告。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Weimai.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3583,14 +3621,14 @@
             "file": "Weimai_remove_ads.lpx"
         },
         {
-            "index": 181,
+            "index": 183,
             "name": "微信公众号去广告",
             "desc": "过滤微信公众号广告",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Weixin.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "RuCu6",
@@ -3602,14 +3640,14 @@
             "file": "Weixin_Official_Accounts_remove_ads.lpx"
         },
         {
-            "index": 182,
+            "index": 184,
             "name": "微信外部链接解锁",
             "desc": "解锁微信外部链接访问限制，跳过中间界面。支付宝链接、被封禁链接进行通知弹窗跳转，在微信中用快照显示被封禁的链接（可选），在微信中进行强制重定向（可选），群聊及扫码均可使用，可选项可在脚本的2~3行更改，也可在BoxJs中更改。",
             "tag": [
                 "功能增强"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Weixin.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "zZPiglet",
@@ -3621,14 +3659,14 @@
             "file": "Weixin_external_links_unlock.lpx"
         },
         {
-            "index": 183,
+            "index": 185,
             "name": "微信小程序去广告",
             "desc": "收录常用小程序的去广告，作者署名在插件内。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/WeixinMiniPrograms.png",
-            "date": "2025-10-02 21:29:46",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3640,14 +3678,14 @@
             "file": "WexinMiniPrograms_Remove_ads.lpx"
         },
         {
-            "index": 184,
+            "index": 186,
             "name": "蜗牛睡眠去广告",
             "desc": "移除音乐页面横幅、日报告解决方案商品推广，移除我的页面服务推广。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/SnailSleep.png",
-            "date": "2026-05-16 16:58:57",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3659,14 +3697,14 @@
             "file": "SnailSleep_remove_ads.lpx"
         },
         {
-            "index": 185,
+            "index": 187,
             "name": "无他相机去广告",
             "desc": "移除开屏广告、拍摄页面广告、右小角广告，精简底栏。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/WutaCamera.png",
-            "date": "2025-07-05 02:22:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3678,14 +3716,14 @@
             "file": "WutaCamera_remove_ads.lpx"
         },
         {
-            "index": 186,
+            "index": 188,
             "name": "下厨房去广告",
             "desc": "移除开屏广告、页面推广及横幅，精简首页标签。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/XiaChuFang.png",
-            "date": "2026-02-22 04:07:10",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3697,14 +3735,14 @@
             "file": "XiaChuFang_remove_ads.lpx"
         },
         {
-            "index": 187,
+            "index": 189,
             "name": "香港抖音去广告",
             "desc": "精简左右侧边栏、移除底栏切换，其余内容后续再完善。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/TikTok.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3716,14 +3754,14 @@
             "file": "HKDouYin_remove_ads.lpx"
         },
         {
-            "index": 188,
+            "index": 190,
             "name": "向日葵去广告",
             "desc": "移除开屏广告、广告横幅。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/OraySunlogin.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3735,14 +3773,14 @@
             "file": "OraySunlogin_remove_ads.lpx"
         },
         {
-            "index": 189,
+            "index": 191,
             "name": "闲鱼去广告",
             "desc": "移除开屏广告、商品信息流广告、关注推荐、搜索栏填充词、首页签到入口及悬浮广告，精简我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/FleaMarket.png",
-            "date": "2026-05-18 21:36:26",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3754,14 +3792,14 @@
             "file": "FleaMarket_remove_ads.lpx"
         },
         {
-            "index": 190,
+            "index": 192,
             "name": "小蚕霸王餐去广告",
             "desc": "移除开屏广告、首页横幅推广、红包推广、更新弹窗。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/XiaoCan.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "Sliverkiss",
@@ -3777,14 +3815,14 @@
             "file": "XiaoCan_remove_ads.lpx"
         },
         {
-            "index": 191,
+            "index": 193,
             "name": "小店掌柜去广告",
             "desc": "移除开屏广告、活动推广和页面跳转。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/ShopKeeperAdmin.png",
-            "date": "2025-05-28 21:48:03",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3796,14 +3834,14 @@
             "file": "ShopKeeperAdmin_remove_ads.lpx"
         },
         {
-            "index": 192,
+            "index": 194,
             "name": "小黑盒去广告",
             "desc": "移除开屏广告和热点板块信息流广告",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/XiaoHeiHe.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3815,14 +3853,14 @@
             "file": "XiaoHeiHe_remove_ads.lpx"
         },
         {
-            "index": 193,
+            "index": 195,
             "name": "小红书去广告",
             "desc": "过滤信息流推广，移除图片及视频水印，如有异常，请先清除缓存再尝试。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/RedPaper.png",
-            "date": "2026-05-13 18:12:29",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "RuCu6",
@@ -3838,14 +3876,14 @@
             "file": "RedPaper_remove_ads.lpx"
         },
         {
-            "index": 194,
+            "index": 196,
             "name": "小桔充电去广告",
             "desc": "移除横幅广告、弹窗广告，精简我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/XiaojukejiCharge.png",
-            "date": "2025-12-08 00:24:31",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3857,14 +3895,14 @@
             "file": "XiaojukejiCharge_remove_ads.lpx"
         },
         {
-            "index": 195,
+            "index": 197,
             "name": "小喵看书去广告",
             "desc": "移除小喵看书章末广告",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/MiaoRead.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3876,14 +3914,14 @@
             "file": "MiaoRead_remove_ads.lpx"
         },
         {
-            "index": 196,
+            "index": 198,
             "name": "小米音箱去广告",
             "desc": "移除开屏广告、应用内横幅广告及弹窗广告。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/XiaomiSpeaker.png",
-            "date": "2025-07-09 08:04:43",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3895,14 +3933,14 @@
             "file": "XiaomiSpeaker_remove_ads.lpx"
         },
         {
-            "index": 197,
+            "index": 199,
             "name": "小睡眠去广告",
             "desc": "移除开屏广告、信息流广告、弹窗广告、轮播图广告、侧边栏横幅广告，精简搜索页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/HeartideBrainWave.png",
-            "date": "2026-05-11 03:08:03",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3914,14 +3952,14 @@
             "file": "HeartideBrainWave_remove_ads.lpx"
         },
         {
-            "index": 198,
+            "index": 200,
             "name": "小象超市去广告",
             "desc": "移除开屏广告、应用内弹窗、猜你想买、横幅推广和悬浮窗。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/iMaiCai.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3933,14 +3971,14 @@
             "file": "iMaiCai_remove_ads.lpx"
         },
         {
-            "index": 199,
+            "index": 201,
             "name": "小宇宙去广告",
             "desc": "移除开屏广告、搜索框推荐词和AI总结。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/CosmosPodcast.png",
-            "date": "2025-07-21 18:21:13",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "wish",
@@ -3952,14 +3990,14 @@
             "file": "CosmosPodcast_remove_ads.lpx"
         },
         {
-            "index": 200,
+            "index": 202,
             "name": "喜马拉雅去广告",
             "desc": "移除开屏广告、播放器广告、各类推荐内容，精简频道和我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Himalaya.png",
-            "date": "2025-07-11 17:53:22",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3971,14 +4009,14 @@
             "file": "Himalaya_remove_ads.lpx"
         },
         {
-            "index": 201,
+            "index": 203,
             "name": "行者户外去广告",
             "desc": "移除弹窗广告、发现页面横幅推广的推广金刚位，移除我的页面横幅推广。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/OnTheWay.png",
-            "date": "2026-05-16 15:25:53",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -3990,14 +4028,14 @@
             "file": "OnTheWay_remove_ads.lpx"
         },
         {
-            "index": 202,
+            "index": 204,
             "name": "雪球去广告",
             "desc": "移除开屏广告、各类横幅广告、信息流广告、帖内广告、新用户定向广告、各类弹窗、股票精选推荐、基金精选推荐、聪明的投资者推荐、私募推荐、直播推荐。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Snowball.png",
-            "date": "2025-11-25 03:30:07",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -4009,14 +4047,14 @@
             "file": "Snowball_remove_ads.lpx"
         },
         {
-            "index": 203,
+            "index": 205,
             "name": "迅雷去广告",
             "desc": "移除开屏广告、首页横幅广告、左上角广告入口，精简我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/XunLei.png",
-            "date": "2025-07-10 21:25:29",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -4028,14 +4066,14 @@
             "file": "XunLei_remove_ads.lpx"
         },
         {
-            "index": 204,
+            "index": 206,
             "name": "医考帮去广告",
             "desc": "移除横幅推广、弹窗、首页悬浮挂件。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/YiKaoBang.png",
-            "date": "2026-02-27 23:29:18",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -4047,14 +4085,14 @@
             "file": "YiKaoBang_remove_ads.lpx"
         },
         {
-            "index": 205,
+            "index": 207,
             "name": "一刻相册去广告",
             "desc": "移除开屏广告、横幅广告和弹窗推广。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/BaiduPhoto.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -4066,14 +4104,14 @@
             "file": "BaiduPhoto_remove_ads.lpx"
         },
         {
-            "index": 206,
+            "index": 208,
             "name": "萤石云视频去广告",
             "desc": "移除开屏广告、首页推广、我的页面推广。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/VideoGo.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -4085,14 +4123,14 @@
             "file": "VideoGo_remove_ads.lpx"
         },
         {
-            "index": 207,
+            "index": 209,
             "name": "一甜相机去广告",
             "desc": "移除开屏广告、悬浮广告及图片选择器横幅广告。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Yitian.png",
-            "date": "2025-07-04 23:22:46",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -4104,14 +4142,14 @@
             "file": "Yitian_remove_ads.lpx"
         },
         {
-            "index": 208,
+            "index": 210,
             "name": "有道翻译官去广告",
             "desc": "移除开屏广告、横幅推广，精简首页。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/YoudaoTrans.png",
-            "date": "2026-05-15 21:07:52",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -4123,14 +4161,14 @@
             "file": "YoudaoTrans_remove_ads.lpx"
         },
         {
-            "index": 209,
+            "index": 211,
             "name": "有道云笔记去广告",
             "desc": "移除开屏广告、弹窗广告及横幅广告。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/YoudaoNote.png",
-            "date": "2025-09-21 16:43:19",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -4142,14 +4180,14 @@
             "file": "YoudaoNote_remove_ads.lpx"
         },
         {
-            "index": 210,
+            "index": 212,
             "name": "优酷视频去广告",
             "desc": "移除开屏广告、视频广告、信息流广告。其余广告由于请求已加密，故无法移除。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/YouKu_Video.png",
-            "date": "2025-11-14 22:56:21",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -4165,14 +4203,14 @@
             "file": "YouKu_Video_remove_ads.lpx"
         },
         {
-            "index": 211,
+            "index": 213,
             "name": "阅友去广告",
             "desc": "移除开屏广告、弹窗广告和阅读页面广告，移除底栏福利按钮。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Yueyou.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -4184,14 +4222,14 @@
             "file": "Yueyou_remove_ads.lpx"
         },
         {
-            "index": 212,
+            "index": 214,
             "name": "云鲸智能去广告",
             "desc": "移除开屏广告、横幅推广，禁用商城。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/NarwelRobots.png",
-            "date": "2026-02-27 22:23:04",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -4203,14 +4241,14 @@
             "file": "NarwelRobots_remove_ads.lpx"
         },
         {
-            "index": 213,
+            "index": 215,
             "name": "掌上无畏契约去广告",
             "desc": "移除开屏广告、弹窗推广、搜索热搜、搜索热榜。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/ValorantBible.png",
-            "date": "2025-11-14 02:04:54",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -4222,14 +4260,14 @@
             "file": "ValorantBible_remove_ads.lpx"
         },
         {
-            "index": 214,
+            "index": 216,
             "name": "掌上英雄联盟去广告",
             "desc": "移除开屏广告、弹窗推广、搜索热搜、搜索热榜、底栏推广图标。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/LOL_Bible.png",
-            "date": "2025-11-14 02:24:43",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -4241,14 +4279,14 @@
             "file": "LOL_Bible_remove_ads.lpx"
         },
         {
-            "index": 215,
+            "index": 217,
             "name": "掌阅去广告",
             "desc": "移除开屏广告、悬浮广告、弹窗广告、朗读音色广告及我的页面广告，移除各页面的横幅轮播图。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/iReader.png",
-            "date": "2025-10-11 08:34:06",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -4260,14 +4298,14 @@
             "file": "iReader_remove_ads.lpx"
         },
         {
-            "index": 216,
+            "index": 218,
             "name": "智慧苏州去广告",
             "desc": "移除开屏广告、横幅，移除信息流推广。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/SuZhouCitizenCard.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "xream",
@@ -4279,14 +4317,14 @@
             "file": "SuZhouCitizenCard_remove_ads.lpx"
         },
         {
-            "index": 217,
+            "index": 219,
             "name": "知乎去广告",
             "desc": "移除HTTPDNS和QUIC传输配置，移除开屏广告、信息流广告、回答页广告，移除回答页下的相关回答、专栏卡片及圈子卡片，移除直答页面推荐知识库和提问推荐，移除评论区评论氛围满意度调查，精简首页顶部标签及我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Zhihu.png",
-            "date": "2026-05-18 22:52:05",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -4298,14 +4336,14 @@
             "file": "Zhihu_remove_ads.lpx"
         },
         {
-            "index": 218,
+            "index": 220,
             "name": "智联招聘去广告",
             "desc": "移除开屏广告、弹窗、职位页面推广和各类横幅推广。此插件需要IPA签名方可使用，App Store用户请勿使用此插件，务必点击下方主页链接查看详细教程。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/ZhiLianZhaoPin.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -4317,12 +4355,12 @@
             "file": "ZhiLianZhaoPin_remove_ads.lpx"
         },
         {
-            "index": 219,
+            "index": 221,
             "name": "知识星球去水印",
             "desc": "移除内容的水印编号",
             "tag": [],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/UnnooQuan.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -4334,14 +4372,14 @@
             "file": "UnnooQuan_remove_watermark.lpx"
         },
         {
-            "index": 220,
+            "index": 222,
             "name": "中国人保去广告",
             "desc": "移除中国人保开屏广告和应用内广告",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/PICC_Insurance.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "Sliverkiss",
@@ -4353,14 +4391,14 @@
             "file": "PICC_Insurance_remove_ads.lpx"
         },
         {
-            "index": 221,
+            "index": 223,
             "name": "中国移动云盘去广告",
             "desc": "移除中国移动云盘开屏广告及应用内广告，首页的多余卡片可滑到最底部自定义隐藏掉，插件对此不做处理。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/mobileClouds.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "RuCu6",
@@ -4372,14 +4410,14 @@
             "file": "mobileClouds_remove_ads.lpx"
         },
         {
-            "index": 222,
+            "index": 224,
             "name": "中华万年历去广告",
             "desc": "移除开屏广告、弹窗、信息流推广，精简我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/EtouchEcalendar.png",
-            "date": "2025-09-06 20:56:43",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -4391,14 +4429,14 @@
             "file": "EtouchEcalendar_remove_ads.lpx"
         },
         {
-            "index": 223,
+            "index": 225,
             "name": "转转去广告",
             "desc": "移除开屏广告、应用内悬浮窗、信息流推广、商品推荐、首页弹窗，精简我的页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/ZhuanZhuan.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -4410,14 +4448,14 @@
             "file": "ZhuanZhuan_remove_ads.lpx"
         },
         {
-            "index": 224,
+            "index": 226,
             "name": "自动加入TestFlight",
             "desc": "自动监控TestFlight名额，一旦有新的名额即刻加入。",
             "tag": [
                 "定时任务"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/TestFlight.png",
-            "date": "2025-11-08 03:27:30",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "奶思",
@@ -4437,14 +4475,14 @@
             "file": "Auto_Join_TF.lpx"
         },
         {
-            "index": 225,
+            "index": 227,
             "name": "纵横小说去广告",
             "desc": "移除纵横小说开屏广告和弹窗",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/ZongHeng.png",
-            "date": "2025-05-13 15:17:08",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",
@@ -4456,14 +4494,14 @@
             "file": "ZongHeng_remove_ads.lpx"
         },
         {
-            "index": 226,
+            "index": 228,
             "name": "最右去广告",
             "desc": "移除开屏广告、信息流广告和广告轮播图。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/ZuiYou.png",
-            "date": "2026-02-22 01:28:27",
+            "date": "2026-06-01 17:11:35",
             "author": [
                 {
                     "name": "可莉🅥",

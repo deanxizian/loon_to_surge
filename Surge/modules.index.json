@@ -327,6 +327,16 @@
         ]
     },
     {
+        "source": "CSG_remove_ads.lpx",
+        "output": "南网在线去广告.sgmodule",
+        "name": "南网在线去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
         "source": "Cainiao_remove_ads.lpx",
         "output": "菜鸟去广告.sgmodule",
         "name": "菜鸟去广告",
@@ -350,6 +360,16 @@
         "source": "CatEarFM_remove_ads.lpx",
         "output": "猫耳FM去广告.sgmodule",
         "name": "猫耳FM去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Cece_remove_ads.lpx",
+        "output": "测测去广告.sgmodule",
+        "name": "测测去广告",
         "sections": [
             "Body Rewrite",
             "Map Local",
