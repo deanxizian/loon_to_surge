@@ -1320,12 +1320,12 @@
         },
         {
             "name": "测测去广告",
-            "desc": "移除瀑布流广告",
+            "desc": "移除开屏广告、活动皮肤、各类弹窗及横幅、金刚位红点文字，精简首页标签及搜索页面。",
             "tag": [
                 "去广告"
             ],
             "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Cece.png",
-            "date": "2026-06-01 20:15:37",
+            "date": "2026-05-13 00:20:48",
             "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Cece_remove_ads.lpx",
             "author": [
                 {
@@ -3321,6 +3321,23 @@
             "index": 185
         },
         {
+            "name": "沃尔玛去广告",
+            "desc": "移除操作引导、商品详情页用户调研、搜索填充词和搜索发现，精简我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Walmart.png",
+            "date": "2026-06-02 02:30:18",
+            "url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Walmart_remove_ads.lpx",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "index": 186
+        },
+        {
             "name": "蜗牛睡眠去广告",
             "desc": "移除音乐页面横幅、日报告解决方案商品推广，移除我的页面服务推广。",
             "tag": [
@@ -3335,7 +3352,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 186
+            "index": 187
         },
         {
             "name": "无他相机去广告",
@@ -3352,7 +3369,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 187
+            "index": 188
         },
         {
             "name": "下厨房去广告",
@@ -3369,7 +3386,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 188
+            "index": 189
         },
         {
             "name": "香港抖音去广告",
@@ -3386,7 +3403,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 189
+            "index": 190
         },
         {
             "name": "向日葵去广告",
@@ -3403,7 +3420,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 190
+            "index": 191
         },
         {
             "name": "闲鱼去广告",
@@ -3420,7 +3437,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 191
+            "index": 192
         },
         {
             "name": "小蚕霸王餐去广告",
@@ -3441,7 +3458,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 192
+            "index": 193
         },
         {
             "name": "小店掌柜去广告",
@@ -3458,7 +3475,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 193
+            "index": 194
         },
         {
             "name": "小黑盒去广告",
@@ -3475,7 +3492,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 194
+            "index": 195
         },
         {
             "name": "小红书去广告",
@@ -3496,7 +3513,7 @@
                     "homepage": "https://github.com/fmz200"
                 }
             ],
-            "index": 195
+            "index": 196
         },
         {
             "name": "小桔充电去广告",
@@ -3513,7 +3530,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 196
+            "index": 197
         },
         {
             "name": "小喵看书去广告",
@@ -3530,7 +3547,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 197
+            "index": 198
         },
         {
             "name": "小米音箱去广告",
@@ -3547,7 +3564,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 198
+            "index": 199
         },
         {
             "name": "小睡眠去广告",
@@ -3564,7 +3581,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 199
+            "index": 200
         },
         {
             "name": "小象超市去广告",
@@ -3581,7 +3598,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 200
+            "index": 201
         },
         {
             "name": "小宇宙去广告",
@@ -3598,7 +3615,7 @@
                     "homepage": null
                 }
             ],
-            "index": 201
+            "index": 202
         },
         {
             "name": "喜马拉雅去广告",
@@ -3615,7 +3632,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 202
+            "index": 203
         },
         {
             "name": "行者户外去广告",
@@ -3632,7 +3649,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 203
+            "index": 204
         },
         {
             "name": "雪球去广告",
@@ -3649,7 +3666,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 204
+            "index": 205
         },
         {
             "name": "迅雷去广告",
@@ -3666,7 +3683,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 205
+            "index": 206
         },
         {
             "name": "医考帮去广告",
@@ -3683,7 +3700,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 206
+            "index": 207
         },
         {
             "name": "一刻相册去广告",
@@ -3700,7 +3717,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 207
+            "index": 208
         },
         {
             "name": "萤石云视频去广告",
@@ -3717,7 +3734,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 208
+            "index": 209
         },
         {
             "name": "一甜相机去广告",
@@ -3734,7 +3751,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 209
+            "index": 210
         },
         {
             "name": "有道翻译官去广告",
@@ -3751,7 +3768,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 210
+            "index": 211
         },
         {
             "name": "有道云笔记去广告",
@@ -3768,7 +3785,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 211
+            "index": 212
         },
         {
             "name": "优酷视频去广告",
@@ -3789,7 +3806,7 @@
                     "homepage": "https://github.com/RuCu6"
                 }
             ],
-            "index": 212
+            "index": 213
         },
         {
             "name": "阅友去广告",
@@ -3806,7 +3823,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 213
+            "index": 214
         },
         {
             "name": "云鲸智能去广告",
@@ -3823,7 +3840,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 214
+            "index": 215
         },
         {
             "name": "掌上无畏契约去广告",
@@ -3840,7 +3857,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 215
+            "index": 216
         },
         {
             "name": "掌上英雄联盟去广告",
@@ -3857,7 +3874,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 216
+            "index": 217
         },
         {
             "name": "掌阅去广告",
@@ -3874,7 +3891,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 217
+            "index": 218
         },
         {
             "name": "智慧苏州去广告",
@@ -3891,7 +3908,7 @@
                     "homepage": "https://github.com/xream"
                 }
             ],
-            "index": 218
+            "index": 219
         },
         {
             "name": "知乎去广告",
@@ -3908,7 +3925,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 219
+            "index": 220
         },
         {
             "name": "智联招聘去广告",
@@ -3925,7 +3942,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 220
+            "index": 221
         },
         {
             "name": "知识星球去水印",
@@ -3940,7 +3957,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 221
+            "index": 222
         },
         {
             "name": "中国人保去广告",
@@ -3957,7 +3974,7 @@
                     "homepage": "https://github.com/Sliverkiss"
                 }
             ],
-            "index": 222
+            "index": 223
         },
         {
             "name": "中国移动云盘去广告",
@@ -3974,7 +3991,7 @@
                     "homepage": "https://github.com/RuCu6"
                 }
             ],
-            "index": 223
+            "index": 224
         },
         {
             "name": "中华万年历去广告",
@@ -3991,7 +4008,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 224
+            "index": 225
         },
         {
             "name": "转转去广告",
@@ -4008,7 +4025,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 225
+            "index": 226
         },
         {
             "name": "自动加入TestFlight",
@@ -4033,7 +4050,7 @@
                     "homepage": "https://github.com/xream"
                 }
             ],
-            "index": 226
+            "index": 227
         },
         {
             "name": "纵横小说去广告",
@@ -4050,7 +4067,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 227
+            "index": 228
         },
         {
             "name": "最右去广告",
@@ -4067,7 +4084,7 @@
                     "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
                 }
             ],
-            "index": 228
+            "index": 229
         }
     ]
 }

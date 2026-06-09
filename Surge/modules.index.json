@@ -1901,6 +1901,16 @@
         ]
     },
     {
+        "source": "Walmart_remove_ads.lpx",
+        "output": "沃尔玛去广告.sgmodule",
+        "name": "沃尔玛去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
         "source": "Weibo_intl_remove_ads.lpx",
         "output": "微博轻享版去广告.sgmodule",
         "name": "微博轻享版去广告",
