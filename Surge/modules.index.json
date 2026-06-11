@@ -618,6 +618,15 @@
         ]
     },
     {
+        "source": "FerrisWheel_remove_ads.lpx",
+        "output": "摩天轮去广告.sgmodule",
+        "name": "摩天轮去广告",
+        "sections": [
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
         "source": "Fileball_mount.lpx",
         "output": "Fileball网盘挂载.sgmodule",
         "name": "Fileball网盘挂载",
