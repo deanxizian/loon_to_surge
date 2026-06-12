@@ -734,6 +734,16 @@
         ]
     },
     {
+        "source": "HantingHotels_remove_ads.lpx",
+        "output": "华住会去广告.sgmodule",
+        "name": "华住会去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
         "source": "HeartideBrainWave_remove_ads.lpx",
         "output": "小睡眠去广告.sgmodule",
         "name": "小睡眠去广告",
