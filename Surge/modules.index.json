@@ -764,6 +764,15 @@
         ]
     },
     {
+        "source": "HongKongToolbar_remove_ads.lpx",
+        "output": "Hong Kong Toolbar去广告.sgmodule",
+        "name": "Hong Kong Toolbar去广告",
+        "sections": [
+            "Rule",
+            "MITM"
+        ]
+    },
+    {
         "source": "Huxiu_remove_ads.lpx",
         "output": "虎嗅去广告.sgmodule",
         "name": "虎嗅去广告",
