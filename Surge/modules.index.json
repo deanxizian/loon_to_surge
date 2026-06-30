@@ -202,6 +202,17 @@
         ]
     },
     {
+        "source": "BaiduTranslate_remove_ads.lpx",
+        "output": "百度翻译去广告.sgmodule",
+        "name": "百度翻译去广告",
+        "sections": [
+            "URL Rewrite",
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
         "source": "BaiduWenku_remove_ads.lpx",
         "output": "百度文库去广告.sgmodule",
         "name": "百度文库去广告",
@@ -377,6 +388,16 @@
         ]
     },
     {
+        "source": "ChaoXingStudy_remove_ads.lpx",
+        "output": "学习通去广告.sgmodule",
+        "name": "学习通去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
         "source": "ChengFenMiao_remove_ads.lpx",
         "output": "成分喵去广告.sgmodule",
         "name": "成分喵去广告",
@@ -423,6 +444,15 @@
         "name": "小宇宙去广告",
         "sections": [
             "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "CrazyRope_remove_ads.lpx",
+        "output": "天天跳绳去广告.sgmodule",
+        "name": "天天跳绳去广告",
+        "sections": [
             "Map Local",
             "MITM"
         ]
@@ -1189,6 +1219,14 @@
         ]
     },
     {
+        "source": "MyFriday_remove_ads.lpx",
+        "output": "超级课程表去广告.sgmodule",
+        "name": "超级课程表去广告",
+        "sections": [
+            "Rule"
+        ]
+    },
+    {
         "source": "NarwelRobots_remove_ads.lpx",
         "output": "云鲸智能去广告.sgmodule",
         "name": "云鲸智能去广告",
@@ -1798,6 +1836,16 @@
         ]
     },
     {
+        "source": "TmallCampus_remove_ads.lpx",
+        "output": "天猫校园去广告.sgmodule",
+        "name": "天猫校园去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
         "source": "TuGuaiShou_remove_ads.lpx",
         "output": "图怪兽去广告.sgmodule",
         "name": "图怪兽去广告",
@@ -1929,11 +1977,30 @@
         ]
     },
     {
+        "source": "Wacai_remove_ads.lpx",
+        "output": "挖财记账去广告-2.sgmodule",
+        "name": "挖财记账去广告",
+        "sections": [
+            "URL Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
         "source": "Walmart_remove_ads.lpx",
         "output": "沃尔玛去广告.sgmodule",
         "name": "沃尔玛去广告",
         "sections": [
             "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "WeatherChina_remove_ads.lpx",
+        "output": "中国天气去广告.sgmodule",
+        "name": "中国天气去广告",
+        "sections": [
             "Map Local",
             "MITM"
         ]
@@ -2278,6 +2345,15 @@
             "Body Rewrite",
             "Map Local",
             "MITM"
+        ]
+    },
+    {
+        "source": "iReaderCityWeather_remove_ads.lpx",
+        "output": "天气预报去广告.sgmodule",
+        "name": "天气预报去广告",
+        "sections": [
+            "Rule",
+            "Map Local"
         ]
     },
     {
