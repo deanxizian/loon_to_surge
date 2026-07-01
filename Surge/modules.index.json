@@ -152,6 +152,15 @@
         ]
     },
     {
+        "source": "AxWorkSchedule_remove_ads.lpx",
+        "output": "排班日历去广告.sgmodule",
+        "name": "排班日历去广告",
+        "sections": [
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
         "source": "BabyTree_remove_ads.lpx",
         "output": "宝宝树孕育去广告.sgmodule",
         "name": "宝宝树孕育去广告",
@@ -1635,6 +1644,16 @@
         ]
     },
     {
+        "source": "SmartLife_remove_ads.lpx",
+        "output": "慧生活798去广告.sgmodule",
+        "name": "慧生活798去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
         "source": "SnailSleep_remove_ads.lpx",
         "output": "蜗牛睡眠去广告.sgmodule",
         "name": "蜗牛睡眠去广告",
@@ -1987,6 +2006,16 @@
         ]
     },
     {
+        "source": "WakeupSchedule_remove_ads.lpx",
+        "output": "WakeUp课程表去广告.sgmodule",
+        "name": "WakeUp课程表去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
         "source": "Walmart_remove_ads.lpx",
         "output": "沃尔玛去广告.sgmodule",
         "name": "沃尔玛去广告",
@@ -2170,6 +2199,16 @@
         "output": "医考帮去广告.sgmodule",
         "name": "医考帮去广告",
         "sections": [
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "YiSchool_remove_ads.lpx",
+        "output": "易校园去广告.sgmodule",
+        "name": "易校园去广告",
+        "sections": [
+            "Body Rewrite",
             "Map Local",
             "MITM"
         ]
@@ -2373,6 +2412,17 @@
         "name": "掌阅去广告",
         "sections": [
             "Rule",
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "ifengNews_remove_ads.lpx",
+        "output": "凤凰新闻去广告.sgmodule",
+        "name": "凤凰新闻去广告",
+        "sections": [
+            "URL Rewrite",
             "Body Rewrite",
             "Map Local",
             "MITM"
