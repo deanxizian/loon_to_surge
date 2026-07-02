@@ -6,7 +6,7 @@
 #!tag=去广告, 依赖
 #!loon_version=3.4.0(962)
 #!homepage=https://hub.kelee.one
-#!date=2026-07-01 10:51:11
+#!date=2026-07-02 01:08:46
 
 [Rule]
 DOMAIN-KEYWORD,adstrategy,REJECT,extended-matching,pre-matching
@@ -226,6 +226,7 @@ DOMAIN,dsp-x.jd.com,REJECT,extended-matching,pre-matching
 DOMAIN,im-x.jd.com,REJECT,extended-matching,pre-matching
 DOMAIN,xlog.jd.com,REJECT,extended-matching,pre-matching
 DOMAIN,janapi.jd.com,REJECT,extended-matching,pre-matching
+DOMAIN,dg.k.jd.com,REJECT,extended-matching,pre-matching
 DOMAIN-SUFFIX,toponadss.com,REJECT,extended-matching,pre-matching
 DOMAIN-SUFFIX,toponad.com,REJECT,extended-matching,pre-matching
 DOMAIN-SUFFIX,motowoo.com,REJECT,extended-matching,pre-matching

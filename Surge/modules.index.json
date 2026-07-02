@@ -407,6 +407,16 @@
         ]
     },
     {
+        "source": "ChatCam_remove_ads.lpx",
+        "output": "看家王去广告.sgmodule",
+        "name": "看家王去广告",
+        "sections": [
+            "URL Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
         "source": "ChengFenMiao_remove_ads.lpx",
         "output": "成分喵去广告.sgmodule",
         "name": "成分喵去广告",
@@ -611,6 +621,16 @@
         "name": "堆糖去广告",
         "sections": [
             "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "EasyCharge_remove_ads.lpx",
+        "output": "e充电去广告.sgmodule",
+        "name": "e充电去广告",
+        "sections": [
+            "Rule",
             "Map Local",
             "MITM"
         ]
@@ -1143,6 +1163,15 @@
         "sections": [
             "Rule",
             "URL Rewrite",
+            "Body Rewrite",
+            "MITM"
+        ]
+    },
+    {
+        "source": "MeiRiSaiChe_remove_ads.lpx",
+        "output": "每日赛车去广告.sgmodule",
+        "name": "每日赛车去广告",
+        "sections": [
             "Body Rewrite",
             "MITM"
         ]
@@ -1839,6 +1868,16 @@
         "sections": [
             "Rule",
             "Body Rewrite",
+            "MITM"
+        ]
+    },
+    {
+        "source": "TianQiTong_remove_ads.lpx",
+        "output": "天气通去广告.sgmodule",
+        "name": "天气通去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
             "MITM"
         ]
     },
