@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import json
 import re
 import shutil
@@ -423,8 +424,99 @@ def ensure_mock_option(mock: str, key: str, value: str) -> str:
     return f"{mock} {key}={value}".strip()
 
 
+MOCK_OPTION_KEYS = ("data-type", "data-path", "data", "status-code", "header", "mock-data-is-base64")
+
+
+def normalize_spaces(text: str) -> str:
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def mock_option_value(mock: str, key: str) -> str | None:
+    match = re.search(rf"(?:(?<=^)|(?<=\s)){re.escape(key)}=(\"[^\"]*\"|\S+)", mock)
+    if not match:
+        return None
+    value = match.group(1)
+    if len(value) >= 2 and value[0] == value[-1] == '"':
+        return value[1:-1]
+    return value
+
+
+def set_mock_scalar_option(mock: str, key: str, value: str) -> str:
+    replacement = f"{key}={value}"
+    if re.search(rf"(?:(?<=^)|(?<=\s)){re.escape(key)}=", mock):
+        return re.sub(rf"(?:(?<=^)|(?<=\s)){re.escape(key)}=\S+", replacement, mock, count=1)
+    return f"{replacement} {mock}".strip()
+
+
+def remove_mock_scalar_option(mock: str, key: str) -> str:
+    return normalize_spaces(re.sub(rf"(?:(?<=^)|(?<=\s)){re.escape(key)}=\S+", "", mock, count=1))
+
+
+def find_quoted_mock_option(mock: str, key: str) -> tuple[int, int] | None:
+    match = re.search(rf"(?:(?<=^)|(?<=\s)){re.escape(key)}=\"", mock)
+    if not match:
+        return None
+
+    value_start = match.end()
+    next_option = "|".join(re.escape(item) for item in MOCK_OPTION_KEYS)
+    tail = mock[value_start:]
+    closing_before_next = re.search(rf"\"\s+(?:{next_option})=", tail)
+    if closing_before_next:
+        return value_start, value_start + closing_before_next.start()
+
+    closing_quote = mock.rfind('"')
+    if closing_quote < value_start:
+        return None
+    return value_start, closing_quote
+
+
+def quoted_mock_option_value(mock: str, key: str) -> str | None:
+    span = find_quoted_mock_option(mock, key)
+    if not span:
+        return None
+    value_start, value_end = span
+    return mock[value_start:value_end]
+
+
+def replace_quoted_mock_option_value(mock: str, key: str, value: str) -> str:
+    span = find_quoted_mock_option(mock, key)
+    if not span:
+        return mock
+    value_start, value_end = span
+    return mock[:value_start] + value + mock[value_end:]
+
+
+def looks_like_json_text(value: str) -> bool:
+    stripped = value.strip()
+    return (stripped.startswith("{") and stripped.endswith("}")) or (stripped.startswith("[") and stripped.endswith("]"))
+
+
+def normalize_mock_inline_data(mock: str, original_data_type: str | None) -> str:
+    data_value = quoted_mock_option_value(mock, "data")
+    if data_value is None:
+        return mock
+
+    if mock_option_value(mock, "mock-data-is-base64") == "true":
+        mock = set_mock_scalar_option(mock, "data-type", "base64")
+        return remove_mock_scalar_option(mock, "mock-data-is-base64")
+
+    if '"' not in data_value and "\n" not in data_value and "\r" not in data_value:
+        return mock
+
+    encoded = base64.b64encode(data_value.encode("utf-8")).decode("ascii")
+    mock = set_mock_scalar_option(mock, "data-type", "base64")
+    mock = replace_quoted_mock_option_value(mock, "data", encoded)
+    if mock_option_value(mock, "header") is None:
+        if original_data_type == "json" or looks_like_json_text(data_value):
+            mock = ensure_mock_option(mock, "header", '"Content-Type:application/json"')
+        else:
+            mock = ensure_mock_option(mock, "header", '"Content-Type:text/plain"')
+    return mock
+
+
 def convert_mock_response_options(text: str) -> str:
     mock = re.sub(r"^mock-response-body\s+", "", text)
+    original_data_type = mock_option_value(mock, "data-type")
 
     if re.search(r"\bdata-path=", mock):
         if re.search(r"\bdata-type=", mock):
@@ -433,9 +525,14 @@ def convert_mock_response_options(text: str) -> str:
             mock = f"data-type=file {mock}"
         mock = re.sub(r"\bdata-path=", "data=", mock, count=1)
         mock = ensure_mock_option(mock, "header", '"Content-Type:text/plain"')
-    elif "data-type=json" in mock:
+    elif original_data_type == "json":
         mock = mock.replace("data-type=json", "data-type=text")
         mock = ensure_mock_option(mock, "header", '"Content-Type:application/json"')
+    else:
+        mock = normalize_mock_inline_data(mock, original_data_type)
+
+    if not re.search(r"\bdata-path=", mock):
+        mock = normalize_mock_inline_data(mock, original_data_type)
 
     return ensure_mock_option(mock, "status-code", "200")
 

@@ -13,7 +13,7 @@
 ^https:\/\/jz\.wacaijizhang\.com\/activity\/ - reject
 
 [Map Local]
-^https:\/\/jz\.wacaijizhang\.com\/sensor\/config\/iOS\.conf\? data-type=text data="{"v":"v2","configs":{"disableSDK":true,"disableDebugMode":true,"supportTransportEncrypt":false}}" status-code=200 header="Content-Type:application/json"
+^https:\/\/jz\.wacaijizhang\.com\/sensor\/config\/iOS\.conf\? data-type=base64 data="eyJ2IjoidjIiLCJjb25maWdzIjp7ImRpc2FibGVTREsiOnRydWUsImRpc2FibGVEZWJ1Z01vZGUiOnRydWUsInN1cHBvcnRUcmFuc3BvcnRFbmNyeXB0IjpmYWxzZX19" status-code=200 header="Content-Type:application/json"
 ^https:\/\/jz\.wacaijizhang\.com\/api\/banners\/ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
 ^https:\/\/jz\.wacaijizhang\.com\/api\/resource\/universal\/fetch$ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
 
