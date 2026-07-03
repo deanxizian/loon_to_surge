@@ -100,6 +100,16 @@
         ]
     },
     {
+        "source": "AlcidaeVideo_remove_ads.lpx",
+        "output": "海雀去广告.sgmodule",
+        "name": "海雀去广告",
+        "sections": [
+            "URL Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
         "source": "AliYunDrive_remove_ads.lpx",
         "output": "阿里云盘去广告.sgmodule",
         "name": "阿里云盘去广告",
@@ -500,6 +510,17 @@
         "output": "大麦去广告.sgmodule",
         "name": "大麦去广告",
         "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Dayima_remove_ads.lpx",
+        "output": "大姨妈月经期助手去广告.sgmodule",
+        "name": "大姨妈月经期助手去广告",
+        "sections": [
+            "URL Rewrite",
             "Body Rewrite",
             "Map Local",
             "MITM"
@@ -1322,6 +1343,16 @@
         ]
     },
     {
+        "source": "OKOK_remove_ads.lpx",
+        "output": "OKOK去广告.sgmodule",
+        "name": "OKOK去广告",
+        "sections": [
+            "URL Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
         "source": "OnTheWay_remove_ads.lpx",
         "output": "行者户外去广告.sgmodule",
         "name": "行者户外去广告",
@@ -1669,6 +1700,15 @@
             "URL Rewrite",
             "Map Local",
             "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "SkyworthDigitalPicamera_remove_ads.lpx",
+        "output": "创维智慧云去广告.sgmodule",
+        "name": "创维智慧云去广告",
+        "sections": [
+            "Map Local",
             "MITM"
         ]
     },
@@ -2184,6 +2224,17 @@
         ]
     },
     {
+        "source": "XiaobaiPrint_remove_ads.lpx",
+        "output": "小白智慧打印去广告.sgmodule",
+        "name": "小白智慧打印去广告",
+        "sections": [
+            "Rule",
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
         "source": "XiaojukejiCharge_remove_ads.lpx",
         "output": "小桔充电去广告.sgmodule",
         "name": "小桔充电去广告",
@@ -2358,6 +2409,16 @@
         "sections": [
             "Rule",
             "URL Rewrite",
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Zhibo8_remove_ads.lpx",
+        "output": "直播吧去广告.sgmodule",
+        "name": "直播吧去广告",
+        "sections": [
             "Body Rewrite",
             "Map Local",
             "MITM"
