@@ -427,6 +427,18 @@
         ]
     },
     {
+        "source": "Chelaile_remove_ads.lpx",
+        "output": "车来了去广告.sgmodule",
+        "name": "车来了去广告",
+        "sections": [
+            "Rule",
+            "URL Rewrite",
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
         "source": "ChengFenMiao_remove_ads.lpx",
         "output": "成分喵去广告.sgmodule",
         "name": "成分喵去广告",

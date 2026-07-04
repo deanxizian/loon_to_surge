@@ -1,0 +1,31 @@
+#!name=车来了去广告
+#!desc=清洗配置，移除开屏广告、首页金刚位、文章推荐，精简我的页面。
+#!author=可莉🅥[https://github.com/luestr/ProxyResource/blob/main/README.md]
+#!icon=https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Chelaile.png
+#!category=iKeLee
+#!openUrl=https://apps.apple.com/app/id667831823
+#!tag=去广告
+#!loon_version=3.4.0(962)
+#!homepage=https://hub.kelee.one
+#!date=2026-07-04 19:58:28
+
+[Rule]
+DOMAIN,ad.chelaile.net.cn,REJECT,extended-matching,pre-matching
+
+[URL Rewrite]
+^https:\/\/cdn\.web\.chelaile\.net\.cn\/info-flow\/index\.html\? - reject
+
+[Map Local]
+^https:\/\/api\.chelaile\.net\.cn\/goocity\/flowPos\/home\? data-type=base64 data="KipZR0tKeyJqc29uciI6eyJzdGF0dXMiOiIwMCIsImRhdGEiOnsiYWR2ZXJ0TGlzdCI6W3siaWQiOjEwNiwidGl0bGUiOiLnq5nngrnlnLDlm74iLCJpY29uVXJsIjoiaHR0cHM6Ly9pbWFnZTMuY2hlbGFpbGUubmV0LmNuLzg5aUlxeGFNLnBuZyIsImxpbmtVcmwiOiIiLCJhZFR5cGUiOjUsInNob3dSZWREb3QiOjAsInVwZGF0ZVRpbWUiOjAsImFwcElkIjoiIiwiYXBwUGF0aCI6IiIsImJ1YmJsZU9yZGVyIjowLCJoNVR5cGUiOjB9LHsiaWQiOjEsInRpdGxlIjoi5Zyw6ZOBIiwiaWNvblVybCI6Imh0dHBzOi8vaW1hZ2UzLmNoZWxhaWxlLm5ldC5jbi9yZXdyTENXWS5wbmciLCJsaW5rVXJsIjoiaHR0cHM6Ly93ZWIuY2hlbGFpbGUubmV0LmNuL21ldHJvL2luZGV4Lmh0bWw/aDVfc3RhdHNfcmVmZXJlcj1pY29uIiwiYWRUeXBlIjoyLCJzaG93UmVkRG90IjowLCJ1cGRhdGVUaW1lIjowLCJhcHBJZCI6IiIsImFwcFBhdGgiOiIiLCJidWJibGVPcmRlciI6MCwiaDVUeXBlIjowfV19fX1ZR0tKIyM=" status-code=200 header="Content-Type:application/json"
+^https:\/\/api\.chelaile\.net\.cn\/goocity\/flowPos\/listByPos\? data-type=text data="**YGKJ{}YGKJ##" status-code=200 header="Content-Type:application/json"
+^https:\/\/web\.chelaile\.net\.cn\/api\/operative_position\/infoflow\/getInfo\? data-type=text data="**YGKJ{}YGKJ##" status-code=200 header="Content-Type:application/json"
+^https:\/\/image3\.chelaile\.net\.cn\/hw6u6LYY\.png$ data-type=tiny-gif status-code=200
+^https:\/\/api\.chelaile\.net\.cn\/led-weather\/v\d\/condition_brief\? data-type=text data="**YGKJ{}YGKJ##" status-code=200 header="Content-Type:application/json"
+^https:\/\/api\.chelaile\.net\.cn\/goocity\/config\/notices\? data-type=text data="**YGKJ{}YGKJ##" status-code=200 header="Content-Type:application/json"
+^https:\/\/api\.chelaile\.net\.cn\/encourage\/activity\/control\? data-type=text data="**YGKJ{}YGKJ##" status-code=200 header="Content-Type:application/json"
+
+[Script]
+清洗配置 = type=http-response, pattern=^https:\/\/api\.chelaile\.net\.cn\/bus-side\/appToggle\/getStatus\?, script-path=https://kelee.one/Resource/JavaScript/Chelaile/Chelaile_remove_ads.js, requires-body=true
+
+[MITM]
+hostname = %APPEND% api.chelaile.net.cn, web.chelaile.net.cn, cdn.web.chelaile.net.cn, image3.chelaile.net.cn
