@@ -163,6 +163,10 @@ def convert_argument_value(value: str) -> str:
     return '"' + unquoted.replace('"', '\\"') + '"'
 
 
+def collect_loon_placeholder_names(text: str) -> set[str]:
+    return set(re.findall(r"(?<!\{)\{([A-Za-z0-9_.-]+)\}(?!\})", text))
+
+
 def convert_json_value(value: str) -> str:
     value = value.strip()
     if re.fullmatch(r"true|false|null|\[\]|\{\}|-?\d+(\.\d+)?", value):
@@ -281,6 +285,87 @@ def parse_properties(text: str | None) -> OrderedDict[str, str]:
         if value:
             props[key.strip()] = value.strip()
     return props
+
+
+def collect_argument_defaults(lines: list[str]) -> OrderedDict[str, str]:
+    defaults: OrderedDict[str, str] = OrderedDict()
+    for line in lines:
+        name, value = split_first(line, "=")
+        if not value:
+            continue
+        parts = split_top_level(value, ",")
+        if len(parts) >= 2:
+            defaults[name.strip()] = parts[1].strip()
+    return defaults
+
+
+def normalized_argument_default(value: str) -> str:
+    normalized = value.strip()
+    if len(normalized) >= 2 and normalized[0] == normalized[-1] and normalized[0] in ("'", '"'):
+        normalized = normalized[1:-1]
+    return normalized.strip().lower()
+
+
+def surge_toggle_default(value: str) -> str:
+    normalized = normalized_argument_default(value)
+    return "#" if normalized in {"", "false", "0", "off", "no", "#"} else ""
+
+
+def enable_argument_name(value: str) -> str | None:
+    match = re.fullmatch(r"\{([A-Za-z0-9_.-]+)\}", value.strip())
+    if match:
+        return match.group(1)
+    return None
+
+
+def collect_enable_argument_names(lines: list[str]) -> set[str]:
+    names: set[str] = set()
+    for line in lines:
+        match = re.match(r"^(?:http-request|http-response)\s+\S+(?:\s+(.*))?$", line)
+        if not match:
+            match = re.match(r"^cron\s+\S+(?:\s+(.*))?$", line)
+        if not match:
+            continue
+        props = parse_properties(match.group(1))
+        if "enable" in props:
+            name = enable_argument_name(props["enable"])
+            if name:
+                names.add(name)
+    return names
+
+
+def collect_script_argument_names(lines: list[str]) -> set[str]:
+    names: set[str] = set()
+    for line in lines:
+        match = re.match(r"^(?:http-request|http-response)\s+\S+(?:\s+(.*))?$", line)
+        if match:
+            props = parse_properties(match.group(1))
+            if "argument" in props:
+                names.update(collect_loon_placeholder_names(props["argument"]))
+            continue
+
+        match = re.match(r"^cron\s+(\S+)(?:\s+(.*))?$", line)
+        if match:
+            cron, props_text = match.groups()
+            names.update(collect_loon_placeholder_names(cron))
+            props = parse_properties(props_text)
+            if "argument" in props:
+                names.update(collect_loon_placeholder_names(props["argument"]))
+    return names
+
+
+def collect_enable_toggle_defaults(
+    lines: list[str],
+    argument_defaults: dict[str, str],
+    shared_argument_names: set[str],
+) -> dict[str, str]:
+    defaults: dict[str, str] = {}
+    for name in collect_enable_argument_names(lines):
+        if name in shared_argument_names:
+            continue
+        if name in argument_defaults:
+            defaults[name] = surge_toggle_default(argument_defaults[name])
+    return defaults
 
 
 def add_report(report: list[dict[str, str]], file: str, kind: str, message: str, line: str) -> None:
@@ -628,11 +713,75 @@ def convert_rewrite_line(line: str, sections: OrderedDict[str, list[str]], repor
         add_report(report, file, "unsupported-rewrite", f"Unsupported rewrite action: {action}", line)
 
 
-def convert_script_line(line: str, output: list[str], report: list[dict[str, str]], file: str) -> None:
+def script_enable_prefix(
+    props: OrderedDict[str, str],
+    argument_defaults: dict[str, str],
+    shared_argument_names: set[str],
+    report: list[dict[str, str]],
+    file: str,
+    line: str,
+) -> str:
+    if "enable" not in props:
+        return ""
+
+    name = enable_argument_name(props["enable"])
+    if name:
+        if name in shared_argument_names:
+            prefix = surge_toggle_default(argument_defaults.get(name, ""))
+            add_report(
+                report,
+                file,
+                "script-enable-shared-commented" if prefix == "#" else "script-enable-shared-kept",
+                "Loon enable argument is also used as a script argument; script line was fixed to the default state to preserve the argument value.",
+                line,
+            )
+            return prefix
+
+        add_report(
+            report,
+            file,
+            "script-enable-toggle-emitted",
+            "Loon enable option was emitted as a Surge module line-prefix toggle.",
+            line,
+        )
+        return f"{{{{{{{name}}}}}}}"
+
+    prefix = surge_toggle_default(props["enable"])
+    if prefix == "#":
+        add_report(
+            report,
+            file,
+            "script-enable-direct-commented",
+            "Loon enable option defaults to false; script line was emitted as a commented Surge line.",
+            line,
+        )
+        return prefix
+
+    add_report(
+        report,
+        file,
+        "script-enable-direct-kept",
+        "Loon enable option defaults to true; script was kept and the static enable option was not emitted.",
+        line,
+    )
+    return ""
+
+
+def convert_script_line(
+    line: str,
+    output: list[str],
+    report: list[dict[str, str]],
+    file: str,
+    argument_defaults: dict[str, str] | None = None,
+    shared_argument_names: set[str] | None = None,
+) -> None:
+    argument_defaults = argument_defaults or {}
+    shared_argument_names = shared_argument_names or set()
     match = re.match(r"^(http-request|http-response)\s+(\S+)(?:\s+(.*))?$", line)
     if match:
         script_type, pattern, props_text = match.groups()
         props = parse_properties(props_text)
+        prefix = script_enable_prefix(props, argument_defaults, shared_argument_names, report, file, line)
         name = props.get("tag") or f"{script_type} {len(output) + 1}"
         parts = [f"type={script_type}", f"pattern={format_script_pattern(pattern)}"]
 
@@ -643,10 +792,8 @@ def convert_script_line(line: str, output: list[str], report: list[dict[str, str
                 parts.append(f"{key}={props[key]}")
         if props.get("argument"):
             parts.append(f"argument={convert_argument_value(props['argument'])}")
-        if "enable" in props:
-            add_report(report, file, "script-enable-dropped", "Loon enable option was not emitted because Surge module support is not equivalent.", line)
 
-        output.append(f"{name} = " + ", ".join(parts))
+        output.append(f"{prefix}{name} = " + ", ".join(parts))
         return
 
     match = re.match(r"^cron\s+(\S+)(?:\s+(.*))?$", line)
@@ -654,6 +801,7 @@ def convert_script_line(line: str, output: list[str], report: list[dict[str, str
         cron, props_text = match.groups()
         cron = convert_placeholder(cron)
         props = parse_properties(props_text)
+        prefix = script_enable_prefix(props, argument_defaults, shared_argument_names, report, file, line)
         name = props.get("tag") or f"cron {len(output) + 1}"
         parts = ["type=cron", f"cronexp={cron}"]
 
@@ -662,10 +810,8 @@ def convert_script_line(line: str, output: list[str], report: list[dict[str, str
                 parts.append(f"{key}={props[key]}")
         if props.get("argument"):
             parts.append(f"argument={convert_argument_value(props['argument'])}")
-        if "enable" in props:
-            add_report(report, file, "script-enable-dropped", "Loon enable option was not emitted because Surge module support is not equivalent.", line)
 
-        output.append(f"{name} = " + ", ".join(parts))
+        output.append(f"{prefix}{name} = " + ", ".join(parts))
         return
 
     match = re.match(r"^generic(?:\s+(.*))?$", line)
@@ -682,18 +828,26 @@ def convert_script_line(line: str, output: list[str], report: list[dict[str, str
     add_report(report, file, "unsupported-script", "Unsupported script line", line)
 
 
-def convert_argument_lines(lines: list[str], report: list[dict[str, str]], file: str) -> list[str]:
+def convert_argument_lines(
+    lines: list[str],
+    report: list[dict[str, str]],
+    file: str,
+    toggle_defaults: dict[str, str] | None = None,
+) -> list[str]:
+    toggle_defaults = toggle_defaults or {}
     items: list[str] = []
     for line in lines:
         name, value = split_first(line, "=")
         if not value:
             add_report(report, file, "argument-parse", "Unable to parse argument line", line)
             continue
+        name = name.strip()
         parts = split_top_level(value, ",")
         if len(parts) < 2:
             add_report(report, file, "argument-default", "Unable to find argument default value", line)
             continue
-        items.append(f"{name.strip()}:{parts[1].strip()}")
+        default_value = toggle_defaults[name] if name in toggle_defaults else parts[1].strip()
+        items.append(f"{name}:{default_value}")
     return items
 
 
@@ -764,6 +918,10 @@ def has_section(source_sections: dict[str, list[str]], name: str) -> bool:
 def convert_file(path: Path, output_root: Path, report: list[dict[str, str]], seen_files: dict[str, int]) -> dict[str, Any]:
     metadata, source_sections = parse_lpx(path)
     sections: OrderedDict[str, list[str]] = OrderedDict((name, []) for name in SECTION_ORDER)
+    argument_lines = section_lines(source_sections, "Argument")
+    argument_defaults = collect_argument_defaults(argument_lines)
+    script_lines = section_lines(source_sections, "Script")
+    shared_enable_argument_names = collect_enable_argument_names(script_lines) & collect_script_argument_names(script_lines)
 
     for line in section_lines(source_sections, "General"):
         match = re.match(r"^real-ip\s*=\s*(.+)$", line, flags=re.IGNORECASE)
@@ -802,15 +960,21 @@ def convert_file(path: Path, output_root: Path, report: list[dict[str, str]], se
                 continue
 
         if len(rule_parts) >= 3 and rule_parts[2].strip().upper() == "PROXY":
-            add_report(report, path.name, "external-policy", "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.", line)
+            add_report(
+                report,
+                path.name,
+                "external-policy",
+                "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+                line,
+            )
 
         sections["Rule"].append(convert_rule_line(line))
 
     for line in section_lines(source_sections, "Rewrite"):
         convert_rewrite_line(line, sections, report, path.name)
 
-    for line in section_lines(source_sections, "Script"):
-        convert_script_line(line, sections["Script"], report, path.name)
+    for line in script_lines:
+        convert_script_line(line, sections["Script"], report, path.name, argument_defaults, shared_enable_argument_names)
 
     for line in section_lines(source_sections, "MitM"):
         match = re.match(r"^hostname\s*=\s*(.+)$", line, flags=re.IGNORECASE)
@@ -830,8 +994,9 @@ def convert_file(path: Path, output_root: Path, report: list[dict[str, str]], se
         if key in metadata:
             output.append(f"#!{key}={metadata[key]}")
 
-    if has_section(source_sections, "Argument"):
-        argument_items = convert_argument_lines(section_lines(source_sections, "Argument"), report, path.name)
+    if argument_lines:
+        toggle_defaults = collect_enable_toggle_defaults(script_lines, argument_defaults, shared_enable_argument_names)
+        argument_items = convert_argument_lines(argument_lines, report, path.name, toggle_defaults)
         if argument_items:
             output.append("#!arguments=" + ",".join(argument_items))
 

@@ -1,5 +1,5 @@
 {
-    "generated_at": "2026-07-06 18:06:38 +00:00",
+    "generated_at": "2026-07-07 10:20:50 +08:00",
     "input_dir": "Loon",
     "output_dir": "Surge",
     "total": 257,
@@ -13,20 +13,20 @@
         },
         {
             "file": "Auto_Join_TF.lpx",
-            "kind": "script-enable-dropped",
-            "message": "Loon enable option was not emitted because Surge module support is not equivalent.",
+            "kind": "script-enable-toggle-emitted",
+            "message": "Loon enable option was emitted as a Surge module line-prefix toggle.",
             "line": "http-request ^https?:\\/\\/testflight\\.apple\\.com\\/v3\\/accounts\\/.*\\/apps$ script-path=https://kelee.one/Resource/JavaScript/TestFlight/CaptureAccountToken.js, tag=获取账号令牌, enable={CaptureAccountToken}"
         },
         {
             "file": "Auto_Join_TF.lpx",
-            "kind": "script-enable-dropped",
-            "message": "Loon enable option was not emitted because Surge module support is not equivalent.",
+            "kind": "script-enable-toggle-emitted",
+            "message": "Loon enable option was emitted as a Surge module line-prefix toggle.",
             "line": "cron {TaskCron} script-path=https://kelee.one/Resource/JavaScript/TestFlight/AutoJoinTF.js, tag=自动加入TF, timeout=600, enable={RunTask}"
         },
         {
             "file": "Auto_Join_TF.lpx",
-            "kind": "script-enable-dropped",
-            "message": "Loon enable option was not emitted because Surge module support is not equivalent.",
+            "kind": "script-enable-toggle-emitted",
+            "message": "Loon enable option was emitted as a Surge module line-prefix toggle.",
             "line": "cron {TaskMonitor} script-path=https://kelee.one/Resource/JavaScript/TestFlight/AutoMonitorTF.js, tag=监控TF位置, timeout=30, enable={RunMonitor}"
         },
         {
@@ -37,14 +37,14 @@
         },
         {
             "file": "Bilibili_remove_ads.lpx",
-            "kind": "script-enable-dropped",
-            "message": "Loon enable option was not emitted because Surge module support is not equivalent.",
+            "kind": "script-enable-shared-commented",
+            "message": "Loon enable argument is also used as a script argument; script line was fixed to the default state to preserve the argument value.",
             "line": "http-request ^https:\\/\\/(?:grpc\\.biliapi\\.net|app\\.bilibili\\.com)\\/bilibili\\.community\\.service\\.dm\\.v1\\.DM\\/DmSegMobile$ script-path=https://kelee.one/Resource/JavaScript/Bilibili/Bilibili_proto_request_kokoryh.js, argument=[{logLevel}], requires-body=true, binary-body-mode=true, timeout=10, enable={sponsorBlock}, tag=空降助手"
         },
         {
             "file": "Bilibili_remove_ads.lpx",
-            "kind": "script-enable-dropped",
-            "message": "Loon enable option was not emitted because Surge module support is not equivalent.",
+            "kind": "script-enable-toggle-emitted",
+            "message": "Loon enable option was emitted as a Surge module line-prefix toggle.",
             "line": "http-request ^https:\\/\\/(?:grpc\\.biliapi\\.net|app\\.bilibili\\.com)\\/bilibili\\.(?:app\\.viewunite\\.v1\\.View\\/View|main\\.community\\.reply\\.v1\\.Reply\\/MainList)$ script-path=https://kelee.one/Resource/JavaScript/Bilibili/Bilibili_proto_request_kokoryh.js, argument=[{purifyComment}, {logLevel}], requires-body=true, binary-body-mode=true, timeout=10, enable={optimizeRequest}, tag=请求处理"
         },
         {
@@ -211,8 +211,8 @@
         },
         {
             "file": "WPS_checkin.lpx",
-            "kind": "script-enable-dropped",
-            "message": "Loon enable option was not emitted because Surge module support is not equivalent.",
+            "kind": "script-enable-toggle-emitted",
+            "message": "Loon enable option was emitted as a Surge module line-prefix toggle.",
             "line": "http-request ^https:\\/\\/moapi\\.wps\\.cn\\/app\\/ios\\/v1\\/app$ script-path=https://kelee.one/Resource/JavaScript/WPS/WPS_checkin.js, requires-body=true, tag=捕获Cookie, enable={CaptureCookie}"
         }
     ]
