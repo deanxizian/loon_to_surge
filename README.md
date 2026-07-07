@@ -1,0 +1,59 @@
+# loon_to_surge
+
+将 [Kelee](https://hub.kelee.one/) 收录的 Loon 模块抓取到本仓库，并自动转换为 Surge 模块。
+
+## 目录
+
+- `Loon/`：抓取到的原始 Loon 模块。
+- `Surge/`：转换后的 Surge 模块、索引和转换报告。
+- `scripts/`：抓取、转换和站点数据生成脚本。
+- `RULES.md`：当前 Loon 到 Surge 的转换规则说明。
+
+## 使用
+
+打开网站后可以搜索模块，并一键导入 Loon 或 Surge。
+
+Surge 模块文件位于：
+
+```text
+Surge/*.sgmodule
+```
+
+转换报告位于：
+
+```text
+Surge/convert-report.json
+```
+
+报告里的 warning 不是一定表示失败，主要用于标记需要知情的转换事项，例如模块规则依赖目标 Surge 配置中存在 `PROXY` 策略组。
+
+## 自动更新
+
+GitHub Actions 每天 00:00（Asia/Shanghai）运行：
+
+```text
+.github/workflows/update-kelee-modules.yml
+```
+
+流程会抓取最新 Kelee 模块，重新生成 `Loon/` 和 `Surge/`，如有变化则自动提交。
+
+## 本地转换
+
+```powershell
+python scripts\convert_kelee_to_surge.py --input-dir Loon --output-dir Surge --report-path Surge\convert-report.json
+```
+
+运行测试：
+
+```powershell
+python -m unittest discover -s tests
+```
+
+## 转换参考
+
+- [luestr/ProxyResource](https://github.com/luestr/ProxyResource)：Kelee Loon 模块来源。
+- [QingRex/LoonKissSurge](https://github.com/QingRex/LoonKissSurge)：参考 Kelee 成品模块的 Surge 输出形态，包括 section 组织、`Map Local`、`http-response-jq`、`extended-matching`、`pre-matching` 等。
+- [Script-Hub-Org/Script-Hub](https://github.com/Script-Hub-Org/Script-Hub)：参考 `enable={...}` 转 Surge 行前缀开关，以及规则标记处理边界。
+- [Surge Manual](https://manual.nssurge.com/)：作为 Surge 模块语法和规则参数的最终依据。
+
+更完整的转换规则见 [RULES.md](RULES.md)。

@@ -4,9 +4,11 @@
 
 参考方向：
 
-- QingRex/LoonKissSurge 的 Loon 到 Surge 转换方式。
-- Script-Hub-Org/Script-Hub 的 Surge 输出策略，尤其是 `enable` 开关和规则匹配标记处理。
-- Surge 模块语法本身的限制：模块里的 `[Rule]` 不应依赖用户配置中自定义策略名。
+- QingRex/LoonKissSurge：主要对照其 Kelee 成品模块的 Surge 输出形态，包括 section 组织、`Map Local`、`http-response-jq`、`extended-matching`、`pre-matching` 等规则标记。
+- Script-Hub-Org/Script-Hub：主要参考 `enable={...}` 转 Surge 行前缀开关的方式，以及规则标记处理的边界。
+- Surge 官方文档：作为最终语法边界，覆盖模块结构、`#!arguments`、`[Rule]`、`[Script]`、`[Map Local]`、`[MITM]` 和 `pre-matching` 的适用范围。
+
+当前规则不是对任一项目逐行照搬。特别是 `PROXY`：Surge 官方公共模块语义更偏向内置策略，但本项目目标配置明确存在 `PROXY` 策略组，因此当前会保留 `PROXY` 规则，并在报告中记录 `external-policy`。
 
 ## 输出文件
 
