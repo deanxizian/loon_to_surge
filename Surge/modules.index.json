@@ -1432,6 +1432,7 @@
             "Rule",
             "Body Rewrite",
             "Map Local",
+            "Script",
             "MITM"
         ]
     },
