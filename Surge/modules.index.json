@@ -2350,8 +2350,6 @@
         "output": "YouTube去广告.sgmodule",
         "name": "YouTube去广告",
         "sections": [
-            "Rule",
-            "Map Local",
             "Script",
             "MITM"
         ]
