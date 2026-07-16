@@ -10,8 +10,8 @@
 #!date=2026-07-02 20:41:31
 
 [Body Rewrite]
-http-response-jq ^https:\/\/api\.romielf\.com\/index\/indexv\d\? 'if (getpath(["data"]) | has("advertisement")) then (setpath(["data","advertisement"]; [])) else . end'
-http-response-jq ^https:\/\/api\.romielf\.com\/index\/indexv\d\? 'if (getpath(["data"]) | has("listadvertising")) then (setpath(["data","listadvertising"]; [])) else . end'
+http-response-jq ^https:\/\/api\.romielf\.com\/index\/indexv\d\? 'if (try (getpath(["data"]) | has("advertisement")) catch false) then (setpath(["data","advertisement"]; [])) else . end'
+http-response-jq ^https:\/\/api\.romielf\.com\/index\/indexv\d\? 'if (try (getpath(["data"]) | has("listadvertising")) catch false) then (setpath(["data","listadvertising"]; [])) else . end'
 http-response-jq ^https:\/\/api\.romielf\.com\/index\/indexv\d\? '.data.list |= map(select(.type == 1))'
 
 [MITM]

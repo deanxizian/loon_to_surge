@@ -234,7 +234,7 @@ def convert_replace_pair_to_jq(path_text: str, value_text: str) -> str:
     key = json.dumps(segments[-1], ensure_ascii=False, separators=(",", ":"))
     path = jq_array(segments)
     value = convert_json_value(value_text)
-    return f"'if (getpath({parent}) | has({key})) then (setpath({path}; {value})) else . end'"
+    return f"'if (try (getpath({parent}) | has({key})) catch false) then (setpath({path}; {value})) else . end'"
 
 
 def convert_replace_pairs_to_jq(text: str) -> list[str]:

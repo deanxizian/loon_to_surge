@@ -60,6 +60,23 @@ DOMAIN,ads.example.com,REJECT
         self.assertIn("DOMAIN,ads.example.com,REJECT,extended-matching,pre-matching", output)
         self.assertEqual([item["kind"] for item in report], ["external-policy"])
 
+    def test_json_replace_jq_guard_handles_missing_parent_paths(self) -> None:
+        output, report = self.convert_lpx(
+            """#!name=Sample
+
+[Rewrite]
+^https://api.example.com/config response-body-json-replace data.flags.enabled true
+"""
+        )
+
+        self.assertIn(
+            'http-response-jq ^https://api.example.com/config '
+            '\'if (try (getpath(["data","flags"]) | has("enabled")) catch false) '
+            'then (setpath(["data","flags","enabled"]; true)) else . end\'',
+            output,
+        )
+        self.assertEqual(report, [])
+
     def test_enable_scripts_use_surge_comment_toggles(self) -> None:
         output, report = self.convert_lpx(
             """#!name=Sample

@@ -269,7 +269,7 @@ pattern data-type=text data=" " status-code=200
 - `response-body-json-jq` 转为 `http-response-jq`。
 - `jq-path=<url>` 会尝试抓取远端 jq 内容并内联。抓取失败时保留原值，并报告 `jq-path-inline-failed`。
 - `response-body-json-del` 转为 jq `delpaths(...)`。
-- `response-body-json-replace` 转为带 `getpath` 检查的 `setpath`，避免目标路径不存在时误建结构。
+- `response-body-json-replace` 转为带 `try (getpath(...) | has(...)) catch false` 检查的 `setpath`，避免父路径不存在时 jq 报错，也避免目标路径不存在时误建结构。
 
 ### Header Rewrite
 

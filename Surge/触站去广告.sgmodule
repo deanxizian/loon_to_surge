@@ -10,8 +10,8 @@
 #!date=2026-06-01 17:11:35
 
 [Body Rewrite]
-http-response-jq ^https:\/\/app\.huashi6\.com\/app\/common\/config$ 'if (getpath(["data"]) | has("disableAd")) then (setpath(["data","disableAd"]; true)) else . end'
-http-response-jq ^https:\/\/app\.huashi6\.com\/app\/common\/config$ 'if (getpath(["data"]) | has("showTopFloatAdvanceTips")) then (setpath(["data","showTopFloatAdvanceTips"]; false)) else . end'
+http-response-jq ^https:\/\/app\.huashi6\.com\/app\/common\/config$ 'if (try (getpath(["data"]) | has("disableAd")) catch false) then (setpath(["data","disableAd"]; true)) else . end'
+http-response-jq ^https:\/\/app\.huashi6\.com\/app\/common\/config$ 'if (try (getpath(["data"]) | has("showTopFloatAdvanceTips")) catch false) then (setpath(["data","showTopFloatAdvanceTips"]; false)) else . end'
 http-response-jq ^https:\/\/app\.huashi6\.com\/app\/common\/config$ 'delpaths([["data","adsConfigIOS"]])'
 http-response-jq ^https:\/\/app\.huashi6\.com\/app\/common\/config$ 'delpaths([["data","adsConfigAndroid"]])'
 http-response-jq ^https:\/\/app\.huashi6\.com\/app\/common\/config$ 'delpaths([["data","url","tabMarket"]])'

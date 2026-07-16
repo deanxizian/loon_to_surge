@@ -21,7 +21,7 @@ http-response-jq ^https:\/\/gateway\.36kr\.com\/api\/mis\/sys\/config\? 'delpath
 http-response-jq ^https:\/\/gateway\.36kr\.com\/api\/mis\/sys\/config\? 'delpaths([["data","switchConfig","ios","sunrise_sunit_mall"]])'
 http-response-jq ^https:\/\/gateway\.36kr\.com\/api\/mis\/sys\/config\? 'delpaths([["data","switchConfig","ios","sunrise_distribution_icon"]])'
 http-response-jq ^https:\/\/gateway\.36kr\.com\/api\/mis\/sys\/config\? 'delpaths([["data","secondFloorConfig"]])'
-http-response-jq ^https:\/\/36kr\.com\/global\/sensors\/config\/iOS\.conf\? 'if (getpath(["configs"]) | has("disableSDK")) then (setpath(["configs","disableSDK"]; true)) else . end'
+http-response-jq ^https:\/\/36kr\.com\/global\/sensors\/config\/iOS\.conf\? 'if (try (getpath(["configs"]) | has("disableSDK")) catch false) then (setpath(["configs","disableSDK"]; true)) else . end'
 http-response-jq ^https:\/\/gateway\.36kr\.com\/api\/mis\/nav\? '.data.navList |= [ .[] | select(.navNick == "home" or .navNick == "newsflash" or .navNick == "me") ]'
 http-response-jq ^https:\/\/gateway\.36kr\.com\/api\/mis\/nav\/home\/subnav\/recom\? '.data.bannerList |= map(select(.itemType != 0))'
 http-response-jq ^https:\/\/gateway\.36kr\.com\/api\/mis\/nav\/home\/subnav\/flow\/ 'delpaths([["data","adItemList"]])'

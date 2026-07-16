@@ -10,8 +10,8 @@
 #!date=2026-06-01 17:11:35
 
 [Body Rewrite]
-http-response-jq ^https:\/\/userapi\.qiekj\.com\/local-life\/tab-order$ 'if (getpath([]) | has("data")) then (setpath(["data"]; [])) else . end'
-http-response-jq ^https:\/\/userapi\.qiekj\.com\/integralGoods\/queryIntegralGoodsCategoryList$ 'if (getpath([]) | has("data")) then (setpath(["data"]; [])) else . end'
+http-response-jq ^https:\/\/userapi\.qiekj\.com\/local-life\/tab-order$ 'if (try (getpath([]) | has("data")) catch false) then (setpath(["data"]; [])) else . end'
+http-response-jq ^https:\/\/userapi\.qiekj\.com\/integralGoods\/queryIntegralGoodsCategoryList$ 'if (try (getpath([]) | has("data")) catch false) then (setpath(["data"]; [])) else . end'
 
 [Map Local]
 ^https:\/\/userapi\.qiekj\.com\/slot\/get$ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
