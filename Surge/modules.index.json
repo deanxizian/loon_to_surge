@@ -1825,16 +1825,6 @@
         ]
     },
     {
-        "source": "Switch_github_mirror.lpx",
-        "output": "GitHub加速.sgmodule",
-        "name": "GitHub加速",
-        "sections": [
-            "Rule",
-            "Script",
-            "MITM"
-        ]
-    },
-    {
         "source": "TV_Assistant_remove_ads.lpx",
         "output": "乐播投屏去广告.sgmodule",
         "name": "乐播投屏去广告",
