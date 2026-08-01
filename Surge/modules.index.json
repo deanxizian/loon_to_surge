@@ -1825,6 +1825,16 @@
         ]
     },
     {
+        "source": "TCLnScreen_remove_ads.lpx",
+        "output": "多屏互动去广告.sgmodule",
+        "name": "多屏互动去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
         "source": "TV_Assistant_remove_ads.lpx",
         "output": "乐播投屏去广告.sgmodule",
         "name": "乐播投屏去广告",
