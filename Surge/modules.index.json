@@ -1894,6 +1894,14 @@
         ]
     },
     {
+        "source": "TelegramRedirect.lpx",
+        "output": "Telegram重定向.sgmodule",
+        "name": "Telegram重定向",
+        "sections": [
+            "MITM"
+        ]
+    },
+    {
         "source": "Tencent_Video_remove_ads.lpx",
         "output": "腾讯视频去广告.sgmodule",
         "name": "腾讯视频去广告",

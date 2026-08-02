@@ -1,9 +1,9 @@
 {
-    "generated_at": "2026-08-01 16:53:38 +00:00",
+    "generated_at": "2026-08-02 16:52:48 +00:00",
     "input_dir": "Loon",
     "output_dir": "Surge",
-    "total": 258,
-    "warnings": 35,
+    "total": 259,
+    "warnings": 36,
     "items": [
         {
             "file": "Auto_Join_TF.lpx",
@@ -196,6 +196,12 @@
             "kind": "external-policy",
             "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
             "line": "DOMAIN, sub-store.vercel.app, PROXY"
+        },
+        {
+            "file": "TelegramRedirect.lpx",
+            "kind": "unsupported-rewrite",
+            "message": "Unsupported rewrite action: if",
+            "line": "request if ${url} ~= /^https:\\/\\/t\\.me\\/.+/ as item then redirect(307, \"${app}?domain=${item.0}\")"
         },
         {
             "file": "TestFlightRegionUnlock.lpx",
