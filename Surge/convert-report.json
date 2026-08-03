@@ -1,9 +1,9 @@
 {
-    "generated_at": "2026-08-02 16:52:48 +00:00",
+    "generated_at": "2026-08-03 17:45:57 +00:00",
     "input_dir": "Loon",
     "output_dir": "Surge",
     "total": 259,
-    "warnings": 36,
+    "warnings": 37,
     "items": [
         {
             "file": "Auto_Join_TF.lpx",
@@ -201,7 +201,13 @@
             "file": "TelegramRedirect.lpx",
             "kind": "unsupported-rewrite",
             "message": "Unsupported rewrite action: if",
-            "line": "request if ${url} ~= /^https:\\/\\/t\\.me\\/.+/ as item then redirect(307, \"${app}?domain=${item.0}\")"
+            "line": "request if ${url} ~= /^https:\\/\\/t\\.me\\/([A-Za-z][A-Za-z0-9_]{3,30}[A-Za-z0-9])\\/?$/ as item then redirect(307, \"${app}://resolve?domain=${item.1}\")"
+        },
+        {
+            "file": "TelegramRedirect.lpx",
+            "kind": "unsupported-rewrite",
+            "message": "Unsupported rewrite action: if",
+            "line": "request if ${url} ~= /^https:\\/\\/t\\.me\\/\\+([A-Za-z0-9_-]+)\\/?$/ as item then redirect(307, \"${app}://join?invite=${item.1}\")"
         },
         {
             "file": "TestFlightRegionUnlock.lpx",
