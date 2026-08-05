@@ -4,9 +4,11 @@
 
 参考方向：
 
+- Loon Rewrite V2 官方文档：作为新版 Rewrite 的语法、类型、Action 顺序和执行阶段依据。
 - QingRex/LoonKissSurge：主要对照其 Kelee 成品模块的 Surge 输出形态，包括 section 组织、`Map Local`、`http-response-jq`、`extended-matching`、`pre-matching` 等规则标记。
 - Script-Hub-Org/Script-Hub：主要参考 `enable={...}` 转 Surge 行前缀开关的方式，以及规则标记处理的边界。
-- Surge 官方文档：作为最终语法边界，覆盖模块结构、`#!arguments`、`[Rule]`、`[Script]`、`[Map Local]`、`[MITM]` 和 `pre-matching` 的适用范围。
+- Loon Script 与 Script API 官方文档：用于确认 `generic` 可接收被操作节点的 `$environment.params.node/nodeInfo`。
+- Surge 官方文档：作为最终语法边界，覆盖模块结构、`#!arguments`、`[Rule]`、`[Script]`、`[Map Local]`、`[MITM]` 和 `pre-matching` 的适用范围；Surge generic/Panel 只使用自身的普通脚本上下文及 `$input/$trigger`，不假设存在 Loon 的被选节点上下文。
 
 当前规则不是对任一项目逐行照搬。特别是 `PROXY`：Surge 官方公共模块语义更偏向内置策略，但本项目目标配置明确存在 `PROXY` 策略组，因此当前会保留 `PROXY` 规则，并在报告中记录 `external-policy`。
 
@@ -26,11 +28,12 @@
 [Header Rewrite]
 [Body Rewrite]
 [Map Local]
+[Panel]
 [Script]
 [MITM]
 ```
 
-生成时会先写入临时目录，转换完成后再替换 `Surge` 目录和报告文件。若生成内容没有变化，`convert-report.json` 里的 `generated_at` 会尽量保持不变。
+生成时会先写入临时目录，转换完成后再替换 `Surge` 目录和报告文件。若生成内容没有变化，`convert-report.json` 里的 `generated_at` 会尽量保持不变。报告中的 `total`、`converted`、`excluded` 分别表示 Loon 输入数、Surge 输出数和主动排除数；Surge 清单与排除报告必须完整覆盖全部 Loon 输入。
 
 ## 元数据
 
@@ -182,6 +185,38 @@ URL-REGEX,^https://example.com/ad.png,REJECT-IMG
 
 Loon `[Rewrite]` 会按动作分流到 Surge 的 `[URL Rewrite]`、`[Header Rewrite]`、`[Body Rewrite]` 或 `[Map Local]`。
 
+### Rewrite V2
+
+Loon 3.5.1 (978) 起使用以下新版格式：
+
+```ini
+request if ${url} ~= /^https:\/\/example\.com/ then request.header.set("X-Test", "true")
+response if ${url} ~= /^https:\/\/example\.com/ then response.json.delete("data.ads")
+```
+
+转换器会识别字符串、原始字符串、正则、变量、数组和嵌套括号的边界，不按空格、逗号或 `|` 直接拆分整行。
+
+当前可安全转换的条件：
+
+- 单个 `${url} ~= /regex/`，可使用 `as name` 捕获并在 URL 替换或重定向中引用 `${name.n}`。
+- 单个 `${url} == "constant"`，转换为完整 URL 正则。
+- URL 正则暂不接受 `i`、`m`、`s` flags，避免在没有确认 Surge 等价语义时改变匹配范围。
+
+当前可安全转换的 Action：
+
+- `url.replace`、`redirect(302|307, ...)` 转为 `[URL Rewrite]`。
+- `reject`、`reject_img`、`reject_dict`、`reject_array` 转为 `[Map Local]`，保留状态码、Body 和 Content-Type；`reject_video` 暂不转换。
+- `request.header.*`、`response.header.*` 的 `add`、`set`、`del`、`replace` 转为 `[Header Rewrite]`。`set` 使用 `header-del` 后接 `header-add`，避免重复 Header。
+- `request.body.replace`、`response.body.replace` 转为 `[Body Rewrite]` 正则替换。
+- `request.json.*`、`response.json.*` 的 `add`、`delete`、`replace`、`jq` 转为 Surge JQ Body Rewrite。
+- HTTP(S) `json.jq_file` 会抓取并内联；相对资源文件因不包含在独立 `.lpx` 下载结果中而拒绝转换。
+- `response.body.mock` 转为 base64 `[Map Local]`；HTTP(S) `response.body.mock_file` 转为 `data-type=file`。
+- Header、Body 正则和 JSON 修改的批量数组参数会按原顺序展开。
+
+多个 Action 只有在都能落入同一个 Surge section、且仍能保持从左到右执行语义时才会展开。方法、请求或响应 Header、响应状态码、逻辑组合条件，以及请求 Body Mock、响应 Mock 与 Header 的混合 Action 等，当前都不会被弱化为仅 URL 匹配。
+
+任何无法安全转换的 V2 行都会产生 `unsupported-rewrite`。该类型属于致命转换错误：全量任务会在替换 `Surge/` 前失败，上一版已验证产物保持不变。
+
 ### URL Rewrite
 
 ```ini
@@ -240,10 +275,10 @@ pattern data-type=tiny-gif status-code=200
 pattern reject-200
 ```
 
-转换为空白响应：
+转换为空 Body 响应：
 
 ```ini
-pattern data-type=text data=" " status-code=200
+pattern data-type=text data="" status-code=200
 ```
 
 `mock-response-body` 会转换为 Surge `Map Local` 参数：
@@ -267,7 +302,7 @@ pattern data-type=text data=" " status-code=200
 其中：
 
 - `response-body-json-jq` 转为 `http-response-jq`。
-- `jq-path=<url>` 会尝试抓取远端 jq 内容并内联。抓取失败时保留原值，并报告 `jq-path-inline-failed`。
+- `jq-path=<url>` 会尝试抓取远端 jq 内容并内联。抓取失败时报告 `jq-path-inline-failed`，并阻止本次生成结果替换上一版产物。
 - `response-body-json-del` 转为 jq `delpaths(...)`。
 - `response-body-json-replace` 转为带 `try (getpath(...) | has(...)) catch false` 检查的 `setpath`，避免父路径不存在时 jq 报错，也避免目标路径不存在时误建结构。
 
@@ -323,6 +358,8 @@ Name = type=http-request, pattern=pattern, script-path=https://example.com/a.js
 - `engine`
 - `max-size`
 - `ability`
+- `script-update-interval`
+- `debug`
 - `argument`
 
 其中 `requires-body=false` 和 `binary-body-mode=false` 会省略。
@@ -349,11 +386,15 @@ Job = type=cron, cronexp={{{Cron}}}, script-path=https://example.com/job.js
 - `timeout`
 - `engine`
 - `wake-system`
+- `script-update-interval`
+- `debug`
 - `argument`
 
 ### generic
 
-Loon generic script 转为：
+Loon generic 与 Surge generic 名称相同，但运行上下文不完全等价。Loon 可以在节点页面手动触发 generic，并通过 `$environment.params.node/nodeInfo` 把被操作节点传给脚本；Surge 官方 generic/Panel 文档没有对应的被选节点参数。因此，本项目不会把任意 Loon generic 直接改名后发布。
+
+只有经过人工核实、脚本本身包含可用 Surge 分支的精确 `script-path` 才会转为：
 
 ```ini
 Name = type=generic, ...
@@ -364,7 +405,27 @@ Name = type=generic, ...
 - `script-path`
 - `timeout`
 - `engine`
-- `img-url`
+- `script-update-interval`
+- `debug`
+- `argument`
+
+Loon 的 `img-url` 只用于其 generic 脚本界面，Surge `[Script]` 没有该参数，转换时会移除。
+
+当前核实并允许转换的脚本：
+
+- `https://kelee.one/Resource/JavaScript/NodeLinkCheck/NodeLinkCheck.js`
+- `https://raw.githubusercontent.com/VirgilClyne/Cloudflare/main/js/1.1.1.1.panel.js`
+
+这两个脚本不是简单改名：
+
+- `NodeLinkCheck.js` 自带 Surge 分支并原生读取 `$argument.policy`。转换后增加模块参数 `Policy`（默认 `PROXY`），脚本参数为 `policy={{{Policy}}}`，避免脚本在没有参数时退回配置中的第一个策略组；同时移除只描述 Loon 长按节点流程的 `openUrl`，并注明依赖 Sub-Store 节点数据。
+- `1.1.1.1.panel.js` 自带 Surge Panel 返回字段。转换后增加与 Script 同名并关联的 `[Panel]`，查询当前 Surge 路由，同时替换掉 Loon 的“长按节点”说明。
+
+两项适配均记录 `generic-script-adapted`，便于复核实际行为。
+
+含有其他 generic `script-path` 的 Loon 模块会整项排除，不生成 `.sgmodule`，也不写入 Surge 索引，并记录 `module-excluded`。这样避免发布可导入但运行时因缺少 Loon 上下文而报错或检测错误节点的模块。新脚本必须先核对其 Surge 分支和实际调用语义，再加入精确白名单。
+
+所有 Script 类型都要求非空 `script-path`。未知属性、冲突的重复属性或无效布尔值会记录为 `unsupported-script` 并阻止发布；相同值的重复属性会安全去重并记录 `script-property-corrected`。
 
 ## Script enable 开关
 
@@ -433,13 +494,19 @@ hostname = %APPEND% example.com, *.example.org
 
 ## 报告类型
 
-`Surge/convert-report.json` 用于记录需要人工知情或暂不支持的项目。当前常见类型：
+`Surge/convert-report.json` 用于记录成功转换后仍需人工知情的项目。转换期间也使用相同类型收集错误，但致命错误会直接终止任务，不覆盖上一版报告和模块。当前常见类型：
 
 - `external-policy`：规则使用 `PROXY`，目标 Surge 主配置需要有同名策略或策略组。
+- `generic-script-adapted`：已核实的 generic 使用其原生 Surge 接口补充了 Policy 参数或 Panel 配置。
+- `module-excluded`：模块含有未经核实的 Loon generic 脚本，已从 Surge 输出和索引中排除。
 - `script-enable-toggle-emitted`：`enable={Arg}` 已转为 Surge 行前缀开关。
 - `script-enable-shared-commented`：`enable` 参数同时是脚本入参，脚本行按默认值静态注释，参数默认值保留。
 - `script-enable-direct-commented`：`enable=false` 已转为注释脚本行。
 - `script-enable-direct-kept`：`enable=true` 已直接保留脚本行。
+- `script-property-corrected`：相同值的重复 Script 属性已安全去重。
+- `rewrite-empty-skipped`：上游存在空 JQ，Surge 不接受空程序，因此跳过该无有效操作的行。
+- `rewrite-action-corrected`：上游把完整 `del(...)` JQ 写在 JSON delete Action 后，按完整 JQ 原样转换，避免按空格拆坏。
+- `jq-expression-corrected`：上游 JQ 缺少变量绑定所需的分组，补齐括号后再输出。
 - `general-pass-through`：`[General]` 行原样透传。
 - `jq-path-inline-failed`：远端 jq 抓取失败，保留原表达式。
 - `unsupported-rewrite`：Rewrite 动作不支持或无法解析。
@@ -449,7 +516,9 @@ hostname = %APPEND% example.com, *.example.org
 - `argument-default`：Argument 行找不到默认值。
 - `mitm-unsupported`：MITM 行不支持。
 
-报告不是一定表示模块不可用。它表示脚本没有在不确定语义下硬猜，需要使用者知情。
+`external-policy`、`generic-script-adapted`、`module-excluded`、`script-enable-*`、`script-property-corrected`、`rewrite-empty-skipped`、`rewrite-action-corrected` 和 `jq-expression-corrected` 是成功生成后的知情报告；其中 `module-excluded` 表示对应模块没有发布到 Surge。`general-pass-through`、`jq-path-inline-failed`、`unsupported-*`、`argument-*`、`mitm-unsupported` 属于致命转换错误；出现时 GitHub Action 失败并保留上一版 Surge 产物。
+
+因此，成功生成的 `convert-report.json` 中存在 warning 不等于模块不可用。当前上游的空 JQ 和错标 JQ 会被明确记录，不会生成空规则或拆坏的规则。
 
 ## 当前安全边界
 
@@ -459,7 +528,8 @@ hostname = %APPEND% example.com, *.example.org
 - 不假设用户 Surge 配置里有某个自定义策略组。
 - 不给非拒绝类规则添加 `pre-matching`。
 - 不把共享脚本参数强行改成 `#` 开关。
-- 不静默吞掉未知语法，无法安全转换时写入报告。
+- 不把未经核实的 Loon generic 当作 Surge generic 发布。
+- 不静默吞掉未知语法，无法安全转换时终止整次生成并保留上一版产物。
 
 ## 当前验证口径
 
@@ -467,6 +537,7 @@ hostname = %APPEND% example.com, *.example.org
 
 ```powershell
 python scripts\convert_kelee_to_surge.py --input-dir Loon --output-dir Surge --report-path Surge\convert-report.json
+python scripts\validate_surge_modules.py --loon-dir Loon --surge-dir Surge --report-path Surge\convert-report.json
 python -m unittest discover -s tests
 git diff --check
 ```
@@ -474,7 +545,11 @@ git diff --check
 还应扫描生成的 `Surge/*.sgmodule`，确认：
 
 - 没有 Loon `enable=` 或 `enabled?=` 残留。
+- 没有 Loon Rewrite V2 的 `request if ... then` 或 `response if ... then` 残留。
+- 所有 `http-request-jq`、`http-response-jq` 表达式均通过真实 `jq` 编译。
 - 没有裸 `{Arg}` 占位符残留，应该是 `{{{Arg}}}`。
+- Surge 清单与 `module-excluded` 报告合起来完整覆盖全部 Loon 模块。
+- 每个动态 `[Panel]` 引用的 `script-name` 都存在于同一模块的 `[Script]`。
 - `PROXY` 规则没有被错误添加 `pre-matching`。
 - 非拒绝策略没有 `pre-matching`。
 - 需要 `extended-matching` 的域名类、`URL-REGEX` 规则已经补齐。

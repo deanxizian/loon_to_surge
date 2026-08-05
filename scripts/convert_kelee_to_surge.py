@@ -17,9 +17,50 @@ try:
 except ModuleNotFoundError:
     from scripts.stable_output import file_contents_match, json_payload_matches, previous_timestamp, tree_contents_match
 
+try:
+    from loon_rewrite_v2 import (
+        RewriteV2Error,
+        V2Action,
+        V2Array,
+        V2Number,
+        V2Regex,
+        V2String,
+        V2UrlCondition,
+        V2Value,
+        V2Variable,
+        is_rewrite_v2_line,
+        parse_rewrite_v2_line,
+        parse_url_only_condition,
+    )
+except ModuleNotFoundError:
+    from scripts.loon_rewrite_v2 import (
+        RewriteV2Error,
+        V2Action,
+        V2Array,
+        V2Number,
+        V2Regex,
+        V2String,
+        V2UrlCondition,
+        V2Value,
+        V2Variable,
+        is_rewrite_v2_line,
+        parse_rewrite_v2_line,
+        parse_url_only_condition,
+    )
+
 
 WINDOWS_INVALID_FILENAME_CHARS = set('<>:"/\\|?*')
-SECTION_ORDER = ("General", "Rule", "URL Rewrite", "Header Rewrite", "Body Rewrite", "Map Local", "Script", "MITM")
+SECTION_ORDER = (
+    "General",
+    "Rule",
+    "URL Rewrite",
+    "Header Rewrite",
+    "Body Rewrite",
+    "Map Local",
+    "Panel",
+    "Script",
+    "MITM",
+)
 JQ_PATH_CACHE: dict[str, str] = {}
 LOON_USER_AGENT = "Loon/860 CFNetwork/3826.500.111.2.2 Darwin/24.4.0"
 DOMAIN_RULE_TYPES = {"DOMAIN", "DOMAIN-SUFFIX", "DOMAIN-KEYWORD"}
@@ -40,6 +81,58 @@ PRE_MATCHING_RULE_TYPES = {
     "SRC-PORT",
     "SRC-IP",
 }
+FATAL_REPORT_KINDS = {
+    "argument-default",
+    "argument-parse",
+    "general-pass-through",
+    "jq-path-inline-failed",
+    "mitm-unsupported",
+    "unsupported-header-rewrite",
+    "unsupported-rewrite",
+    "unsupported-script",
+}
+LOON_SCRIPT_COMMON_PROPERTIES = {
+    "argument",
+    "debug",
+    "enable",
+    "engine",
+    "script-path",
+    "script-update-interval",
+    "tag",
+    "timeout",
+}
+LOON_SCRIPT_TYPE_PROPERTIES = {
+    "cron": {"wake-system"},
+    "generic": {"img-url"},
+    "http-request": {"ability", "binary-body-mode", "max-size", "requires-body"},
+    "http-response": {"ability", "binary-body-mode", "max-size", "requires-body"},
+}
+NODE_LINK_CHECK_SCRIPT_PATH = "https://kelee.one/Resource/JavaScript/NodeLinkCheck/NodeLinkCheck.js"
+WARP_PANEL_SCRIPT_PATH = "https://raw.githubusercontent.com/VirgilClyne/Cloudflare/main/js/1.1.1.1.panel.js"
+VERIFIED_SURGE_GENERIC_SCRIPT_PATHS = frozenset({NODE_LINK_CHECK_SCRIPT_PATH, WARP_PANEL_SCRIPT_PATH})
+LOON_MOCK_CONTENT_TYPES = {
+    "json": "application/json",
+    "text": "text/plain",
+    "css": "text/css",
+    "html": "text/html",
+    "javascript": "text/javascript",
+    "plain": "text/plain",
+    "png": "image/png",
+    "gif": "image/gif",
+    "jpeg": "image/jpeg",
+    "tiff": "image/tiff",
+    "svg": "image/svg+xml",
+    "mp4": "video/mp4",
+    "form-data": "multipart/form-data",
+}
+JQ_COMPATIBILITY_REWRITES = (
+    ('type=="object"then', 'type=="object" then'),
+    (
+        'type=="object"and .name as $name|$name|IN(namesToRemove[])|not',
+        'type=="object" and (.name as $name|$name|IN(namesToRemove[])|not)',
+    ),
+    (')else .end;removeParentIfNameMatches', ') else . end;removeParentIfNameMatches'),
+)
 
 
 def timestamp() -> str:
@@ -225,6 +318,29 @@ def convert_delete_paths_to_jq(paths: list[str]) -> list[str]:
     return ["'delpaths([" + convert_path_to_jq_array(path) + "])'" for path in paths]
 
 
+def convert_delete_source_to_jq(
+    text: str,
+    report: list[dict[str, str]],
+    file: str,
+    line: str,
+) -> list[str]:
+    stripped = text.strip()
+    if len(stripped) >= 2 and stripped[0] == stripped[-1] and stripped[0] in ("'", '"'):
+        expression = stripped[1:-1].strip()
+        if re.match(r"^(?:del|delpaths)\s*\(", expression):
+            add_report(
+                report,
+                file,
+                "rewrite-action-corrected",
+                "JSON delete contains a complete JQ expression; converted as JQ instead of splitting it into key paths.",
+                line,
+            )
+            return [quote_jq_expression(expression)]
+
+    paths = [item for item in re.split(r"\s+", stripped) if item]
+    return convert_delete_paths_to_jq(paths)
+
+
 def convert_replace_pair_to_jq(path_text: str, value_text: str) -> str:
     segments = path_segments(path_text)
     if not segments:
@@ -265,10 +381,35 @@ def quote_jq_expression(text: str) -> str:
     return "'" + text.replace("'", "\\'") + "'"
 
 
-def convert_jq_expression(text: str, report: list[dict[str, str]], file: str, line: str) -> str:
-    match = re.fullmatch(r'jq-path=(["\']?)(.+?)\1', text.strip())
+def convert_jq_expression(text: str, report: list[dict[str, str]], file: str, line: str) -> str | None:
+    stripped = text.strip()
+    if not stripped or stripped in ("''", '""'):
+        add_report(
+            report,
+            file,
+            "rewrite-empty-skipped",
+            "Empty JQ expression was skipped because Surge requires a non-empty JQ program.",
+            line,
+        )
+        return None
+
+    match = re.fullmatch(r'jq-path=(["\']?)(.+?)\1', stripped)
     if not match:
-        return text
+        quote = stripped[0] if len(stripped) >= 2 and stripped[0] == stripped[-1] and stripped[0] in ("'", '"') else ""
+        expression = stripped[1:-1] if quote else stripped
+        original_expression = expression
+        for old, new in JQ_COMPATIBILITY_REWRITES:
+            expression = expression.replace(old, new)
+        if expression != original_expression:
+            add_report(
+                report,
+                file,
+                "jq-expression-corrected",
+                "Normalized missing JQ token separators and variable-binding grouping so the expression compiles.",
+                line,
+            )
+            return quote_jq_expression(expression)
+        return stripped
 
     url = match.group(2)
     try:
@@ -282,9 +423,115 @@ def parse_properties(text: str | None) -> OrderedDict[str, str]:
     props: OrderedDict[str, str] = OrderedDict()
     for part in split_top_level(text, ","):
         key, value = split_first(part, "=")
-        if value:
-            props[key.strip()] = value.strip()
+        key = key.strip()
+        if key:
+            props[key] = value.strip()
     return props
+
+
+def unquote_property_value(value: str) -> str:
+    value = value.strip()
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in ("'", '"'):
+        return value[1:-1]
+    return value
+
+
+def unverified_generic_scripts(
+    lines: list[str],
+    verified_paths: frozenset[str] = VERIFIED_SURGE_GENERIC_SCRIPT_PATHS,
+) -> list[tuple[str, str]]:
+    unverified: list[tuple[str, str]] = []
+    for line in lines:
+        match = re.match(r"^generic(?:\s+(.*))?$", line)
+        if not match:
+            continue
+        path = unquote_property_value(parse_properties(match.group(1)).get("script-path", ""))
+        if path and path not in verified_paths:
+            unverified.append((line, path))
+    return unverified
+
+
+def generic_script_properties(lines: list[str]) -> list[tuple[str, OrderedDict[str, str]]]:
+    scripts: list[tuple[str, OrderedDict[str, str]]] = []
+    for line in lines:
+        match = re.match(r"^generic(?:\s+(.*))?$", line)
+        if match:
+            scripts.append((line, parse_properties(match.group(1))))
+    return scripts
+
+
+def merge_query_argument(argument: str, key: str, value: str) -> str:
+    text = unquote_property_value(argument)
+    parts = [part for part in text.split("&") if part]
+    keys = {part.partition("=")[0].strip().lower() for part in parts}
+    if key.lower() not in keys:
+        parts.insert(0, f"{key}={value}")
+    return "&".join(parts)
+
+
+def validate_script_properties(
+    script_type: str,
+    text: str | None,
+    props: OrderedDict[str, str],
+    report: list[dict[str, str]],
+    file: str,
+    line: str,
+) -> bool:
+    errors: list[str] = []
+    duplicate_same_values: set[str] = set()
+    seen: dict[str, str] = {}
+    for part in split_top_level(text, ","):
+        key, value = split_first(part, "=")
+        key = key.strip()
+        value = value.strip()
+        if "=" not in part or not key:
+            errors.append(f"Malformed script property: {part}")
+            continue
+        if key in seen:
+            if seen[key] == value:
+                duplicate_same_values.add(key)
+            else:
+                errors.append(f"Conflicting duplicate script property: {key}")
+        seen[key] = value
+
+    allowed = LOON_SCRIPT_COMMON_PROPERTIES | LOON_SCRIPT_TYPE_PROPERTIES[script_type]
+    unknown = sorted(set(props) - allowed)
+    if unknown:
+        errors.append(f"Unsupported {script_type} property/properties: {', '.join(unknown)}")
+
+    if not props.get("script-path"):
+        errors.append("Missing non-empty script-path")
+
+    empty = sorted(key for key, value in props.items() if not value and key != "argument")
+    if empty:
+        errors.append(f"Empty script property/properties: {', '.join(empty)}")
+
+    for key in ("binary-body-mode", "debug", "requires-body", "wake-system"):
+        if key in props and props[key].lower() not in {"true", "false"}:
+            errors.append(f"{key} must be true or false")
+
+    if "engine" in props and props["engine"].lower() not in {"auto", "jsc", "webview"}:
+        errors.append("engine must be auto, jsc, or webview")
+
+    if "enable" in props:
+        enable = props["enable"]
+        normalized = normalized_argument_default(enable)
+        if not enable_argument_name(enable) and normalized not in {"true", "false", "1", "0", "on", "off", "yes", "no"}:
+            errors.append("enable must be a boolean value or an {Argument} placeholder")
+
+    if errors:
+        add_report(report, file, "unsupported-script", "; ".join(errors), line)
+        return False
+    if duplicate_same_values:
+        add_report(
+            report,
+            file,
+            "script-property-corrected",
+            "Removed duplicate script property/properties with identical values: "
+            + ", ".join(sorted(duplicate_same_values)),
+            line,
+        )
+    return True
 
 
 def collect_argument_defaults(lines: list[str]) -> OrderedDict[str, str]:
@@ -325,6 +572,8 @@ def collect_enable_argument_names(lines: list[str]) -> set[str]:
         if not match:
             match = re.match(r"^cron\s+\S+(?:\s+(.*))?$", line)
         if not match:
+            match = re.match(r"^generic(?:\s+(.*))?$", line)
+        if not match:
             continue
         props = parse_properties(match.group(1))
         if "enable" in props:
@@ -351,6 +600,13 @@ def collect_script_argument_names(lines: list[str]) -> set[str]:
             props = parse_properties(props_text)
             if "argument" in props:
                 names.update(collect_loon_placeholder_names(props["argument"]))
+            continue
+
+        match = re.match(r"^generic(?:\s+(.*))?$", line)
+        if match:
+            props = parse_properties(match.group(1))
+            if "argument" in props:
+                names.update(collect_loon_placeholder_names(props["argument"]))
     return names
 
 
@@ -370,6 +626,17 @@ def collect_enable_toggle_defaults(
 
 def add_report(report: list[dict[str, str]], file: str, kind: str, message: str, line: str) -> None:
     report.append({"file": file, "kind": kind, "message": message, "line": line})
+
+
+def fatal_report_items(report: list[dict[str, str]]) -> list[dict[str, str]]:
+    return [item for item in report if item["kind"] in FATAL_REPORT_KINDS]
+
+
+def fatal_report_message(items: list[dict[str, str]]) -> str:
+    details = "\n".join(
+        f"- {item['file']} [{item['kind']}]: {item['message']}\n  {item['line']}" for item in items
+    )
+    return f"Conversion stopped because {len(items)} item(s) could not be converted safely:\n{details}"
 
 
 def is_reject_policy(policy: str) -> bool:
@@ -609,7 +876,9 @@ def convert_mock_response_options(text: str) -> str:
         else:
             mock = f"data-type=file {mock}"
         mock = re.sub(r"\bdata-path=", "data=", mock, count=1)
-        mock = ensure_mock_option(mock, "header", '"Content-Type:text/plain"')
+        content_type = LOON_MOCK_CONTENT_TYPES.get(original_data_type or "")
+        if content_type:
+            mock = ensure_mock_option(mock, "header", f'"Content-Type:{content_type}"')
     elif original_data_type == "json":
         mock = mock.replace("data-type=json", "data-type=text")
         mock = ensure_mock_option(mock, "header", '"Content-Type:application/json"')
@@ -618,6 +887,11 @@ def convert_mock_response_options(text: str) -> str:
 
     if not re.search(r"\bdata-path=", mock):
         mock = normalize_mock_inline_data(mock, original_data_type)
+
+    if not re.search(r"(?:(?<=^)|(?<=\s))data=", mock) and original_data_type in {"text", "plain"}:
+        mock = ensure_mock_option(mock, "data", '""')
+        mock = ensure_mock_option(mock, "status-code", "200")
+        mock = ensure_mock_option(mock, "header", '"Content-Type:text/plain"')
 
     return ensure_mock_option(mock, "status-code", "200")
 
@@ -639,17 +913,483 @@ def clean_hostname_list(text: str) -> str:
     return ", ".join(item.strip() for item in split_top_level(text, ",") if item.strip())
 
 
-def convert_rewrite_line(line: str, sections: OrderedDict[str, list[str]], report: list[dict[str, str]], file: str) -> None:
+def v2_constant_string(value: V2Value, description: str) -> str:
+    if not isinstance(value, V2String) or any(isinstance(part, V2Variable) for part in value.parts):
+        raise RewriteV2Error(f"{description} must be a constant string")
+    return "".join(part for part in value.parts if isinstance(part, str))
+
+
+def v2_regex_capture_group_count(pattern: str) -> int:
+    count = 0
+    in_character_class = False
+    index = 0
+    while index < len(pattern):
+        char = pattern[index]
+        if char == "\\":
+            index += 2
+            continue
+        if char == "[":
+            in_character_class = True
+        elif char == "]" and in_character_class:
+            in_character_class = False
+        elif char == "(" and not in_character_class:
+            if not pattern.startswith("?", index + 1):
+                count += 1
+            elif pattern.startswith("?<", index + 1) and not pattern.startswith(("?<=", "?<!"), index + 1):
+                count += 1
+        index += 1
+    return count
+
+
+def reject_v2_url_action_capture_syntax(value: V2Value, description: str) -> None:
+    if not isinstance(value, V2String):
+        return
+    if any(isinstance(part, str) and re.search(r"\$\d+", part) for part in value.parts):
+        raise RewriteV2Error(
+            f"{description} uses $n syntax; Loon URL Actions require a named condition capture such as ${{item.1}}"
+        )
+
+
+def v2_render_template(
+    value: V2Value,
+    condition: V2UrlCondition,
+    argument_names: set[str],
+    description: str,
+    *,
+    allow_url_captures: bool = False,
+) -> str:
+    if isinstance(value, V2Variable):
+        parts: tuple[str | V2Variable, ...] = (value,)
+    elif isinstance(value, V2String):
+        parts = value.parts
+    else:
+        raise RewriteV2Error(f"{description} must be a string")
+
+    rendered: list[str] = []
+    for part in parts:
+        if isinstance(part, str):
+            rendered.append(part)
+            continue
+
+        capture = re.fullmatch(r"(.+)\.(\d+)", part.name)
+        if capture and capture.group(1) == condition.capture_name:
+            if not allow_url_captures:
+                raise RewriteV2Error(f"{description} cannot preserve URL capture variable ${{{part.name}}} in Surge")
+            capture_index = int(capture.group(2))
+            if str(capture_index) != capture.group(2):
+                raise RewriteV2Error(f"{description} uses a non-canonical capture index: {capture.group(2)}")
+            capture_count = v2_regex_capture_group_count(condition.regex.pattern)
+            if capture_index > capture_count:
+                raise RewriteV2Error(
+                    f"{description} references capture {capture_index}, but the URL condition has {capture_count} group(s)"
+                )
+            rendered.append(f"${capture_index}")
+        elif part.name in argument_names:
+            rendered.append(f"{{{{{{{part.name}}}}}}}")
+        else:
+            raise RewriteV2Error(f"{description} references unsupported or undefined variable ${{{part.name}}}")
+    return "".join(rendered)
+
+
+def v2_regex_pattern(value: V2Value, description: str) -> str:
+    if not isinstance(value, V2Regex):
+        raise RewriteV2Error(f"{description} must be a regular expression")
+    if value.flags:
+        raise RewriteV2Error(
+            f"{description} uses Loon regex flags /{value.flags}; no equivalent is emitted without verified Surge semantics"
+        )
+    return value.pattern
+
+
+def v2_url_pattern(condition: V2UrlCondition) -> str:
+    pattern = v2_regex_pattern(condition.regex, "URL condition")
+    if re.search(r"\s", pattern):
+        raise RewriteV2Error("URL condition contains literal whitespace that cannot be emitted as a Surge pattern token")
+    return pattern
+
+
+def v2_integer(value: V2Value, description: str, minimum: int | None = None, maximum: int | None = None) -> int:
+    if not isinstance(value, V2Number) or not re.fullmatch(r"-?\d+", value.text):
+        raise RewriteV2Error(f"{description} must be an integer")
+    result = int(value.text)
+    if minimum is not None and result < minimum or maximum is not None and result > maximum:
+        raise RewriteV2Error(f"{description} must be between {minimum} and {maximum}")
+    return result
+
+
+def expand_v2_arguments(action: V2Action, expected: int) -> list[tuple[V2Value, ...]]:
+    if len(action.arguments) != expected:
+        raise RewriteV2Error(f"{action.name} expects {expected} arguments, got {len(action.arguments)}")
+
+    arrays = [argument for argument in action.arguments if isinstance(argument, V2Array)]
+    if not arrays:
+        return [action.arguments]
+    if len(arrays) != expected:
+        raise RewriteV2Error(f"{action.name} cannot mix array and scalar arguments")
+
+    lengths = {len(array.items) for array in arrays}
+    if lengths == {0}:
+        raise RewriteV2Error(f"{action.name} array arguments cannot be empty")
+    if len(lengths) != 1:
+        raise RewriteV2Error(f"{action.name} array arguments must have equal lengths")
+    return [tuple(array.items[index] for array in arrays) for index in range(next(iter(lengths)))]
+
+
+def single_v2_arguments(action: V2Action, expected: int) -> tuple[V2Value, ...]:
+    if len(action.arguments) != expected:
+        raise RewriteV2Error(f"{action.name} expects {expected} arguments, got {len(action.arguments)}")
+    if any(isinstance(argument, V2Array) for argument in action.arguments):
+        raise RewriteV2Error(f"{action.name} does not support batch array arguments")
+    return action.arguments
+
+
+def quote_surge_rewrite_token(value: str, description: str, *, always: bool = False) -> str:
+    if "\n" in value or "\r" in value:
+        raise RewriteV2Error(f"{description} contains a newline that cannot be represented safely in one Surge line")
+    if not always and value and not re.search(r"\s", value) and not any(quote in value for quote in ("'", '"')):
+        return value
+    return "'" + value.replace("'", "\\'") + "'"
+
+
+def v2_json_value(value: V2Value, description: str) -> str:
+    if value is None:
+        return "null"
+    if value is True:
+        return "true"
+    if value is False:
+        return "false"
+    if isinstance(value, V2Number):
+        return value.text
+    if isinstance(value, V2String):
+        if any(isinstance(part, V2Variable) for part in value.parts):
+            raise RewriteV2Error(f"{description} contains a dynamic variable whose JSON type cannot be preserved")
+        return json.dumps("".join(part for part in value.parts if isinstance(part, str)), ensure_ascii=False)
+    if isinstance(value, V2Variable):
+        raise RewriteV2Error(f"{description} uses a typed plugin variable that cannot be safely embedded in Surge JQ")
+    raise RewriteV2Error(f"{description} uses an unsupported JSON value")
+
+
+def v2_map_local_inline(pattern: str, body: str, status: int, content_type: str | None = None) -> str:
+    if body:
+        encoded = base64.b64encode(body.encode("utf-8")).decode("ascii")
+        result = f'{pattern} data-type=base64 data="{encoded}" status-code={status}'
+    else:
+        result = f'{pattern} data-type=text data="" status-code={status}'
+    if content_type:
+        result += f' header="Content-Type:{content_type}"'
+    return result
+
+
+def convert_v2_url_action(
+    action: V2Action,
+    phase: str,
+    pattern: str,
+    condition: V2UrlCondition,
+    argument_names: set[str],
+) -> list[tuple[str, str]] | None:
+    if action.name == "url.replace":
+        if phase != "request":
+            raise RewriteV2Error("url.replace is only valid in the request phase")
+        arguments = single_v2_arguments(action, 1)
+        reject_v2_url_action_capture_syntax(arguments[0], "url.replace replacement")
+        replacement = v2_render_template(
+            arguments[0], condition, argument_names, "url.replace replacement", allow_url_captures=True
+        )
+        if re.search(r"\s", replacement):
+            raise RewriteV2Error("url.replace replacement contains literal whitespace")
+        return [("URL Rewrite", f"{pattern} {replacement} header")]
+
+    if action.name == "redirect":
+        if phase != "request":
+            raise RewriteV2Error("redirect is only valid in the request phase")
+        arguments = single_v2_arguments(action, 2)
+        status = v2_integer(arguments[0], "redirect status")
+        if status not in (302, 307):
+            raise RewriteV2Error("Surge URL Rewrite redirect status must be 302 or 307")
+        reject_v2_url_action_capture_syntax(arguments[1], "redirect replacement")
+        replacement = v2_render_template(
+            arguments[1], condition, argument_names, "redirect replacement", allow_url_captures=True
+        )
+        if re.search(r"\s", replacement):
+            raise RewriteV2Error("redirect replacement contains literal whitespace")
+        return [("URL Rewrite", f"{pattern} {replacement} {status}")]
+
+    return None
+
+
+def convert_v2_reject_action(action: V2Action, phase: str, pattern: str) -> list[tuple[str, str]] | None:
+    if not action.name.startswith("reject"):
+        return None
+    if phase != "request":
+        raise RewriteV2Error(f"{action.name} is only valid in the request phase")
+    if action.name == "reject_video":
+        raise RewriteV2Error("reject_video has no verified native Surge Map Local equivalent")
+
+    if action.name == "reject":
+        if len(action.arguments) not in (1, 2):
+            raise RewriteV2Error(f"reject expects 1 or 2 arguments, got {len(action.arguments)}")
+        status = v2_integer(action.arguments[0], "reject status", 100, 599)
+        body = v2_constant_string(action.arguments[1], "reject body") if len(action.arguments) == 2 else ""
+        return [("Map Local", v2_map_local_inline(pattern, body, status, "text/plain" if body else None))]
+
+    status = v2_integer(single_v2_arguments(action, 1)[0], f"{action.name} status", 100, 599)
+    if action.name == "reject_img":
+        return [("Map Local", f"{pattern} data-type=tiny-gif status-code={status}")]
+    if action.name == "reject_dict":
+        return [("Map Local", v2_map_local_inline(pattern, "{}", status, "application/json"))]
+    if action.name == "reject_array":
+        return [("Map Local", v2_map_local_inline(pattern, "[]", status, "application/json"))]
+    raise RewriteV2Error(f"Unsupported Rewrite V2 reject Action: {action.name}")
+
+
+def convert_v2_header_action(
+    action: V2Action,
+    phase: str,
+    pattern: str,
+    condition: V2UrlCondition,
+    argument_names: set[str],
+) -> list[tuple[str, str]] | None:
+    matched = re.fullmatch(r"(request|response)\.header\.(add|set|del|replace)", action.name)
+    if not matched:
+        return None
+    action_phase, operation = matched.groups()
+    if action_phase != phase:
+        raise RewriteV2Error(f"{action.name} cannot be used in the {phase} phase")
+
+    direction = f"http-{phase}"
+    expected = {"add": 2, "set": 2, "del": 1, "replace": 3}[operation]
+    converted: list[tuple[str, str]] = []
+    for arguments in expand_v2_arguments(action, expected):
+        header_name = v2_render_template(arguments[0], condition, argument_names, f"{action.name} header name")
+        if not header_name or re.search(r"[\s:]", header_name):
+            raise RewriteV2Error(f"{action.name} header name is invalid for Surge")
+        quoted_name = quote_surge_rewrite_token(header_name, "Header name")
+
+        if operation == "del":
+            converted.append(("Header Rewrite", f"{direction} {pattern} header-del {quoted_name}"))
+            continue
+
+        if operation in ("add", "set"):
+            header_value = v2_render_template(arguments[1], condition, argument_names, f"{action.name} value")
+            quoted_value = quote_surge_rewrite_token(header_value, "Header value")
+            if operation == "set":
+                converted.append(("Header Rewrite", f"{direction} {pattern} header-del {quoted_name}"))
+            converted.append(("Header Rewrite", f"{direction} {pattern} header-add {quoted_name} {quoted_value}"))
+            continue
+
+        header_regex = v2_regex_pattern(arguments[1], f"{action.name} regular expression")
+        replacement = v2_render_template(arguments[2], condition, argument_names, f"{action.name} replacement")
+        converted.append(
+            (
+                "Header Rewrite",
+                f"{direction} {pattern} header-replace-regex {quoted_name} "
+                f"{quote_surge_rewrite_token(header_regex, 'Header regular expression', always=True)} "
+                f"{quote_surge_rewrite_token(replacement, 'Header replacement', always=True)}",
+            )
+        )
+    return converted
+
+
+def convert_v2_body_action(
+    action: V2Action,
+    phase: str,
+    pattern: str,
+    condition: V2UrlCondition,
+    argument_names: set[str],
+) -> list[tuple[str, str]] | None:
+    matched = re.fullmatch(r"(request|response)\.body\.replace", action.name)
+    if not matched:
+        return None
+    if matched.group(1) != phase:
+        raise RewriteV2Error(f"{action.name} cannot be used in the {phase} phase")
+
+    converted: list[tuple[str, str]] = []
+    for arguments in expand_v2_arguments(action, 2):
+        body_regex = v2_regex_pattern(arguments[0], f"{action.name} regular expression")
+        replacement = v2_render_template(arguments[1], condition, argument_names, f"{action.name} replacement")
+        converted.append(
+            (
+                "Body Rewrite",
+                f"http-{phase} {pattern} "
+                f"{quote_surge_rewrite_token(body_regex, 'Body regular expression', always=True)} "
+                f"{quote_surge_rewrite_token(replacement, 'Body replacement', always=True)}",
+            )
+        )
+    return converted
+
+
+def convert_v2_json_action(action: V2Action, phase: str, pattern: str) -> list[tuple[str, str]] | None:
+    matched = re.fullmatch(r"(request|response)\.json\.(add|delete|replace|jq|jq_file)", action.name)
+    if not matched:
+        return None
+    action_phase, operation = matched.groups()
+    if action_phase != phase:
+        raise RewriteV2Error(f"{action.name} cannot be used in the {phase} phase")
+
+    direction = f"http-{phase}-jq"
+    converted: list[tuple[str, str]] = []
+    if operation == "delete":
+        for arguments in expand_v2_arguments(action, 1):
+            path = v2_constant_string(arguments[0], f"{action.name} path")
+            converted.append(("Body Rewrite", f"{direction} {pattern} 'delpaths([{convert_path_to_jq_array(path)}])'"))
+        return converted
+
+    if operation in ("add", "replace"):
+        for arguments in expand_v2_arguments(action, 2):
+            path_text = v2_constant_string(arguments[0], f"{action.name} path")
+            segments = path_segments(path_text)
+            if not segments:
+                raise RewriteV2Error(f"{action.name} path cannot be empty")
+            path = jq_array(segments)
+            value = v2_json_value(arguments[1], f"{action.name} value")
+            if operation == "add":
+                expression = f"setpath({path}; {value})"
+            else:
+                parent = jq_array(segments[:-1])
+                key = json.dumps(segments[-1], ensure_ascii=False, separators=(",", ":"))
+                expression = (
+                    f"if (try (getpath({parent}) | has({key})) catch false) "
+                    f"then (setpath({path}; {value})) else . end"
+                )
+            converted.append(("Body Rewrite", f"{direction} {pattern} {quote_jq_expression(expression)}"))
+        return converted
+
+    arguments = single_v2_arguments(action, 1)
+    source = v2_constant_string(arguments[0], f"{action.name} expression")
+    if operation == "jq_file":
+        if not re.match(r"^https?://", source):
+            raise RewriteV2Error("Relative jq_file resources are not downloaded with standalone Kelee .lpx files")
+        try:
+            source = fetch_jq_path(source)
+        except Exception as exc:  # noqa: BLE001 - turn remote resource failures into a fatal conversion report.
+            raise RewriteV2Error(f"Unable to inline jq_file {source}: {exc}") from exc
+    converted.append(("Body Rewrite", f"{direction} {pattern} {quote_jq_expression(source)}"))
+    return converted
+
+
+def convert_v2_mock_action(action: V2Action, phase: str, pattern: str) -> list[tuple[str, str]] | None:
+    matched = re.fullmatch(r"(request|response)\.body\.(mock|mock_file)", action.name)
+    if not matched:
+        return None
+    action_phase, operation = matched.groups()
+    if action_phase != phase:
+        raise RewriteV2Error(f"{action.name} cannot be used in the {phase} phase")
+    if phase == "request":
+        raise RewriteV2Error(f"{action.name} has no verified native Surge equivalent that also preserves content type")
+
+    minimum = 2
+    maximum = 4
+    if not minimum <= len(action.arguments) <= maximum:
+        raise RewriteV2Error(f"{action.name} expects between {minimum} and {maximum} arguments")
+    if any(isinstance(argument, V2Array) for argument in action.arguments):
+        raise RewriteV2Error(f"{action.name} does not support batch array arguments")
+
+    content_kind = v2_constant_string(action.arguments[0], f"{action.name} content type")
+    if content_kind not in LOON_MOCK_CONTENT_TYPES:
+        raise RewriteV2Error(f"{action.name} uses unsupported content type: {content_kind}")
+    content_type = LOON_MOCK_CONTENT_TYPES[content_kind]
+    status = v2_integer(action.arguments[2], f"{action.name} status", 100, 599) if len(action.arguments) >= 3 else 200
+    base64_mode = action.arguments[3] if len(action.arguments) >= 4 else False
+    if not isinstance(base64_mode, bool):
+        raise RewriteV2Error(f"{action.name} Base64 flag must be Boolean")
+
+    data = v2_constant_string(action.arguments[1], f"{action.name} body")
+    if operation == "mock_file":
+        if base64_mode:
+            raise RewriteV2Error("response.body.mock_file Base64 resources cannot be represented by Surge Map Local")
+        if not re.match(r"^https?://", data):
+            raise RewriteV2Error("Relative mock_file resources are not downloaded with standalone Kelee .lpx files")
+        escaped_data = data.replace('"', '\\"')
+        return [
+            (
+                "Map Local",
+                f'{pattern} data-type=file data="{escaped_data}" status-code={status} '
+                f'header="Content-Type:{content_type}"',
+            )
+        ]
+
+    if base64_mode:
+        try:
+            base64.b64decode(data, validate=True)
+        except Exception as exc:  # noqa: BLE001 - report invalid source data as a conversion error.
+            raise RewriteV2Error(f"{action.name} body is not valid Base64") from exc
+        encoded = data
+    else:
+        encoded = base64.b64encode(data.encode("utf-8")).decode("ascii")
+    return [
+        (
+            "Map Local",
+            f'{pattern} data-type=base64 data="{encoded}" status-code={status} header="Content-Type:{content_type}"',
+        )
+    ]
+
+
+def convert_rewrite_v2_line(
+    line: str,
+    sections: OrderedDict[str, list[str]],
+    report: list[dict[str, str]],
+    file: str,
+    argument_names: set[str],
+) -> None:
+    try:
+        rewrite = parse_rewrite_v2_line(line)
+        condition = parse_url_only_condition(rewrite.condition)
+        if condition.capture_name and condition.capture_name in argument_names:
+            raise RewriteV2Error(
+                f"URL capture name {condition.capture_name!r} conflicts with a declared plugin argument"
+            )
+        pattern = v2_url_pattern(condition)
+        converted: list[tuple[str, str]] = []
+
+        for action in rewrite.actions:
+            action_lines = (
+                convert_v2_url_action(action, rewrite.phase, pattern, condition, argument_names)
+                or convert_v2_reject_action(action, rewrite.phase, pattern)
+                or convert_v2_header_action(action, rewrite.phase, pattern, condition, argument_names)
+                or convert_v2_body_action(action, rewrite.phase, pattern, condition, argument_names)
+                or convert_v2_json_action(action, rewrite.phase, pattern)
+                or convert_v2_mock_action(action, rewrite.phase, pattern)
+            )
+            if not action_lines:
+                raise RewriteV2Error(f"Unsupported Rewrite V2 Action: {action.name}")
+            converted.extend(action_lines)
+
+        target_sections = {section for section, _ in converted}
+        if len(target_sections) != 1:
+            raise RewriteV2Error(
+                "Actions cross Surge processing stages; splitting them would not preserve Loon's left-to-right execution order"
+            )
+        if len(rewrite.actions) > 1 and target_sections & {"URL Rewrite", "Map Local"}:
+            raise RewriteV2Error("Multiple terminal URL or mock Actions cannot be represented as one Surge operation")
+
+        for section, converted_line in converted:
+            sections[section].append(converted_line)
+    except RewriteV2Error as exc:
+        add_report(report, file, "unsupported-rewrite", f"Rewrite V2: {exc}", line)
+
+
+def convert_rewrite_line(
+    line: str,
+    sections: OrderedDict[str, list[str]],
+    report: list[dict[str, str]],
+    file: str,
+    argument_names: set[str] | None = None,
+) -> None:
+    if is_rewrite_v2_line(line):
+        convert_rewrite_v2_line(line, sections, report, file, argument_names or set())
+        return
+
     inline_match = re.match(r"^(http-request|http-response)\s+(\S+)\s+(\S+)(?:\s+(.*))?$", line)
     if inline_match:
         kind, pattern, action, rest = inline_match.groups()
         rest = rest or ""
 
         if action == "response-body-json-jq":
-            sections["Body Rewrite"].append(f"http-response-jq {pattern} {convert_jq_expression(rest, report, file, line)}")
+            expression = convert_jq_expression(rest, report, file, line)
+            if expression is not None:
+                sections["Body Rewrite"].append(f"http-response-jq {pattern} {expression}")
         elif action == "response-body-json-del":
-            paths = [item for item in re.split(r"\s+", rest.strip()) if item]
-            for expression in convert_delete_paths_to_jq(paths):
+            for expression in convert_delete_source_to_jq(rest, report, file, line):
                 sections["Body Rewrite"].append(f"http-response-jq {pattern} {expression}")
         elif action == "response-body-json-replace":
             for expression in convert_replace_pairs_to_jq(rest):
@@ -676,14 +1416,15 @@ def convert_rewrite_line(line: str, sections: OrderedDict[str, list[str]], repor
     elif action == "reject-img":
         sections["Map Local"].append(f"{pattern} data-type=tiny-gif status-code=200")
     elif action == "reject-200":
-        sections["Map Local"].append(f'{pattern} data-type=text data=" " status-code=200')
+        sections["Map Local"].append(f'{pattern} data-type=text data="" status-code=200')
     elif action == "mock-response-body":
         sections["Map Local"].append(f"{pattern} {convert_mock_response_options(rest)}")
     elif action == "response-body-json-jq":
-        sections["Body Rewrite"].append(f"http-response-jq {pattern} {convert_jq_expression(rest, report, file, line)}")
+        expression = convert_jq_expression(rest, report, file, line)
+        if expression is not None:
+            sections["Body Rewrite"].append(f"http-response-jq {pattern} {expression}")
     elif action == "response-body-json-del":
-        paths = [item for item in re.split(r"\s+", rest.strip()) if item]
-        for expression in convert_delete_paths_to_jq(paths):
+        for expression in convert_delete_source_to_jq(rest, report, file, line):
             sections["Body Rewrite"].append(f"http-response-jq {pattern} {expression}")
     elif action == "response-body-json-replace":
         for expression in convert_replace_pairs_to_jq(rest):
@@ -781,11 +1522,23 @@ def convert_script_line(
     if match:
         script_type, pattern, props_text = match.groups()
         props = parse_properties(props_text)
+        if not validate_script_properties(script_type, props_text, props, report, file, line):
+            return
         prefix = script_enable_prefix(props, argument_defaults, shared_argument_names, report, file, line)
         name = props.get("tag") or f"{script_type} {len(output) + 1}"
         parts = [f"type={script_type}", f"pattern={format_script_pattern(pattern)}"]
 
-        for key in ("script-path", "requires-body", "binary-body-mode", "timeout", "engine", "max-size", "ability"):
+        for key in (
+            "script-path",
+            "requires-body",
+            "binary-body-mode",
+            "timeout",
+            "engine",
+            "max-size",
+            "ability",
+            "script-update-interval",
+            "debug",
+        ):
             if key in props:
                 if key in ("requires-body", "binary-body-mode") and props[key] == "false":
                     continue
@@ -801,11 +1554,13 @@ def convert_script_line(
         cron, props_text = match.groups()
         cron = convert_placeholder(cron)
         props = parse_properties(props_text)
+        if not validate_script_properties("cron", props_text, props, report, file, line):
+            return
         prefix = script_enable_prefix(props, argument_defaults, shared_argument_names, report, file, line)
         name = props.get("tag") or f"cron {len(output) + 1}"
         parts = ["type=cron", f"cronexp={cron}"]
 
-        for key in ("script-path", "timeout", "engine", "wake-system"):
+        for key in ("script-path", "timeout", "engine", "wake-system", "script-update-interval", "debug"):
             if key in props:
                 parts.append(f"{key}={props[key]}")
         if props.get("argument"):
@@ -816,13 +1571,22 @@ def convert_script_line(
 
     match = re.match(r"^generic(?:\s+(.*))?$", line)
     if match:
-        props = parse_properties(match.group(1))
+        props_text = match.group(1)
+        props = parse_properties(props_text)
+        if not validate_script_properties("generic", props_text, props, report, file, line):
+            return
+        prefix = script_enable_prefix(props, argument_defaults, shared_argument_names, report, file, line)
         name = props.get("tag") or f"generic {len(output) + 1}"
         parts = ["type=generic"]
-        for key in ("script-path", "timeout", "engine", "img-url"):
+        for key in ("script-path", "timeout", "engine", "script-update-interval", "debug"):
             if key in props:
                 parts.append(f"{key}={props[key]}")
-        output.append(f"{name} = " + ", ".join(parts))
+        argument = props.get("argument", "")
+        if unquote_property_value(props["script-path"]) == NODE_LINK_CHECK_SCRIPT_PATH:
+            argument = merge_query_argument(argument, "policy", "{Policy}")
+        if argument:
+            parts.append(f"argument={convert_argument_value(argument)}")
+        output.append(f"{prefix}{name} = " + ", ".join(parts))
         return
 
     add_report(report, file, "unsupported-script", "Unsupported script line", line)
@@ -915,12 +1679,76 @@ def has_section(source_sections: dict[str, list[str]], name: str) -> bool:
     return bool(section_lines(source_sections, name))
 
 
-def convert_file(path: Path, output_root: Path, report: list[dict[str, str]], seen_files: dict[str, int]) -> dict[str, Any]:
+def convert_file(
+    path: Path,
+    output_root: Path,
+    report: list[dict[str, str]],
+    seen_files: dict[str, int],
+) -> dict[str, Any] | None:
     metadata, source_sections = parse_lpx(path)
     sections: OrderedDict[str, list[str]] = OrderedDict((name, []) for name in SECTION_ORDER)
     argument_lines = section_lines(source_sections, "Argument")
     argument_defaults = collect_argument_defaults(argument_lines)
     script_lines = section_lines(source_sections, "Script")
+    generic_scripts = generic_script_properties(script_lines)
+    generic_paths = {
+        unquote_property_value(props.get("script-path", ""))
+        for _, props in generic_scripts
+        if props.get("script-path")
+    }
+    unverified_generic = unverified_generic_scripts(script_lines)
+    if unverified_generic:
+        paths = ", ".join(dict.fromkeys(item[1] for item in unverified_generic))
+        add_report(
+            report,
+            path.name,
+            "module-excluded",
+            "Module was excluded from Surge output because generic script compatibility is not verified: "
+            + paths
+            + ". Loon generic scripts may depend on selected-node context that Surge does not provide.",
+            unverified_generic[0][0],
+        )
+        return None
+
+    if NODE_LINK_CHECK_SCRIPT_PATH in generic_paths:
+        metadata["desc"] = (
+            "Checks the proxy chain for a Surge policy using Sub-Store node data. "
+            "Configure Policy when installing; default: PROXY."
+        )
+        metadata.pop("openUrl", None)
+        node_link_line = next(
+            line
+            for line, props in generic_scripts
+            if unquote_property_value(props.get("script-path", "")) == NODE_LINK_CHECK_SCRIPT_PATH
+        )
+        add_report(
+            report,
+            path.name,
+            "generic-script-adapted",
+            "Added a Surge Policy module argument and passed it to NodeLinkCheck as $argument.policy; default is PROXY.",
+            node_link_line,
+        )
+
+    if WARP_PANEL_SCRIPT_PATH in generic_paths:
+        metadata["desc"] = "Displays WARP details for the current Surge route in an information panel."
+        warp_line, warp_props = next(
+            (line, props)
+            for line, props in generic_scripts
+            if unquote_property_value(props.get("script-path", "")) == WARP_PANEL_SCRIPT_PATH
+        )
+        script_name = warp_props.get("tag") or "WARP INFO"
+        sections["Panel"].append(
+            f'{script_name} = title={json.dumps(script_name, ensure_ascii=False)}, '
+            'content="Refresh to query the current Surge route.", style=info, '
+            f"script-name={script_name}"
+        )
+        add_report(
+            report,
+            path.name,
+            "generic-script-adapted",
+            "Added a Surge information Panel linked to the verified WARP generic script.",
+            warp_line,
+        )
     shared_enable_argument_names = collect_enable_argument_names(script_lines) & collect_script_argument_names(script_lines)
 
     for line in section_lines(source_sections, "General"):
@@ -971,7 +1799,7 @@ def convert_file(path: Path, output_root: Path, report: list[dict[str, str]], se
         sections["Rule"].append(convert_rule_line(line))
 
     for line in section_lines(source_sections, "Rewrite"):
-        convert_rewrite_line(line, sections, report, path.name)
+        convert_rewrite_line(line, sections, report, path.name, set(argument_defaults))
 
     for line in script_lines:
         convert_script_line(line, sections["Script"], report, path.name, argument_defaults, shared_enable_argument_names)
@@ -994,11 +1822,12 @@ def convert_file(path: Path, output_root: Path, report: list[dict[str, str]], se
         if key in metadata:
             output.append(f"#!{key}={metadata[key]}")
 
-    if argument_lines:
-        toggle_defaults = collect_enable_toggle_defaults(script_lines, argument_defaults, shared_enable_argument_names)
-        argument_items = convert_argument_lines(argument_lines, report, path.name, toggle_defaults)
-        if argument_items:
-            output.append("#!arguments=" + ",".join(argument_items))
+    toggle_defaults = collect_enable_toggle_defaults(script_lines, argument_defaults, shared_enable_argument_names)
+    argument_items = convert_argument_lines(argument_lines, report, path.name, toggle_defaults)
+    if NODE_LINK_CHECK_SCRIPT_PATH in generic_paths and "Policy" not in argument_defaults:
+        argument_items.append("Policy:PROXY")
+    if argument_items:
+        output.append("#!arguments=" + ",".join(argument_items))
 
     for section_name in SECTION_ORDER:
         lines = sections[section_name]
@@ -1059,7 +1888,13 @@ def convert_kelee_to_surge(input_dir: str, output_dir: str, report_path: str) ->
         files = sorted(input_root.glob("*.lpx"), key=lambda item: item.name)
 
         for file_path in files:
-            manifest.append(convert_file(file_path, temp_output_root, report, seen_files))
+            converted = convert_file(file_path, temp_output_root, report, seen_files)
+            if converted is not None:
+                manifest.append(converted)
+
+        fatal_items = fatal_report_items(report)
+        if fatal_items:
+            raise RuntimeError(fatal_report_message(fatal_items))
 
         temp_manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=4), encoding="utf-8", newline="\n")
         summary = {
@@ -1067,6 +1902,8 @@ def convert_kelee_to_surge(input_dir: str, output_dir: str, report_path: str) ->
             "input_dir": input_dir,
             "output_dir": output_dir,
             "total": len(files),
+            "converted": len(manifest),
+            "excluded": len(files) - len(manifest),
             "warnings": len(report),
             "items": report,
         }
@@ -1083,7 +1920,8 @@ def convert_kelee_to_surge(input_dir: str, output_dir: str, report_path: str) ->
         replace_file(temp_manifest_path, manifest_full_path, root)
         replace_file(temp_report_full_path, report_full_path, root)
 
-        print(f"Converted {len(files)} modules.")
+        print(f"Converted {len(manifest)} of {len(files)} modules.")
+        print(f"Excluded: {len(files) - len(manifest)}")
         print(f"Output: {output_root}")
         print(f"Manifest: {manifest_full_path}")
         print(f"Report: {report_full_path}")

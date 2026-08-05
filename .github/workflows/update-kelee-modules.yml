@@ -28,8 +28,14 @@ jobs:
         with:
           python-version: "3.x"
 
-      - name: Fetch and convert modules
+      - name: Verify jq
+        run: jq --version
+
+      - name: Fetch, convert, and validate modules
         run: python scripts/update_kelee_modules.py
+
+      - name: Run converter tests
+        run: python -m unittest discover -s tests
 
       - name: Commit changes
         run: |

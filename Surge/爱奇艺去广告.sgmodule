@@ -24,7 +24,6 @@ http-response-jq ^https:\/\/cards\.iqiyi\.com\/views_category\/3\.0\/category_ho
 http-response-jq ^https:\/\/cards\.iqiyi\.com\/waterfall(-plt)?\/3\.0\/feed\? 'del(.base.statistics | select(.ad_str)) | del(.. | select(.block_class?))'
 http-response-jq ^https:\/\/cards\.iqiyi\.com\/views_plt\/3\.0\/player_tabs_v2\? 'delpaths([["kv_pair","activity_tab"]])'
 http-response-jq ^https:\/\/cards\.iqiyi\.com\/views_plt\/3\.0\/player_tabs_v2\? 'del(.cards[] | select(.alias_name == "play_vip_promotion" or .alias_name == "play_detail_tag" or .alias_name == "play_chat_entrance" or .alias_name == "play_ad_no_vip" or .alias_name == "play_vertical_short_video" or .alias_name == "play_rap_custom" or .alias_name == "play_topical_tab" or .alias_name == "play_vertical" or .alias_name == "play_water_fall_like")) | del(.. | select(.block_class?))'
-http-response-jq ^https:\/\/comment-card\.iqiyi\.com\/views_comment\/3\.0\/long_video_comments\? ''
 http-response-jq ^https:\/\/cards\.iqiyi\.com\/views_search\/3\.0\/hot_query_search\? '.cards |= map(select(.alias_name as $name | $name != "ad_trueview" and $name != "ad_mobile_flow" and $name != "search_mid_text_ad")) | if .base.statistics.ad_str? then del(.base.statistics) else . end'
 http-response-jq ^https?:\/\/comment-card\.iqiyi\.com\/views_comment\/3\.0\/long_video_comments\? '.cards |= map(select(has("alias_name")))'
 http-response-jq ^https?:\/\/iface2\.iqiyi\.com\/views_menus\/3\.0\/bottom_theme\? 'delpaths([["theme_list"]])'

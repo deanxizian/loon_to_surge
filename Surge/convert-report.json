@@ -1,9 +1,11 @@
 {
-    "generated_at": "2026-08-03 17:45:57 +00:00",
+    "generated_at": "2026-08-05 16:37:55 +08:00",
     "input_dir": "Loon",
     "output_dir": "Surge",
     "total": 259,
-    "warnings": 37,
+    "converted": 258,
+    "excluded": 1,
+    "warnings": 42,
     "items": [
         {
             "file": "Auto_Join_TF.lpx",
@@ -52,6 +54,24 @@
             "kind": "external-policy",
             "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
             "line": "DOMAIN-SUFFIX, jsdelivr.net, PROXY"
+        },
+        {
+            "file": "KuGou_remove_ads.lpx",
+            "kind": "jq-expression-corrected",
+            "message": "Normalized missing JQ token separators and variable-binding grouping so the expression compiles.",
+            "line": "^https:\\/\\/gateway(retry)?\\.kugou\\.com\\/ocean\\/v\\d\\/tab\\/list_v\\d response-body-json-jq 'def namesToRemove:[\"AI帮唱\",\"长相思2\",\"K歌\",\"小说\",\"游戏\"];def removeParentIfNameMatches:if type==\"object\"then with_entries(select(.value|(type==\"object\"and .name as $name|$name|IN(namesToRemove[])|not)))|map_values(removeParentIfNameMatches)else .end;removeParentIfNameMatches'"
+        },
+        {
+            "file": "NodeLinkCheck.lpx",
+            "kind": "generic-script-adapted",
+            "message": "Added a Surge Policy module argument and passed it to NodeLinkCheck as $argument.policy; default is PROXY.",
+            "line": "generic script-path=https://kelee.one/Resource/JavaScript/NodeLinkCheck/NodeLinkCheck.js, tag=代理链路检测,img-url=link.circle.system"
+        },
+        {
+            "file": "Node_detection_tool.lpx",
+            "kind": "module-excluded",
+            "message": "Module was excluded from Surge output because generic script compatibility is not verified: https://kelee.one/Resource/JavaScript/Node_detection_tool/NetworkEntryAndExitQueries.js, https://kelee.one/Resource/JavaScript/Node_detection_tool/LocationDetection.js, https://kelee.one/Resource/JavaScript/Node_detection_tool/NodeUnlockDetection.js. Loon generic scripts may depend on selected-node context that Surge does not provide.",
+            "line": "generic script-path=https://kelee.one/Resource/JavaScript/Node_detection_tool/NetworkEntryAndExitQueries.js, timeout=10, tag=入口落地查询,img-url=globe.asia.australia.system"
         },
         {
             "file": "Prevent_DNS_Leaks.lpx",
@@ -192,22 +212,16 @@
             "line": "DOMAIN, scripthub.vercel.app, PROXY"
         },
         {
+            "file": "Script-Hub.lpx",
+            "kind": "script-property-corrected",
+            "message": "Removed duplicate script property/properties with identical values: timeout",
+            "line": "http-request ^https?:\\/\\/script\\.hub\\/($|edit\\/|reload) script-path=https://raw.githubusercontent.com/Script-Hub-Org/Script-Hub/main/script-hub.js, timeout=300, , timeout=300, tag=前端界面"
+        },
+        {
             "file": "Sub-Store.lpx",
             "kind": "external-policy",
             "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
             "line": "DOMAIN, sub-store.vercel.app, PROXY"
-        },
-        {
-            "file": "TelegramRedirect.lpx",
-            "kind": "unsupported-rewrite",
-            "message": "Unsupported rewrite action: if",
-            "line": "request if ${url} ~= /^https:\\/\\/t\\.me\\/([A-Za-z][A-Za-z0-9_]{3,30}[A-Za-z0-9])\\/?$/ as item then redirect(307, \"${app}://resolve?domain=${item.1}\")"
-        },
-        {
-            "file": "TelegramRedirect.lpx",
-            "kind": "unsupported-rewrite",
-            "message": "Unsupported rewrite action: if",
-            "line": "request if ${url} ~= /^https:\\/\\/t\\.me\\/\\+([A-Za-z0-9_-]+)\\/?$/ as item then redirect(307, \"${app}://join?invite=${item.1}\")"
         },
         {
             "file": "TestFlightRegionUnlock.lpx",
@@ -222,10 +236,28 @@
             "line": "DOMAIN, app.tubemaxapp.com, PROXY"
         },
         {
+            "file": "WARP_Node_Query.lpx",
+            "kind": "generic-script-adapted",
+            "message": "Added a Surge information Panel linked to the verified WARP generic script.",
+            "line": "generic script-path=https://raw.githubusercontent.com/VirgilClyne/Cloudflare/main/js/1.1.1.1.panel.js, timeout=10, tag=WARP · INFO,img-url=icloud.circle.system"
+        },
+        {
             "file": "WPS_checkin.lpx",
             "kind": "script-enable-toggle-emitted",
             "message": "Loon enable option was emitted as a Surge module line-prefix toggle.",
             "line": "http-request ^https:\\/\\/moapi\\.wps\\.cn\\/app\\/ios\\/v1\\/app$ script-path=https://kelee.one/Resource/JavaScript/WPS/WPS_checkin.js, requires-body=true, tag=捕获Cookie, enable={CaptureCookie}"
+        },
+        {
+            "file": "Zhibo8_remove_ads.lpx",
+            "kind": "rewrite-action-corrected",
+            "message": "JSON delete contains a complete JQ expression; converted as JQ instead of splitting it into key paths.",
+            "line": "^https:\\/\\/pre-match\\.qiumibao\\.com\\/pre_match_data\\/v\\d\\/\\d+-\\d+-\\d+\\/\\d+_fund\\.htm\\? response-body-json-del 'del(.data[] | select(.type == \"guide\"))'"
+        },
+        {
+            "file": "iQiYi_Video_remove_ads.lpx",
+            "kind": "rewrite-empty-skipped",
+            "message": "Empty JQ expression was skipped because Surge requires a non-empty JQ program.",
+            "line": "^https:\\/\\/comment-card\\.iqiyi\\.com\\/views_comment\\/3\\.0\\/long_video_comments\\? response-body-json-jq ''"
         }
     ]
 }

@@ -31,7 +31,7 @@ DOMAIN,ipv4.kkmh.com,REJECT,extended-matching,pre-matching
 ^https:\/\/h5\.kuaikanmanhua\.com\/v\d\/kb\/recharge_good\/list_h5 data-type=text data="{}" status-code=200 header="Content-Type:application/json"
 ^https:\/\/(cdn-)?pay\.kkmh\.com\/v\d\/kb\/wallet data-type=text data="{}" status-code=200 header="Content-Type:application/json"
 ^https:\/\/(cdn-)?api\.kkmh\.com\/v\d\/checkin\/api\/new_user\/tab_info$ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
-^https:\/\/h5\.kuaikanmanhua\.com\/game-h5\/new-user-welfare\/index\.html data-type=text data=" " status-code=200
+^https:\/\/h5\.kuaikanmanhua\.com\/game-h5\/new-user-welfare\/index\.html data-type=text data="" status-code=200
 ^https:\/\/(cdn-)?pay\.kkmh\.com\/v\d\/vip\/platform_base\/popups_display$ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
 ^https:\/\/(cdn-)?api\.kkmh\.com\/v\d\/checkin\/task_center\/get_by_task_type data-type=text data="{}" status-code=200 header="Content-Type:application/json"
 

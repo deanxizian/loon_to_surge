@@ -25,7 +25,7 @@ Surge/*.sgmodule
 Surge/convert-report.json
 ```
 
-报告里的 warning 不是一定表示失败，主要用于标记需要知情的转换事项，例如模块规则依赖目标 Surge 配置中存在 `PROXY` 策略组。
+成功生成后的 warning 是需要知情的转换事项，例如模块规则依赖目标 Surge 配置中存在 `PROXY` 策略组。依赖 Loon 专属运行上下文的 `generic` 模块不会强行转换，会从 Surge 输出中排除并记录 `module-excluded`；已核实具有 Surge 分支的脚本会使用原生 Policy 参数或 Panel 配置并记录 `generic-script-adapted`。其他无法安全转换的语法会直接使任务失败，并在覆盖前保留上一版 Surge 产物。
 
 ## 自动更新
 
@@ -41,6 +41,7 @@ GitHub Actions 每天 00:00（Asia/Shanghai）运行：
 
 ```powershell
 python scripts\convert_kelee_to_surge.py --input-dir Loon --output-dir Surge --report-path Surge\convert-report.json
+python scripts\validate_surge_modules.py --loon-dir Loon --surge-dir Surge --report-path Surge\convert-report.json
 ```
 
 运行测试：
@@ -52,6 +53,7 @@ python -m unittest discover -s tests
 ## 转换参考
 
 - [luestr/ProxyResource](https://github.com/luestr/ProxyResource)：Kelee Loon 模块来源。
+- [Loon Rewrite V2](https://nsloon.app/docs/Rewrite/rewrite_v2/)：新版 Rewrite 的语法、类型、Action 和执行顺序依据。
 - [QingRex/LoonKissSurge](https://github.com/QingRex/LoonKissSurge)：参考 Kelee 成品模块的 Surge 输出形态，包括 section 组织、`Map Local`、`http-response-jq`、`extended-matching`、`pre-matching` 等。
 - [Script-Hub-Org/Script-Hub](https://github.com/Script-Hub-Org/Script-Hub)：参考 `enable={...}` 转 Surge 行前缀开关，以及规则标记处理边界。
 - [Surge Manual](https://manual.nssurge.com/)：作为 Surge 模块语法和规则参数的最终依据。

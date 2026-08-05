@@ -1347,14 +1347,6 @@
         ]
     },
     {
-        "source": "Node_detection_tool.lpx",
-        "output": "节点检测工具.sgmodule",
-        "name": "节点检测工具",
-        "sections": [
-            "Script"
-        ]
-    },
-    {
         "source": "OKOK_remove_ads.lpx",
         "output": "OKOK去广告.sgmodule",
         "name": "OKOK去广告",
@@ -1898,6 +1890,7 @@
         "output": "Telegram重定向.sgmodule",
         "name": "Telegram重定向",
         "sections": [
+            "URL Rewrite",
             "MITM"
         ]
     },
@@ -2054,6 +2047,7 @@
         "output": "WARP节点查询.sgmodule",
         "name": "WARP节点查询",
         "sections": [
+            "Panel",
             "Script",
             "MITM"
         ]

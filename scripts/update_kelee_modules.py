@@ -9,6 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from convert_kelee_to_surge import convert_kelee_to_surge  # noqa: E402
 from fetch_kelee_modules import fetch_kelee_modules  # noqa: E402
+from validate_surge_modules import validate_surge_modules  # noqa: E402
 
 
 def main() -> None:
@@ -21,6 +22,8 @@ def main() -> None:
 
     fetch_kelee_modules(args.base_url, args.loon_dir)
     convert_kelee_to_surge(args.loon_dir, args.surge_dir, args.report_path)
+    summary = validate_surge_modules(args.loon_dir, args.surge_dir, args.report_path, require_jq=True)
+    print(f"Validated {summary['modules']} Surge modules.")
 
 
 if __name__ == "__main__":
