@@ -8,9 +8,10 @@
 #!loon_version=3.4.0(962)
 #!homepage=https://hub.kelee.one
 #!date=2026-06-01 17:11:35
+#!requirement=CORE_VERSION>=20
 
 [URL Rewrite]
-^https:\/\/zgrb\.epicc\.com\.cn\/G-HAPP\/h\/headlines\/queryHeadlines - reject
+^https:\/\/zgrb\.epicc\.com\.cn\/G-HAPP\/h\/headlines\/queryHeadlines _ reject
 
 [Map Local]
 ^https:\/\/zgrb\.epicc\.com\.cn\/G-HAPP\/a\/update\/startupPage\/v1 data-type=text data="{}" status-code=200 header="Content-Type:application/json"

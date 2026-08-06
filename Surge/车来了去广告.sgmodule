@@ -8,12 +8,13 @@
 #!loon_version=3.4.0(962)
 #!homepage=https://hub.kelee.one
 #!date=2026-07-04 19:58:28
+#!requirement=CORE_VERSION>=20
 
 [Rule]
 DOMAIN,ad.chelaile.net.cn,REJECT,extended-matching,pre-matching
 
 [URL Rewrite]
-^https:\/\/cdn\.web\.chelaile\.net\.cn\/info-flow\/index\.html\? - reject
+^https:\/\/cdn\.web\.chelaile\.net\.cn\/info-flow\/index\.html\? _ reject
 
 [Map Local]
 ^https:\/\/api\.chelaile\.net\.cn\/goocity\/flowPos\/home\? data-type=base64 data="KipZR0tKeyJqc29uciI6eyJzdGF0dXMiOiIwMCIsImRhdGEiOnsiYWR2ZXJ0TGlzdCI6W3siaWQiOjEwNiwidGl0bGUiOiLnq5nngrnlnLDlm74iLCJpY29uVXJsIjoiaHR0cHM6Ly9pbWFnZTMuY2hlbGFpbGUubmV0LmNuLzg5aUlxeGFNLnBuZyIsImxpbmtVcmwiOiIiLCJhZFR5cGUiOjUsInNob3dSZWREb3QiOjAsInVwZGF0ZVRpbWUiOjAsImFwcElkIjoiIiwiYXBwUGF0aCI6IiIsImJ1YmJsZU9yZGVyIjowLCJoNVR5cGUiOjB9LHsiaWQiOjEsInRpdGxlIjoi5Zyw6ZOBIiwiaWNvblVybCI6Imh0dHBzOi8vaW1hZ2UzLmNoZWxhaWxlLm5ldC5jbi9yZXdyTENXWS5wbmciLCJsaW5rVXJsIjoiaHR0cHM6Ly93ZWIuY2hlbGFpbGUubmV0LmNuL21ldHJvL2luZGV4Lmh0bWw/aDVfc3RhdHNfcmVmZXJlcj1pY29uIiwiYWRUeXBlIjoyLCJzaG93UmVkRG90IjowLCJ1cGRhdGVUaW1lIjowLCJhcHBJZCI6IiIsImFwcFBhdGgiOiIiLCJidWJibGVPcmRlciI6MCwiaDVUeXBlIjowfV19fX1ZR0tKIyM=" status-code=200 header="Content-Type:application/json"

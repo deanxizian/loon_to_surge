@@ -8,6 +8,7 @@
 #!loon_version=3.4.0(962)
 #!homepage=https://hub.kelee.one
 #!date=2026-06-01 17:11:35
+#!requirement=CORE_VERSION>=20
 
 [Rule]
 DOMAIN,adsmind.gdtimg.com,REJECT,extended-matching,pre-matching
@@ -46,7 +47,7 @@ IP-CIDR,47.110.187.87/32,REJECT,no-resolve,pre-matching
 URL-REGEX,"^http:\/\/y\.gtimg\.cn\/music\/common\/upload\/t_k_main_page_banner\/",REJECT,extended-matching
 
 [URL Rewrite]
-^https:\/\/tmeadkg\.y\.qq\.com\/maproxy\/getAd$ - reject
+^https:\/\/tmeadkg\.y\.qq\.com\/maproxy\/getAd$ _ reject
 
 [Map Local]
 ^https:\/\/wallpaper-\d+\.file\.myqcloud\.com\/dsl\/ data-type=text data="{}" status-code=200 header="Content-Type:application/json"

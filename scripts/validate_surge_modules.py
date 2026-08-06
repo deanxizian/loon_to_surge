@@ -10,6 +10,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import urllib.parse
 from typing import Any
 
 
@@ -17,6 +18,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from convert_kelee_to_surge import (  # noqa: E402
     FATAL_REPORT_KINDS,
+    MODULE_RULE_POLICIES,
     SECTION_ORDER,
     VERIFIED_SURGE_GENERIC_SCRIPT_PATHS,
     split_top_level,
@@ -25,7 +27,7 @@ from convert_kelee_to_surge import (  # noqa: E402
 
 
 INFORMATIONAL_REPORT_KINDS = {
-    "external-policy",
+    "argument-unused-dropped",
     "generic-script-adapted",
     "jq-expression-corrected",
     "module-excluded",
@@ -125,16 +127,30 @@ def parse_sections(text: str, file: str, errors: list[str]) -> tuple[list[str], 
     return order, sections
 
 
-def module_arguments(text: str) -> set[str]:
-    line = next((item for item in text.splitlines() if item.startswith("#!arguments=")), None)
-    if not line:
+def module_arguments(text: str, file: str, errors: list[str]) -> set[str]:
+    lines = [item for item in text.splitlines() if item.startswith("#!arguments=")]
+    if not lines:
+        return set()
+    if len(lines) > 1:
+        errors.append(f"{file}: must contain at most one #!arguments line")
+
+    payload = lines[0].removeprefix("#!arguments=")
+    if re.search(r"%(?![0-9A-Fa-f]{2})", payload):
+        errors.append(f"{file}: #!arguments contains invalid percent encoding")
+    try:
+        pairs = urllib.parse.parse_qsl(payload, keep_blank_values=True, strict_parsing=True)
+    except ValueError as exc:
+        errors.append(f"{file}: invalid #!arguments query string: {exc}")
         return set()
 
     arguments: set[str] = set()
-    for item in split_top_level(line.removeprefix("#!arguments="), ","):
-        key = item.split(":", 1)[0].strip()
-        if key:
-            arguments.add(key)
+    for key, _ in pairs:
+        if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", key):
+            errors.append(f"{file}: invalid module argument name: {key!r}")
+            continue
+        if key in arguments:
+            errors.append(f"{file}: duplicate module argument name: {key}")
+        arguments.add(key)
     return arguments
 
 
@@ -172,6 +188,10 @@ def validate_section_line(file: str, number: int, section: str, line: str, error
         rule_type = parts[0].strip().upper()
         policy = parts[2].strip().upper()
         options = {part.strip().lower() for part in parts[3:]}
+        if policy not in MODULE_RULE_POLICIES:
+            errors.append(
+                f"{prefix}: module Rule policy must be DIRECT, REJECT, or REJECT-TINYGIF: {line}"
+            )
         if rule_type in DOMAIN_RULE_TYPES | {"URL-REGEX"} and "extended-matching" not in options:
             errors.append(f"{prefix}: domain or URL rule is missing extended-matching: {line}")
         if not policy.startswith("REJECT") and "pre-matching" in options:
@@ -188,6 +208,8 @@ def validate_section_line(file: str, number: int, section: str, line: str, error
     if section == "URL Rewrite":
         if len(tokens) != 3 or tokens[-1] not in {"302", "307", "header", "reject"}:
             errors.append(f"{prefix}: invalid URL Rewrite shape: {tokens}")
+        elif tokens[-1] == "reject" and tokens[1] != "_":
+            errors.append(f"{prefix}: URL Rewrite reject replacement must be _: {line}")
         return
 
     if section == "Header Rewrite":
@@ -407,7 +429,6 @@ def validate_surge_modules(
     section_modules: Counter[str] = Counter()
     section_lines: Counter[str] = Counter()
     jq_expressions: list[tuple[str, int, str]] = []
-    proxy_rule_count = 0
 
     for path in surge_files:
         try:
@@ -427,6 +448,11 @@ def validate_surge_modules(
             errors.append(f"{path.name}: missing final newline")
         if sum(line.startswith("#!name=") for line in text.splitlines()) != 1:
             errors.append(f"{path.name}: must contain exactly one #!name")
+        system_lines = [line for line in text.splitlines() if line.startswith("#!system=")]
+        if len(system_lines) > 1:
+            errors.append(f"{path.name}: must contain at most one #!system line")
+        elif system_lines and system_lines[0].removeprefix("#!system=") not in {"ios", "mac"}:
+            errors.append(f"{path.name}: #!system must be ios or mac")
 
         order, sections = parse_sections(text, path.name, errors)
         if not order:
@@ -437,6 +463,8 @@ def validate_surge_modules(
         indexes = [SECTION_ORDER.index(name) for name in order if name in SECTION_ORDER]
         if indexes != sorted(indexes):
             errors.append(f"{path.name}: invalid section order: {order}")
+        if ("Body Rewrite" in sections or "Map Local" in sections) and "#!requirement=CORE_VERSION>=20" not in text.splitlines():
+            errors.append(f"{path.name}: Body Rewrite or Map Local requires #!requirement=CORE_VERSION>=20")
 
         panel_script_names: set[str] = set()
         script_names: set[str] = set()
@@ -455,10 +483,6 @@ def validate_surge_modules(
                             panel_script_names.add(unquote_property_value(value))
                 if effective and name == "Script" and " = " in effective:
                     script_names.add(effective.split(" = ", 1)[0].strip())
-                if name == "Rule":
-                    parts = split_top_level(line, ",")
-                    if len(parts) >= 3 and parts[2].strip().upper() == "PROXY":
-                        proxy_rule_count += 1
                 if name == "Body Rewrite":
                     try:
                         tokens = tokenize_surge_line(line)
@@ -481,6 +505,7 @@ def validate_surge_modules(
             "Loon Rewrite V2": r"^(?:request|response)\s+if\s+.+\s+then\s+",
             "Loon enable": r"\benable\s*=",
             "Loon enabled?": r"\benabled\?\s*=",
+            "legacy module placeholder": r"\{\{\{[^{}]+\}\}\}",
             "Loon mock option": r"\b(?:data-path|mock-data-is-base64)=",
         }
         for label, pattern in forbidden.items():
@@ -488,18 +513,21 @@ def validate_surge_modules(
                 if re.search(pattern, line):
                     errors.append(f"{path.name}:{number}: residual {label}: {line}")
 
-        declared = module_arguments(text)
-        referenced = set(re.findall(r"\{\{\{([^{}]+)\}\}\}", text))
-        missing_arguments = sorted(referenced - declared)
+        declared = module_arguments(text, path.name, errors)
+        replacement_text = "\n".join(
+            line for line in text.splitlines() if not line.startswith("#!arguments=")
+        )
+        referenced = set(re.findall(r"%([A-Za-z_][A-Za-z0-9_]*)%", replacement_text))
+        built_in_placeholders = {"APPEND", "DEVICE_NAME", "GATEWAY_ADDRESS", "INSERT", "PROFILE_DIR", "SSID"}
+        candidate_arguments = {
+            name for name in referenced if name not in built_in_placeholders and not re.fullmatch(r"[0-9A-Fa-f]{2}", name)
+        }
+        missing_arguments = sorted(candidate_arguments - declared)
         if missing_arguments:
             errors.append(f"{path.name}: undeclared module arguments: {missing_arguments}")
-
-    external_policy_count = sum(item.get("kind") == "external-policy" for item in items)
-    if external_policy_count != proxy_rule_count:
-        errors.append(
-            "PROXY rule/report count mismatch: "
-            f"rules={proxy_rule_count}, external-policy={external_policy_count}"
-        )
+        unused_arguments = sorted(declared - candidate_arguments)
+        if unused_arguments:
+            errors.append(f"{path.name}: unused module arguments: {unused_arguments}")
 
     resolved_jq = shutil.which(jq_command or "jq")
     if not resolved_jq and require_jq:

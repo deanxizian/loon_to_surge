@@ -8,6 +8,7 @@
 #!loon_version=3.4.0(962)
 #!homepage=https://hub.kelee.one
 #!date=2026-06-12 14:11:11
+#!requirement=CORE_VERSION>=20
 
 [Body Rewrite]
 http-response-jq ^https:\/\/gw-cn\.jiaoliuqu\.com\/mp-dolphin\/v\d\/rec\/recByPositions\? '.info.data |= map(if .materials and (.materials | type) == "array" then .materials |= map(select(has("adPosition") | not)) else . end)'

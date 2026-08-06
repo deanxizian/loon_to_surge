@@ -14,13 +14,13 @@ DOMAIN,nex.163.com,DIRECT,extended-matching
 DOMAIN,gw.m.163.com,DIRECT,extended-matching
 
 [URL Rewrite]
-^https?:\/\/interface\.music\.163\.com\/eapi\/ad - reject
-^https?:\/\/c\.m\.163\.com\/nc\/gl\/ - reject
-^https?:\/\/client\.mail\.163\.com\/apptrack\/confinfo\/searchMultiAds - reject
-^https?:\/\/g1\.163\.com\/madfeedback - reject
-^https?:\/\/interface\.music\.163\.com\/eapi\/ad\/ - reject
-^https?:\/\/support\.you\.163\.com\/xhr\/boot\/getBootMedia\.json - reject
-^https?:\/\/interface3?\.music\.163\.com/eapi/(ad|abtest|sp|hot|store|search/(specialkeyword|defaultkeyword|hot)) - reject
+^https?:\/\/interface\.music\.163\.com\/eapi\/ad _ reject
+^https?:\/\/c\.m\.163\.com\/nc\/gl\/ _ reject
+^https?:\/\/client\.mail\.163\.com\/apptrack\/confinfo\/searchMultiAds _ reject
+^https?:\/\/g1\.163\.com\/madfeedback _ reject
+^https?:\/\/interface\.music\.163\.com\/eapi\/ad\/ _ reject
+^https?:\/\/support\.you\.163\.com\/xhr\/boot\/getBootMedia\.json _ reject
+^https?:\/\/interface3?\.music\.163\.com/eapi/(ad|abtest|sp|hot|store|search/(specialkeyword|defaultkeyword|hot)) _ reject
 
 [Script]
 移除网易新闻广告 = type=http-response, pattern=^https:\/\/nex\.163\.com\/q, script-path=https://kelee.one/Resource/JavaScript/NeteaseNews/NeteaseNews_remove_ads.js, requires-body=true

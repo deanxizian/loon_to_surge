@@ -8,6 +8,7 @@
 #!loon_version=3.4.0(962)
 #!homepage=https://hub.kelee.one
 #!date=2026-07-03 08:23:50
+#!requirement=CORE_VERSION>=20
 
 [Body Rewrite]
 http-response-jq ^https:\/\/headline\.qiumibao\.com\/recommend\/list\? '.news|=map(select(.model=="news" or .model=="video"))'

@@ -8,9 +8,10 @@
 #!loon_version=3.4.0(962)
 #!homepage=https://hub.kelee.one
 #!date=2026-07-01 11:32:25
+#!requirement=CORE_VERSION>=20
 
 [URL Rewrite]
-^https:\/\/config\.nine\.ifeng\.com\/news\/h5prepublish\? - reject
+^https:\/\/config\.nine\.ifeng\.com\/news\/h5prepublish\? _ reject
 
 [Body Rewrite]
 http-response-jq ^https:\/\/config\.nine\.ifeng\.com\/news\/cow\? '.bottomNav|=map(select(.NavId=="bottomNavNews" or .NavId=="bottomNavMine"))'

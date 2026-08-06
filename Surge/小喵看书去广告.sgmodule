@@ -10,7 +10,7 @@
 #!date=2026-06-01 17:11:35
 
 [URL Rewrite]
-^https:\/\/api\.miaomiaoyd\.com\/book\/config\/getAdsSettings$ - reject
+^https:\/\/api\.miaomiaoyd\.com\/book\/config\/getAdsSettings$ _ reject
 
 [MITM]
 hostname = %APPEND% api.miaomiaoyd.com

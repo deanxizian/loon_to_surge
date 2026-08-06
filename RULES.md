@@ -8,9 +8,9 @@
 - QingRex/LoonKissSurge：主要对照其 Kelee 成品模块的 Surge 输出形态，包括 section 组织、`Map Local`、`http-response-jq`、`extended-matching`、`pre-matching` 等规则标记。
 - Script-Hub-Org/Script-Hub：主要参考 `enable={...}` 转 Surge 行前缀开关的方式，以及规则标记处理的边界。
 - Loon Script 与 Script API 官方文档：用于确认 `generic` 可接收被操作节点的 `$environment.params.node/nodeInfo`。
-- Surge 官方文档：作为最终语法边界，覆盖模块结构、`#!arguments`、`[Rule]`、`[Script]`、`[Map Local]`、`[MITM]` 和 `pre-matching` 的适用范围；Surge generic/Panel 只使用自身的普通脚本上下文及 `$input/$trigger`，不假设存在 Loon 的被选节点上下文。
+- Surge 官方文档：作为最终语法边界，覆盖模块结构、`#!arguments`、`#!system`、`#!requirement`、`[Rule]`、`[Script]`、`[Map Local]`、`[MITM]` 和 `pre-matching` 的适用范围；Surge generic/Panel 只使用自身的普通脚本上下文及 `$input/$trigger`，不假设存在 Loon 的被选节点上下文。
 
-当前规则不是对任一项目逐行照搬。特别是 `PROXY`：Surge 官方公共模块语义更偏向内置策略，但本项目目标配置明确存在 `PROXY` 策略组，因此当前会保留 `PROXY` 规则，并在报告中记录 `external-policy`。
+当前规则不是对任一项目逐行照搬。参考项目与 Surge Manual 冲突时，以当前 Surge Manual 为准。
 
 ## 输出文件
 
@@ -41,7 +41,9 @@ Loon 文件里的 `#!` 元数据按以下规则输出：
 
 - 保留：`name`、`desc`、`author`、`icon`
 - 固定添加：`#!category=iKeLee`
-- 继续保留：`openUrl`、`open`、`tag`、`system`、`system_version`、`loon_version`、`homepage`、`date`
+- 继续保留：`openUrl`、`open`、`tag`、`system_version`、`loon_version`、`homepage`、`date`
+- `system` 只输出 Surge 官方支持的 `ios` 或 `mac`：Loon 的 `iOS/iPadOS` 映射为 `ios`，`macOS` 映射为 `mac`；同时覆盖 iOS 和 macOS 时省略限制，`watchOS` 没有 Surge 对应目标。
+- 含 `[Body Rewrite]` 或内联 `[Map Local]` 的模块添加 `#!requirement=CORE_VERSION>=20`。
 
 模块文件名使用模块 `name`，并清理 Windows 不合法文件名字符。重名时自动追加 `-2`、`-3`。
 
@@ -53,8 +55,10 @@ Loon `[Argument]` 会转换为 Surge `#!arguments=`。
 
 - 每行取 `=` 左侧作为参数名。
 - 每行逗号分隔后的第二项作为默认值。
-- 输出格式为 `参数名:默认值`。
-- 脚本参数或 cron 里的 Loon 占位符 `{Name}` 会转换成 Surge 模块占位符 `{{{Name}}}`。
+- 按标准 query-string 输出 `参数名=默认值&参数名2=默认值2`，默认值进行 URL 编码。
+- 参数名只保留 ASCII 字母、数字和下划线；其他字符转换为 `_`，数字开头时加 `ARG_`。归一化后重名会阻止发布。
+- 脚本参数、cron 或 Rewrite 里的 Loon 占位符 `{Name}` / `${Name}` 会转换成 Surge 模块占位符 `%Name%`。
+- 未被任何生成行引用的 Loon 参数会删除，并记录 `argument-unused-dropped`。
 
 示例：
 
@@ -66,7 +70,7 @@ Cron=select, "0 1 * * *", "0 2 * * *", tag=Cron
 转换为：
 
 ```ini
-#!arguments=Cron:"0 1 * * *"
+#!arguments=Cron=0+1+%2A+%2A+%2A
 ```
 
 ## General
@@ -107,25 +111,11 @@ example.com
 DOMAIN,example.com,REJECT,extended-matching,pre-matching
 ```
 
-### PROXY 策略
+### 模块策略限制
 
-`PROXY` 策略规则会保留，并写入报告 `external-policy`。
+Surge Manual 明确规定模块 `[Rule]` 只允许 `DIRECT`、`REJECT`、`REJECT-TINYGIF`。因此，只要一个 Loon 模块含有 `PROXY`、`REJECT-DROP` 或其他策略，该模块会整项排除并记录一次 `module-excluded`，不会删除单条规则后发布语义残缺的模块。
 
-原因：当前目标 Surge 配置明确存在名为 `PROXY` 的策略或策略组，因此保留这类规则才能保持原模块语义。报告只用于提醒：这些模块依赖目标 Surge 主配置提供 `PROXY`。
-
-示例：
-
-```ini
-DOMAIN,example.com,PROXY
-```
-
-转换为：
-
-```ini
-DOMAIN,example.com,PROXY,extended-matching
-```
-
-非拒绝策略不会添加 `pre-matching`。
+即使用户主配置中存在名为 `PROXY` 的策略组，官方模块语法仍不保证可以引用它。是否放宽此限制只能依据当前 Surge 真机测试结果，不能根据普通配置文件的 `[Rule]` 能力推断。
 
 ### extended-matching
 
@@ -137,16 +127,11 @@ DOMAIN,example.com,PROXY,extended-matching
 - `URL-REGEX`
 - 逻辑规则里的域名类子规则
 
-对于代理类或其他非拒绝策略规则，只加 `extended-matching`，不加 `pre-matching`。
+对于 `DIRECT` 等非拒绝策略规则，只加 `extended-matching`，不加 `pre-matching`。
 
 ### pre-matching
 
-`pre-matching` 只留给拒绝类规则：
-
-- `REJECT`
-- `REJECT-DROP`
-- `REJECT-NO-DROP`
-- 其他以 `REJECT` 开头的策略
+生成模块中的 `pre-matching` 只用于允许发布的拒绝策略：`REJECT` 与 `REJECT-TINYGIF`。其他 `REJECT-*` 策略会先触发整模块排除，不会进入这一转换步骤。
 
 对非拒绝策略，如果原 Loon 规则里带了 `pre-matching`，转换时会移除。
 
@@ -226,7 +211,7 @@ pattern reject
 转换为：
 
 ```ini
-pattern - reject
+pattern _ reject
 ```
 
 ```ini
@@ -364,7 +349,7 @@ Name = type=http-request, pattern=pattern, script-path=https://example.com/a.js
 
 其中 `requires-body=false` 和 `binary-body-mode=false` 会省略。
 
-`argument` 会统一加双引号，内部 `{Name}` 会转换为 `{{{Name}}}`。
+`argument` 会统一加双引号，内部 `{Name}` 会转换为 `%Name%`。
 
 ### cron
 
@@ -377,7 +362,7 @@ cron {Cron} script-path=https://example.com/job.js, tag=Job
 转换为：
 
 ```ini
-Job = type=cron, cronexp={{{Cron}}}, script-path=https://example.com/job.js
+Job = type=cron, cronexp="%Cron%", script-path=https://example.com/job.js
 ```
 
 保留的属性：
@@ -418,7 +403,7 @@ Loon 的 `img-url` 只用于其 generic 脚本界面，Surge `[Script]` 没有�
 
 这两个脚本不是简单改名：
 
-- `NodeLinkCheck.js` 自带 Surge 分支并原生读取 `$argument.policy`。转换后增加模块参数 `Policy`（默认 `PROXY`），脚本参数为 `policy={{{Policy}}}`，避免脚本在没有参数时退回配置中的第一个策略组；同时移除只描述 Loon 长按节点流程的 `openUrl`，并注明依赖 Sub-Store 节点数据。
+- `NodeLinkCheck.js` 自带 Surge 分支并原生读取 `$argument.policy`。转换后增加模块参数 `Policy`（默认 `PROXY`），脚本参数为 `policy=%Policy%`，避免脚本在没有参数时退回配置中的第一个策略组；同时移除只描述 Loon 长按节点流程的 `openUrl`，并注明依赖 Sub-Store 节点数据。
 - `1.1.1.1.panel.js` 自带 Surge Panel 返回字段。转换后增加与 Script 同名并关联的 `[Panel]`，查询当前 Surge 路由，同时替换掉 Loon 的“长按节点”说明。
 
 两项适配均记录 `generic-script-adapted`，便于复核实际行为。
@@ -446,10 +431,10 @@ http-request ^https://example.com script-path=https://example.com/a.js, tag=Capt
 转换为：
 
 ```ini
-#!arguments=Capture:#
+#!arguments=Capture=%23
 
 [Script]
-{{{Capture}}}Capture = type=http-request, pattern=^https://example.com, script-path=https://example.com/a.js
+%Capture%Capture = type=http-request, pattern=^https://example.com, script-path=https://example.com/a.js
 ```
 
 默认值规则：
@@ -466,11 +451,11 @@ http-request ^https://example.com script-path=https://example.com/a.js, tag=Capt
 
 ### enable 参数同时也是脚本入参
 
-如果同一个参数既用于 `enable={Arg}`，又用于 `argument={Arg}` 或 cron 表达式，为避免把普通入参默认值改成 `#`，当前不会使用 `{{{Arg}}}` 行前缀开关。
+如果同一个参数既用于 `enable={Arg}`，又用于 `argument={Arg}` 或 cron 表达式，为避免把普通入参默认值改成 `#`，当前不会使用 `%Arg%` 行前缀开关。
 
 处理方式：
 
-- 保留 `#!arguments=Arg:false` 这类原始布尔默认值。
+- 保留 `#!arguments=Arg=false` 这类原始布尔默认值。
 - 根据默认值静态注释或保留对应脚本行。
 - 写入报告 `script-enable-shared-commented` 或 `script-enable-shared-kept`。
 
@@ -496,9 +481,9 @@ hostname = %APPEND% example.com, *.example.org
 
 `Surge/convert-report.json` 用于记录成功转换后仍需人工知情的项目。转换期间也使用相同类型收集错误，但致命错误会直接终止任务，不覆盖上一版报告和模块。当前常见类型：
 
-- `external-policy`：规则使用 `PROXY`，目标 Surge 主配置需要有同名策略或策略组。
+- `argument-unused-dropped`：Loon 声明了参数，但任何生成行都未引用，参数已从 Surge 输出删除。
 - `generic-script-adapted`：已核实的 generic 使用其原生 Surge 接口补充了 Policy 参数或 Panel 配置。
-- `module-excluded`：模块含有未经核实的 Loon generic 脚本，已从 Surge 输出和索引中排除。
+- `module-excluded`：模块含有 Surge 模块不允许的 Rule 策略、未经核实的 Loon generic 脚本或其他不可安全发布的模块级问题，已从 Surge 输出和索引中排除。
 - `script-enable-toggle-emitted`：`enable={Arg}` 已转为 Surge 行前缀开关。
 - `script-enable-shared-commented`：`enable` 参数同时是脚本入参，脚本行按默认值静态注释，参数默认值保留。
 - `script-enable-direct-commented`：`enable=false` 已转为注释脚本行。
@@ -514,9 +499,11 @@ hostname = %APPEND% example.com, *.example.org
 - `unsupported-script`：Script 行不支持或无法解析。
 - `argument-parse`：Argument 行无法解析。
 - `argument-default`：Argument 行找不到默认值。
+- `argument-name-collision`：参数名归一化后重名。
 - `mitm-unsupported`：MITM 行不支持。
+- `unsupported-system`：Loon 平台限制无法映射为 Surge 的 `ios/mac`。
 
-`external-policy`、`generic-script-adapted`、`module-excluded`、`script-enable-*`、`script-property-corrected`、`rewrite-empty-skipped`、`rewrite-action-corrected` 和 `jq-expression-corrected` 是成功生成后的知情报告；其中 `module-excluded` 表示对应模块没有发布到 Surge。`general-pass-through`、`jq-path-inline-failed`、`unsupported-*`、`argument-*`、`mitm-unsupported` 属于致命转换错误；出现时 GitHub Action 失败并保留上一版 Surge 产物。
+`argument-unused-dropped`、`generic-script-adapted`、`module-excluded`、`script-enable-*`、`script-property-corrected`、`rewrite-empty-skipped`、`rewrite-action-corrected` 和 `jq-expression-corrected` 是成功生成后的知情报告；其中 `module-excluded` 表示对应模块没有发布到 Surge。`general-pass-through`、`jq-path-inline-failed`、`unsupported-*`、`argument-parse`、`argument-default`、`argument-name-collision`、`mitm-unsupported` 属于致命转换错误；出现时 GitHub Action 失败并保留上一版 Surge 产物。
 
 因此，成功生成的 `convert-report.json` 中存在 warning 不等于模块不可用。当前上游的空 JQ 和错标 JQ 会被明确记录，不会生成空规则或拆坏的规则。
 
@@ -524,7 +511,7 @@ hostname = %APPEND% example.com, *.example.org
 
 当前转换明确不做以下事情：
 
-- 不把 `PROXY` 自动改成其他策略；当前会原样保留为 `PROXY`。
+- 不把 `PROXY`、`REJECT-DROP` 自动改成其他策略；含这类模块规则的模块会整项排除。
 - 不假设用户 Surge 配置里有某个自定义策略组。
 - 不给非拒绝类规则添加 `pre-matching`。
 - 不把共享脚本参数强行改成 `#` 开关。
@@ -547,9 +534,66 @@ git diff --check
 - 没有 Loon `enable=` 或 `enabled?=` 残留。
 - 没有 Loon Rewrite V2 的 `request if ... then` 或 `response if ... then` 残留。
 - 所有 `http-request-jq`、`http-response-jq` 表达式均通过真实 `jq` 编译。
-- 没有裸 `{Arg}` 占位符残留，应该是 `{{{Arg}}}`。
+- 没有旧式 `{{{Arg}}}` 或裸 `{Arg}` 占位符残留，模块参数应使用 `%Arg%`。
+- `#!arguments` 能按标准 query-string 解码，参数名唯一，且每个参数都被生成内容引用。
+- URL Rewrite 的拒绝行使用 `_ reject`。
+- 模块 `[Rule]` 只含 `DIRECT`、`REJECT`、`REJECT-TINYGIF`。
+- `#!system` 只可能是 `ios` 或 `mac`。
+- 含 `[Body Rewrite]` 或 `[Map Local]` 的模块带有 `#!requirement=CORE_VERSION>=20`。
 - Surge 清单与 `module-excluded` 报告合起来完整覆盖全部 Loon 模块。
 - 每个动态 `[Panel]` 引用的 `script-name` 都存在于同一模块的 `[Script]`。
-- `PROXY` 规则没有被错误添加 `pre-matching`。
 - 非拒绝策略没有 `pre-matching`。
 - 需要 `extended-matching` 的域名类、`URL-REGEX` 规则已经补齐。
+
+## 真机验证
+
+静态校验可以确认语法形状、占位符、section、规则策略和 JQ 编译，但不能证明 Surge 的参数 UI、MITM、第三方脚本及目标 App 的实际行为。以下项目必须在最新版 Surge 真机上验证。
+
+测试前先备份当前配置，安装并信任 Surge MITM CA；只在测试期间启用对应模块，查看 Surge 日志和最近请求，完成后删除临时模块。
+
+### 1. 模块参数与 enable 行前缀
+
+使用 `WPS每日签到.sgmodule`：
+
+1. 导入后打开模块参数，确认 `CaptureCookie` 默认值显示为 `#` 而不是 `%23`，`CRONEXP` 显示为 `0 8 * * *` 而不是带 `+` 的编码文本，且无未使用的 `DAY`。
+2. 保持 `CaptureCookie=#`，重新应用模块；捕获 Cookie 的 http-request 脚本应保持禁用。
+3. 将 `CaptureCookie` 清空并重新应用；该脚本应启用，cron 表达式仍应完整保留空格。
+4. 若 Surge 不允许保存空参数、保留了 `%CaptureCookie%`，或脚本状态与预期相反，则 `enable={Arg}` 行前缀方案不能视为可用。
+
+### 2. Rewrite V2 转换
+
+使用 `Telegram重定向.sgmodule`：
+
+1. 在参数中分别选择 `tg` 和 `sg`。
+2. 打开带路径捕获的 `https://t.me/<name>` 链接。
+3. 确认重定向协议随参数变化，`<name>` 被完整带入目标 URL，Surge 日志没有 URL Rewrite 解析错误。
+
+### 3. HTTP Rewrite、Map Local 与 JQ
+
+至少分别测试：`小蚕霸王餐去广告.sgmodule` 的 Header Rewrite、`36氪去广告.sgmodule` 的 Body Rewrite/Map Local，以及一个含 `http-response-jq` 的常用模块。
+
+1. 启用 MITM 和模块，清除目标 App 缓存后重新发起请求。
+2. 在最近请求中确认命中了对应 URL，响应被修改，日志中没有正则、JQ、Body Rewrite 或 Map Local 错误。
+3. JQ Body Rewrite 官方最低版本是 Surge iOS 5.14 / Mac 5.9；`CORE_VERSION>=20` 只覆盖基础 Body Rewrite 与内联 Map Local，因此 JQ 模块应使用最新版 Surge 实测。
+
+### 4. generic 与 Panel
+
+- `WARP节点查询.sgmodule`：Panel 能显示并刷新当前 Surge 路由信息，日志无脚本异常。
+- `代理链路检测.sgmodule`：准备有效的 Sub-Store 节点数据，分别选择两个真实策略，确认 `$argument.policy` 生效且检测的是所选策略。
+
+### 5. 平台限制
+
+在 iOS 导入 `555电影去广告.sgmodule`，确认 `#!system=ios` 被接受；再在 Surge Mac 尝试同一模块，确认客户端按平台限制拒绝或隐藏。`YouTube去广告.sgmodule` 不带平台限制，应能在两端导入。
+
+### 6. 官方未允许的 Rule 策略
+
+这是决定能否恢复策略型排除模块的关键 A/B 测试。先确保主配置确实存在 `PROXY` 策略组，再手工导入仅含下列内容的临时模块：
+
+```ini
+#!name=External Policy Smoke Test
+
+[Rule]
+DOMAIN,example.com,PROXY,extended-matching
+```
+
+记录三个结果：是否能导入、是否能启用、请求 `example.com` 时是否实际命中该规则。再把策略改成 `REJECT-DROP` 重复测试。只有当前 iOS 与 Mac Surge 都能稳定导入并实际生效，才有依据放宽官方文档规定的 `DIRECT/REJECT/REJECT-TINYGIF` 限制；仅“文件能导入”不算通过。

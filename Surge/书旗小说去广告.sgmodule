@@ -8,12 +8,13 @@
 #!loon_version=3.4.0(962)
 #!homepage=https://hub.kelee.one
 #!date=2026-06-01 17:11:35
+#!requirement=CORE_VERSION>=20
 
 [Rule]
 DOMAIN,render-web.11222.cn,REJECT,extended-matching,pre-matching
 
 [URL Rewrite]
-^https:\/\/ocean\.shuqireader\.com\/api\/render\/load\/resource - reject
+^https:\/\/ocean\.shuqireader\.com\/api\/render\/load\/resource _ reject
 
 [Map Local]
 ^https:\/\/huichuan\.sm\.cn\/nativead data-type=text data="{}" status-code=200 header="Content-Type:application/json"

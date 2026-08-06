@@ -8,6 +8,7 @@
 #!loon_version=3.4.0(962)
 #!homepage=https://hub.kelee.one
 #!date=2026-06-01 17:11:35
+#!requirement=CORE_VERSION>=20
 
 [Rule]
 DOMAIN,wxsnsdy.wxs.qq.com,REJECT,extended-matching,pre-matching
@@ -18,29 +19,29 @@ DOMAIN,ad.maoyan.com,REJECT,extended-matching,pre-matching
 DOMAIN,e.jparking.cn,REJECT,extended-matching,pre-matching
 
 [URL Rewrite]
-^https:\/\/webapi\.qmai\.cn\/web\/cmk-center\/marketing\/canvas\/advert-reach - reject
-^https:\/\/creditcardapp\.bankcomm\.com\/cnsvPmpaMdbcardWeb\/page\/getGuidePageAds - reject
-^https:\/\/mbmodule-openapi\.paas\.cmbchina\.com\/graphic\/v2\/module\/graphic - reject
-^https:\/\/app\.95504\.net\/app\/json\/page_ad\/initPageAd\?ver= - reject
-^https:\/\/minipro\.95504\.net\/app\/json\/ad\/getPopAdData - reject
-^https:\/\/minipro\.95504\.net\/app\/json\/ad\/getIndexAdData - reject
-^https:\/\/flow\.dmall\.com\/app\/home\/pops - reject
-^https:\/\/api\.yonghuivip\.com\/api\/fp\/homepage\/pop - reject
-^https:\/\/activity\.yonghuivip\.com\/api\/app\/fp\/homepage\/pop - reject
-^https:\/\/activity\.yonghuivip\.com\/api\/\/web\/shensuan\/ad - reject
-^https:\/\/sauron-report\.yonghuivip\.com\/collect - reject
-^https:\/\/ump\.ems\.com\.cn\/mailAd$ - reject
-^https:\/\/hdgateway\.zto\.com\/getApolloConfig - reject
-^https:\/\/hdgateway\.zto\.com\/track - reject
-^https:\/\/hdgateway\.zto\.com\/getAdInfo - reject
-^https:\/\/hdgateway\.zto\.com\/listJumperShow - reject
-^https:\/\/fscdn\.zto\.com\/fs1 - reject
-^https:\/\/aag\.enmonster\.com\/apa\/index\/advert\/skin - reject
-^https:\/\/ad\.xiaotucc\.com\/advert - reject
-^https:\/\/api-marketing\.zhinengxiyifang\.cn\/api\/v2\/cloudcode\/wechat\/bid - reject
-^https:\/\/ccmsupport-sz\.tenpay\.com\/cgi-bin\/common\/ccm_page_element.cgi - reject
-^https:\/\/api\.pinduoduo\.com\/api\/ktt_gateway\/activity\/feeds\/personal_home_page\/ - reject
-^https:\/\/api\.szbgcx\.cn\/account\/adv\/ - reject
+^https:\/\/webapi\.qmai\.cn\/web\/cmk-center\/marketing\/canvas\/advert-reach _ reject
+^https:\/\/creditcardapp\.bankcomm\.com\/cnsvPmpaMdbcardWeb\/page\/getGuidePageAds _ reject
+^https:\/\/mbmodule-openapi\.paas\.cmbchina\.com\/graphic\/v2\/module\/graphic _ reject
+^https:\/\/app\.95504\.net\/app\/json\/page_ad\/initPageAd\?ver= _ reject
+^https:\/\/minipro\.95504\.net\/app\/json\/ad\/getPopAdData _ reject
+^https:\/\/minipro\.95504\.net\/app\/json\/ad\/getIndexAdData _ reject
+^https:\/\/flow\.dmall\.com\/app\/home\/pops _ reject
+^https:\/\/api\.yonghuivip\.com\/api\/fp\/homepage\/pop _ reject
+^https:\/\/activity\.yonghuivip\.com\/api\/app\/fp\/homepage\/pop _ reject
+^https:\/\/activity\.yonghuivip\.com\/api\/\/web\/shensuan\/ad _ reject
+^https:\/\/sauron-report\.yonghuivip\.com\/collect _ reject
+^https:\/\/ump\.ems\.com\.cn\/mailAd$ _ reject
+^https:\/\/hdgateway\.zto\.com\/getApolloConfig _ reject
+^https:\/\/hdgateway\.zto\.com\/track _ reject
+^https:\/\/hdgateway\.zto\.com\/getAdInfo _ reject
+^https:\/\/hdgateway\.zto\.com\/listJumperShow _ reject
+^https:\/\/fscdn\.zto\.com\/fs1 _ reject
+^https:\/\/aag\.enmonster\.com\/apa\/index\/advert\/skin _ reject
+^https:\/\/ad\.xiaotucc\.com\/advert _ reject
+^https:\/\/api-marketing\.zhinengxiyifang\.cn\/api\/v2\/cloudcode\/wechat\/bid _ reject
+^https:\/\/ccmsupport-sz\.tenpay\.com\/cgi-bin\/common\/ccm_page_element.cgi _ reject
+^https:\/\/api\.pinduoduo\.com\/api\/ktt_gateway\/activity\/feeds\/personal_home_page\/ _ reject
+^https:\/\/api\.szbgcx\.cn\/account\/adv\/ _ reject
 
 [Body Rewrite]
 http-response-jq ^https:\/\/mcsp\.cloudpnr\.com\/api\/miniapp\/popular\/T_MINIAPP$ 'delpaths([["data"]])'

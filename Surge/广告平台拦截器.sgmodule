@@ -354,10 +354,10 @@ DOMAIN-SUFFIX,tobidad.com,REJECT,extended-matching,pre-matching
 DOMAIN,ep7.facebook.com,REJECT,extended-matching,pre-matching
 
 [URL Rewrite]
-^https:\/\/video-dsp\.pddpic\.com\/market-dsp-video\/ - reject
-^https:\/\/t-dsp\.pinduoduo\.com\/dspcb\/i\/mrk_ - reject
-^https:\/\/images\.pinduoduo\.com\/mrk\/ - reject
-^https:\/\/images\.pinduoduo\.com\/marketing_api\/ - reject
+^https:\/\/video-dsp\.pddpic\.com\/market-dsp-video\/ _ reject
+^https:\/\/t-dsp\.pinduoduo\.com\/dspcb\/i\/mrk_ _ reject
+^https:\/\/images\.pinduoduo\.com\/mrk\/ _ reject
+^https:\/\/images\.pinduoduo\.com\/marketing_api\/ _ reject
 
 [MITM]
 hostname = %APPEND% video-dsp.pddpic.com, t-dsp.pinduoduo.com, images.pinduoduo.com

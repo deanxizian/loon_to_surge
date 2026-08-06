@@ -1,65 +1,53 @@
 {
-    "generated_at": "2026-08-05 16:37:55 +08:00",
+    "generated_at": "2026-08-06 10:32:30 +08:00",
     "input_dir": "Loon",
     "output_dir": "Surge",
     "total": 259,
-    "converted": 258,
-    "excluded": 1,
-    "warnings": 42,
+    "converted": 247,
+    "excluded": 12,
+    "warnings": 19,
     "items": [
         {
+            "file": "AppleWeatherEnhancer.lpx",
+            "kind": "module-excluded",
+            "message": "Module was excluded from Surge output because module rules may only use DIRECT, REJECT, or REJECT-TINYGIF; found: REJECT-DROP.",
+            "line": "DOMAIN, weather-analytics-events.apple.com, REJECT-DROP"
+        },
+        {
             "file": "Auto_Join_TF.lpx",
-            "kind": "external-policy",
-            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "kind": "module-excluded",
+            "message": "Module was excluded from Surge output because module rules may only use DIRECT, REJECT, or REJECT-TINYGIF; found: PROXY.",
             "line": "DOMAIN, testflight.apple.com, PROXY"
         },
         {
-            "file": "Auto_Join_TF.lpx",
-            "kind": "script-enable-toggle-emitted",
-            "message": "Loon enable option was emitted as a Surge module line-prefix toggle.",
-            "line": "http-request ^https?:\\/\\/testflight\\.apple\\.com\\/v3\\/accounts\\/.*\\/apps$ script-path=https://kelee.one/Resource/JavaScript/TestFlight/CaptureAccountToken.js, tag=获取账号令牌, enable={CaptureAccountToken}"
-        },
-        {
-            "file": "Auto_Join_TF.lpx",
-            "kind": "script-enable-toggle-emitted",
-            "message": "Loon enable option was emitted as a Surge module line-prefix toggle.",
-            "line": "cron {TaskCron} script-path=https://kelee.one/Resource/JavaScript/TestFlight/AutoJoinTF.js, tag=自动加入TF, timeout=600, enable={RunTask}"
-        },
-        {
-            "file": "Auto_Join_TF.lpx",
-            "kind": "script-enable-toggle-emitted",
-            "message": "Loon enable option was emitted as a Surge module line-prefix toggle.",
-            "line": "cron {TaskMonitor} script-path=https://kelee.one/Resource/JavaScript/TestFlight/AutoMonitorTF.js, tag=监控TF位置, timeout=30, enable={RunMonitor}"
-        },
-        {
             "file": "Bilibili_remove_ads.lpx",
-            "kind": "external-policy",
-            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "kind": "module-excluded",
+            "message": "Module was excluded from Surge output because module rules may only use DIRECT, REJECT, or REJECT-TINYGIF; found: PROXY.",
             "line": "DOMAIN, bsbsb.top, PROXY"
         },
         {
-            "file": "Bilibili_remove_ads.lpx",
-            "kind": "script-enable-shared-commented",
-            "message": "Loon enable argument is also used as a script argument; script line was fixed to the default state to preserve the argument value.",
-            "line": "http-request ^https:\\/\\/(?:grpc\\.biliapi\\.net|app\\.bilibili\\.com)\\/bilibili\\.community\\.service\\.dm\\.v1\\.DM\\/DmSegMobile$ script-path=https://kelee.one/Resource/JavaScript/Bilibili/Bilibili_proto_request_kokoryh.js, argument=[{logLevel}], requires-body=true, binary-body-mode=true, timeout=10, enable={sponsorBlock}, tag=空降助手"
-        },
-        {
-            "file": "Bilibili_remove_ads.lpx",
-            "kind": "script-enable-toggle-emitted",
-            "message": "Loon enable option was emitted as a Surge module line-prefix toggle.",
-            "line": "http-request ^https:\\/\\/(?:grpc\\.biliapi\\.net|app\\.bilibili\\.com)\\/bilibili\\.(?:app\\.viewunite\\.v1\\.View\\/View|main\\.community\\.reply\\.v1\\.Reply\\/MainList)$ script-path=https://kelee.one/Resource/JavaScript/Bilibili/Bilibili_proto_request_kokoryh.js, argument=[{purifyComment}, {logLevel}], requires-body=true, binary-body-mode=true, timeout=10, enable={optimizeRequest}, tag=请求处理"
-        },
-        {
             "file": "BoxJs.lpx",
-            "kind": "external-policy",
-            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "kind": "module-excluded",
+            "message": "Module was excluded from Surge output because module rules may only use DIRECT, REJECT, or REJECT-TINYGIF; found: PROXY.",
             "line": "DOMAIN-SUFFIX, jsdelivr.net, PROXY"
+        },
+        {
+            "file": "HongKongToolbar_remove_ads.lpx",
+            "kind": "module-excluded",
+            "message": "Module was excluded from Surge output because module rules may only use DIRECT, REJECT, or REJECT-TINYGIF; found: REJECT-DROP.",
+            "line": "URL-REGEX, \"^https:\\/\\/a\\.881903\\.com\\/live\\/preroll\\/.*\\/.*\", REJECT-DROP"
         },
         {
             "file": "KuGou_remove_ads.lpx",
             "kind": "jq-expression-corrected",
             "message": "Normalized missing JQ token separators and variable-binding grouping so the expression compiles.",
             "line": "^https:\\/\\/gateway(retry)?\\.kugou\\.com\\/ocean\\/v\\d\\/tab\\/list_v\\d response-body-json-jq 'def namesToRemove:[\"AI帮唱\",\"长相思2\",\"K歌\",\"小说\",\"游戏\"];def removeParentIfNameMatches:if type==\"object\"then with_entries(select(.value|(type==\"object\"and .name as $name|$name|IN(namesToRemove[])|not)))|map_values(removeParentIfNameMatches)else .end;removeParentIfNameMatches'"
+        },
+        {
+            "file": "Line_remove_ads.lpx",
+            "kind": "module-excluded",
+            "message": "Module was excluded from Surge output because module rules may only use DIRECT, REJECT, or REJECT-TINYGIF; found: REJECT-DROP.",
+            "line": "URL-REGEX, \"^https:\\/\\/a\\.line\\.me\\/lass\\/api\\/v\\d\\/ads$\", REJECT-DROP"
         },
         {
             "file": "NodeLinkCheck.lpx",
@@ -75,164 +63,32 @@
         },
         {
             "file": "Prevent_DNS_Leaks.lpx",
-            "kind": "external-policy",
-            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "kind": "module-excluded",
+            "message": "Module was excluded from Surge output because module rules may only use DIRECT, REJECT, or REJECT-TINYGIF; found: PROXY.",
             "line": "DOMAIN-SUFFIX, dnsleaktest.com, PROXY"
         },
         {
-            "file": "Prevent_DNS_Leaks.lpx",
-            "kind": "external-policy",
-            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
-            "line": "DOMAIN-SUFFIX, dnsleak.com, PROXY"
-        },
-        {
-            "file": "Prevent_DNS_Leaks.lpx",
-            "kind": "external-policy",
-            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
-            "line": "DOMAIN-SUFFIX, expressvpn.com, PROXY"
-        },
-        {
-            "file": "Prevent_DNS_Leaks.lpx",
-            "kind": "external-policy",
-            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
-            "line": "DOMAIN-SUFFIX, nordvpn.com, PROXY"
-        },
-        {
-            "file": "Prevent_DNS_Leaks.lpx",
-            "kind": "external-policy",
-            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
-            "line": "DOMAIN-SUFFIX, surfshark.com, PROXY"
-        },
-        {
-            "file": "Prevent_DNS_Leaks.lpx",
-            "kind": "external-policy",
-            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
-            "line": "DOMAIN-SUFFIX, ipleak.net, PROXY"
-        },
-        {
-            "file": "Prevent_DNS_Leaks.lpx",
-            "kind": "external-policy",
-            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
-            "line": "DOMAIN-SUFFIX, perfect-privacy.com, PROXY"
-        },
-        {
-            "file": "Prevent_DNS_Leaks.lpx",
-            "kind": "external-policy",
-            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
-            "line": "DOMAIN-SUFFIX, browserleaks.com, PROXY"
-        },
-        {
-            "file": "Prevent_DNS_Leaks.lpx",
-            "kind": "external-policy",
-            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
-            "line": "DOMAIN-SUFFIX, browserleaks.org, PROXY"
-        },
-        {
-            "file": "Prevent_DNS_Leaks.lpx",
-            "kind": "external-policy",
-            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
-            "line": "DOMAIN-SUFFIX, vpnunlimited.com, PROXY"
-        },
-        {
-            "file": "Prevent_DNS_Leaks.lpx",
-            "kind": "external-policy",
-            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
-            "line": "DOMAIN-SUFFIX, whoer.net, PROXY"
-        },
-        {
-            "file": "Prevent_DNS_Leaks.lpx",
-            "kind": "external-policy",
-            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
-            "line": "DOMAIN-SUFFIX, whrq.net, PROXY"
-        },
-        {
-            "file": "Prevent_DNS_Leaks.lpx",
-            "kind": "external-policy",
-            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
-            "line": "DOMAIN-SUFFIX, astrill.com, PROXY"
-        },
-        {
-            "file": "Prevent_DNS_Leaks.lpx",
-            "kind": "external-policy",
-            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
-            "line": "DOMAIN-SUFFIX, astrill.org, PROXY"
-        },
-        {
-            "file": "Prevent_DNS_Leaks.lpx",
-            "kind": "external-policy",
-            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
-            "line": "DOMAIN-SUFFIX, dnsleak.asn247.net, PROXY"
-        },
-        {
-            "file": "Prevent_DNS_Leaks.lpx",
-            "kind": "external-policy",
-            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
-            "line": "DOMAIN-SUFFIX, surfshark.com, PROXY"
-        },
-        {
-            "file": "Prevent_DNS_Leaks.lpx",
-            "kind": "external-policy",
-            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
-            "line": "DOMAIN-SUFFIX, surfsharkdns.com, PROXY"
-        },
-        {
-            "file": "Prevent_DNS_Leaks.lpx",
-            "kind": "external-policy",
-            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
-            "line": "DOMAIN-SUFFIX, pixelscan.net, PROXY"
-        },
-        {
-            "file": "Prevent_DNS_Leaks.lpx",
-            "kind": "external-policy",
-            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
-            "line": "DOMAIN, ipv4.ping0.cc, PROXY"
-        },
-        {
-            "file": "Prevent_DNS_Leaks.lpx",
-            "kind": "external-policy",
-            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
-            "line": "DOMAIN, ipv6.ping0.cc, PROXY"
-        },
-        {
-            "file": "Prevent_DNS_Leaks.lpx",
-            "kind": "external-policy",
-            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
-            "line": "DOMAIN-SUFFIX, ipapi.co, PROXY"
-        },
-        {
-            "file": "Prevent_DNS_Leaks.lpx",
-            "kind": "external-policy",
-            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
-            "line": "DOMAIN, ip-scan.adspower.net, PROXY"
-        },
-        {
             "file": "Script-Hub.lpx",
-            "kind": "external-policy",
-            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "kind": "module-excluded",
+            "message": "Module was excluded from Surge output because module rules may only use DIRECT, REJECT, or REJECT-TINYGIF; found: PROXY.",
             "line": "DOMAIN, scripthub.vercel.app, PROXY"
         },
         {
-            "file": "Script-Hub.lpx",
-            "kind": "script-property-corrected",
-            "message": "Removed duplicate script property/properties with identical values: timeout",
-            "line": "http-request ^https?:\\/\\/script\\.hub\\/($|edit\\/|reload) script-path=https://raw.githubusercontent.com/Script-Hub-Org/Script-Hub/main/script-hub.js, timeout=300, , timeout=300, tag=前端界面"
-        },
-        {
             "file": "Sub-Store.lpx",
-            "kind": "external-policy",
-            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "kind": "module-excluded",
+            "message": "Module was excluded from Surge output because module rules may only use DIRECT, REJECT, or REJECT-TINYGIF; found: PROXY.",
             "line": "DOMAIN, sub-store.vercel.app, PROXY"
         },
         {
             "file": "TestFlightRegionUnlock.lpx",
-            "kind": "external-policy",
-            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "kind": "module-excluded",
+            "message": "Module was excluded from Surge output because module rules may only use DIRECT, REJECT, or REJECT-TINYGIF; found: PROXY.",
             "line": "DOMAIN, testflight.apple.com, PROXY"
         },
         {
             "file": "TubeMax_remove_ads.lpx",
-            "kind": "external-policy",
-            "message": "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
+            "kind": "module-excluded",
+            "message": "Module was excluded from Surge output because module rules may only use DIRECT, REJECT, or REJECT-TINYGIF; found: PROXY.",
             "line": "DOMAIN, app.tubemaxapp.com, PROXY"
         },
         {
@@ -246,6 +102,12 @@
             "kind": "script-enable-toggle-emitted",
             "message": "Loon enable option was emitted as a Surge module line-prefix toggle.",
             "line": "http-request ^https:\\/\\/moapi\\.wps\\.cn\\/app\\/ios\\/v1\\/app$ script-path=https://kelee.one/Resource/JavaScript/WPS/WPS_checkin.js, requires-body=true, tag=捕获Cookie, enable={CaptureCookie}"
+        },
+        {
+            "file": "WPS_checkin.lpx",
+            "kind": "argument-unused-dropped",
+            "message": "Declared Loon argument is not referenced by any converted module line and was removed.",
+            "line": "DAY=input, \"1\", tag=兑换天数, desc=每日签到时自动兑换的天数，可不做更改。"
         },
         {
             "file": "Zhibo8_remove_ads.lpx",

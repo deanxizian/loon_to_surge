@@ -8,6 +8,7 @@
 #!loon_version=3.4.0(962)
 #!homepage=https://hub.kelee.one
 #!date=2026-07-02 20:41:31
+#!requirement=CORE_VERSION>=20
 
 [Body Rewrite]
 http-response-jq ^https:\/\/api\.romielf\.com\/index\/indexv\d\? 'if (try (getpath(["data"]) | has("advertisement")) catch false) then (setpath(["data","advertisement"]; [])) else . end'

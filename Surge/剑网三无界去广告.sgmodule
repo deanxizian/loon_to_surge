@@ -5,7 +5,6 @@
 #!category=iKeLee
 #!openUrl=https://apps.apple.com/app/id1002355194
 #!tag=去广告
-#!system=iOS, iPadOS, macOS
 #!loon_version=3.4.0(962)
 #!homepage=https://hub.kelee.one
 #!date=2026-06-01 17:11:35
@@ -14,7 +13,7 @@
 always-real-ip = %APPEND% *-update.xoyocdn.com, xg-flow.xoyo.com
 
 [URL Rewrite]
-^https:\/\/jx3comm\.xoyocdn\.com\/jx3gc\/zhcn\/login_ad\/WebCareer\/WebCareerTab\.txt - reject
+^https:\/\/jx3comm\.xoyocdn\.com\/jx3gc\/zhcn\/login_ad\/WebCareer\/WebCareerTab\.txt _ reject
 
 [MITM]
 hostname = %APPEND% jx3comm.xoyocdn.com

@@ -8,6 +8,7 @@
 #!loon_version=3.4.0(962)
 #!homepage=https://hub.kelee.one
 #!date=2026-06-01 17:11:35
+#!requirement=CORE_VERSION>=20
 
 [Rule]
 DOMAIN,trackercollect.ddxq.mobi,REJECT,extended-matching,pre-matching
@@ -15,8 +16,8 @@ DOMAIN,ddfs-public.ddimg.mobi,REJECT,extended-matching,pre-matching
 DOMAIN,rttrack.ddxq.mobi,REJECT,extended-matching,pre-matching
 
 [URL Rewrite]
-^https?:\/\/maicai\.api\.ddxq\.mobi\/advert\/ - reject
-^https?:\/\/maicai\.api\.ddxq\.mobi\/homeApi\/getHomeAdPop - reject
+^https?:\/\/maicai\.api\.ddxq\.mobi\/advert\/ _ reject
+^https?:\/\/maicai\.api\.ddxq\.mobi\/homeApi\/getHomeAdPop _ reject
 
 [Body Rewrite]
 http-response-jq ^https:\/\/maicai\.api\.ddxq\.mobi\/homeApi\/categoriesNewDetail\? 'delpaths([["data","ad_info"]])'

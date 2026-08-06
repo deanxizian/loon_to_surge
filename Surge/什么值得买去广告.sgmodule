@@ -8,12 +8,13 @@
 #!loon_version=3.4.0(962)
 #!homepage=https://hub.kelee.one
 #!date=2026-06-01 17:11:35
+#!requirement=CORE_VERSION>=20
 
 [Rule]
 DOMAIN,adx-api.zdmimg.com,REJECT,extended-matching,pre-matching
 
 [URL Rewrite]
-^https:\/\/h5\.smzdm\.com\/user\/coupon\/coupon_list\? - reject
+^https:\/\/h5\.smzdm\.com\/user\/coupon\/coupon_list\? _ reject
 
 [Body Rewrite]
 http-response-jq ^https:\/\/app-api\.smzdm\.com\/util\/update$ 'if (try (getpath(["data"]) | has("silence_local_push")) catch false) then (setpath(["data","silence_local_push"]; 0)) else . end'

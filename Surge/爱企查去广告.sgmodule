@@ -8,9 +8,10 @@
 #!loon_version=3.4.0(962)
 #!homepage=https://hub.kelee.one
 #!date=2026-06-01 17:11:35
+#!requirement=CORE_VERSION>=20
 
 [URL Rewrite]
-^https:\/\/aiqicha\.baidu\.com\/app\/commonstatusAjax - reject
+^https:\/\/aiqicha\.baidu\.com\/app\/commonstatusAjax _ reject
 
 [Map Local]
 ^https:\/\/aiqicha\.baidu\.com\/app\/bannerPicAjax data-type=text data="{}" status-code=200 header="Content-Type:application/json"

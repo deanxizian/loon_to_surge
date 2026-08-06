@@ -6,6 +6,7 @@ import json
 import re
 import shutil
 import tempfile
+import urllib.parse
 import urllib.request
 from collections import OrderedDict
 from datetime import datetime
@@ -81,8 +82,10 @@ PRE_MATCHING_RULE_TYPES = {
     "SRC-PORT",
     "SRC-IP",
 }
+MODULE_RULE_POLICIES = frozenset({"DIRECT", "REJECT", "REJECT-TINYGIF"})
 FATAL_REPORT_KINDS = {
     "argument-default",
+    "argument-name-collision",
     "argument-parse",
     "general-pass-through",
     "jq-path-inline-failed",
@@ -90,6 +93,7 @@ FATAL_REPORT_KINDS = {
     "unsupported-header-rewrite",
     "unsupported-rewrite",
     "unsupported-script",
+    "unsupported-system",
 }
 LOON_SCRIPT_COMMON_PROPERTIES = {
     "argument",
@@ -244,8 +248,25 @@ def quote_jq_string(text: str) -> str:
     return json.dumps(text, ensure_ascii=False)
 
 
+def surge_argument_name(name: str) -> str:
+    normalized = re.sub(r"[^A-Za-z0-9_]", "_", name.strip())
+    if not normalized:
+        return "ARG"
+    if not re.match(r"[A-Za-z_]", normalized):
+        normalized = "ARG_" + normalized
+    return normalized
+
+
+def surge_argument_placeholder(name: str) -> str:
+    return f"%{surge_argument_name(name)}%"
+
+
 def convert_placeholder(text: str) -> str:
-    return re.sub(r"\{([A-Za-z0-9_.-]+)\}", r"{{{\1}}}", text)
+    return re.sub(
+        r"\{([A-Za-z0-9_.-]+)\}",
+        lambda match: surge_argument_placeholder(match.group(1)),
+        text,
+    )
 
 
 def convert_argument_value(value: str) -> str:
@@ -985,7 +1006,7 @@ def v2_render_template(
                 )
             rendered.append(f"${capture_index}")
         elif part.name in argument_names:
-            rendered.append(f"{{{{{{{part.name}}}}}}}")
+            rendered.append(surge_argument_placeholder(part.name))
         else:
             raise RewriteV2Error(f"{description} references unsupported or undefined variable ${{{part.name}}}")
     return "".join(rendered)
@@ -1410,7 +1431,7 @@ def convert_rewrite_line(
     rest = rest or ""
 
     if action == "reject":
-        sections["URL Rewrite"].append(f"{pattern} - reject")
+        sections["URL Rewrite"].append(f"{pattern} _ reject")
     elif action == "reject-dict":
         sections["Map Local"].append(f'{pattern} data-type=text data="{{}}" status-code=200 header="Content-Type:application/json"')
     elif action == "reject-img":
@@ -1485,7 +1506,7 @@ def script_enable_prefix(
             "Loon enable option was emitted as a Surge module line-prefix toggle.",
             line,
         )
-        return f"{{{{{{{name}}}}}}}"
+        return surge_argument_placeholder(name)
 
     prefix = surge_toggle_default(props["enable"])
     if prefix == "#":
@@ -1558,7 +1579,7 @@ def convert_script_line(
             return
         prefix = script_enable_prefix(props, argument_defaults, shared_argument_names, report, file, line)
         name = props.get("tag") or f"cron {len(output) + 1}"
-        parts = ["type=cron", f"cronexp={cron}"]
+        parts = ["type=cron", f'cronexp="{cron}"']
 
         for key in ("script-path", "timeout", "engine", "wake-system", "script-update-interval", "debug"):
             if key in props:
@@ -1597,21 +1618,53 @@ def convert_argument_lines(
     report: list[dict[str, str]],
     file: str,
     toggle_defaults: dict[str, str] | None = None,
-) -> list[str]:
+    used_names: set[str] | None = None,
+) -> list[tuple[str, str]]:
     toggle_defaults = toggle_defaults or {}
-    items: list[str] = []
+    used_names = used_names or set()
+    items: list[tuple[str, str]] = []
+    source_names: dict[str, str] = {}
     for line in lines:
         name, value = split_first(line, "=")
         if not value:
             add_report(report, file, "argument-parse", "Unable to parse argument line", line)
             continue
         name = name.strip()
+        if not name:
+            add_report(report, file, "argument-parse", "Argument name is empty", line)
+            continue
+        converted_name = surge_argument_name(name)
+        if converted_name in source_names:
+            previous_name = source_names[converted_name]
+            message = (
+                f"Argument {name!r} is declared more than once."
+                if previous_name == name
+                else f"Argument names {previous_name!r} and {name!r} both normalize to {converted_name!r}."
+            )
+            add_report(
+                report,
+                file,
+                "argument-name-collision",
+                message,
+                line,
+            )
+            continue
+        source_names[converted_name] = name
         parts = split_top_level(value, ",")
         if len(parts) < 2:
             add_report(report, file, "argument-default", "Unable to find argument default value", line)
             continue
+        if name not in used_names:
+            add_report(
+                report,
+                file,
+                "argument-unused-dropped",
+                "Declared Loon argument is not referenced by any converted module line and was removed.",
+                line,
+            )
+            continue
         default_value = toggle_defaults[name] if name in toggle_defaults else parts[1].strip()
-        items.append(f"{name}:{default_value}")
+        items.append((converted_name, unquote_property_value(default_value)))
     return items
 
 
@@ -1679,6 +1732,77 @@ def has_section(source_sections: dict[str, list[str]], name: str) -> bool:
     return bool(section_lines(source_sections, name))
 
 
+def unsupported_module_rule_policies(source_sections: dict[str, list[str]]) -> list[tuple[str, str]]:
+    unsupported: list[tuple[str, str]] = []
+    for raw_line in section_lines(source_sections, "Rule"):
+        line = strip_rule_inline_comment(raw_line)
+        if not line or is_bare_domain_rule(line):
+            continue
+        if re.match(r"^\S+\s+\d{3}\s+.+$", line):
+            continue
+
+        parts = split_top_level(line, ",")
+        if len(parts) < 3:
+            continue
+        rule_type = parts[0].strip().upper()
+        policy = parts[2].strip().upper()
+        if rule_type == "URL-REGEX" and policy in {"REJECT-DICT", "REJECT-IMG"}:
+            continue
+        if policy not in MODULE_RULE_POLICIES:
+            unsupported.append((line, policy))
+    return unsupported
+
+
+def convert_system_metadata(
+    value: str | None,
+    report: list[dict[str, str]],
+    file: str,
+) -> str | None:
+    if not value:
+        return None
+
+    targets: set[str] = set()
+    unsupported: list[str] = []
+    aliases = {
+        "ios": "ios",
+        "ipados": "ios",
+        "mac": "mac",
+        "macos": "mac",
+        "watchos": None,
+    }
+    for raw_platform in value.split(","):
+        platform = raw_platform.strip()
+        if not platform:
+            continue
+        mapped = aliases.get(platform.lower(), "unsupported")
+        if mapped == "unsupported":
+            unsupported.append(platform)
+        elif mapped:
+            targets.add(mapped)
+
+    if unsupported:
+        add_report(
+            report,
+            file,
+            "unsupported-system",
+            "Unknown Loon system value(s) cannot be mapped to Surge: " + ", ".join(unsupported),
+            f"#!system={value}",
+        )
+    if not targets and not unsupported:
+        add_report(
+            report,
+            file,
+            "unsupported-system",
+            "The Loon system restriction has no supported Surge target (ios or mac).",
+            f"#!system={value}",
+        )
+    if not targets:
+        return None
+    if targets == {"ios", "mac"}:
+        return None
+    return next(iter(targets))
+
+
 def convert_file(
     path: Path,
     output_root: Path,
@@ -1686,6 +1810,19 @@ def convert_file(
     seen_files: dict[str, int],
 ) -> dict[str, Any] | None:
     metadata, source_sections = parse_lpx(path)
+    unsupported_rules = unsupported_module_rule_policies(source_sections)
+    if unsupported_rules:
+        policies = ", ".join(dict.fromkeys(policy for _, policy in unsupported_rules))
+        add_report(
+            report,
+            path.name,
+            "module-excluded",
+            "Module was excluded from Surge output because module rules may only use DIRECT, REJECT, or "
+            f"REJECT-TINYGIF; found: {policies}.",
+            unsupported_rules[0][0],
+        )
+        return None
+
     sections: OrderedDict[str, list[str]] = OrderedDict((name, []) for name in SECTION_ORDER)
     argument_lines = section_lines(source_sections, "Argument")
     argument_defaults = collect_argument_defaults(argument_lines)
@@ -1787,15 +1924,6 @@ def convert_file(
                 sections["Map Local"].append(f"{pattern} data-type=tiny-gif status-code=200")
                 continue
 
-        if len(rule_parts) >= 3 and rule_parts[2].strip().upper() == "PROXY":
-            add_report(
-                report,
-                path.name,
-                "external-policy",
-                "Rule uses PROXY, which requires the target Surge profile to define a PROXY policy or policy group.",
-                line,
-            )
-
         sections["Rule"].append(convert_rule_line(line))
 
     for line in section_lines(source_sections, "Rewrite"):
@@ -1814,20 +1942,35 @@ def convert_file(
             add_report(report, path.name, "mitm-unsupported", "Unsupported MitM line", line)
 
     output: list[str] = []
+    surge_system = convert_system_metadata(metadata.get("system"), report, path.name)
     for key in ("name", "desc", "author", "icon"):
         if key in metadata:
             output.append(f"#!{key}={metadata[key]}")
     output.append("#!category=iKeLee")
-    for key in ("openUrl", "open", "tag", "system", "system_version", "loon_version", "homepage", "date"):
+    for key in ("openUrl", "open", "tag", "system_version", "loon_version", "homepage", "date"):
         if key in metadata:
             output.append(f"#!{key}={metadata[key]}")
+    if surge_system:
+        output.append(f"#!system={surge_system}")
+    if sections["Body Rewrite"] or sections["Map Local"]:
+        output.append("#!requirement=CORE_VERSION>=20")
 
     toggle_defaults = collect_enable_toggle_defaults(script_lines, argument_defaults, shared_enable_argument_names)
-    argument_items = convert_argument_lines(argument_lines, report, path.name, toggle_defaults)
+    used_argument_names: set[str] = set()
+    for section_name, lines in source_sections.items():
+        if section_name.lower() != "argument":
+            used_argument_names.update(collect_loon_placeholder_names("\n".join(lines)))
+    argument_items = convert_argument_lines(
+        argument_lines,
+        report,
+        path.name,
+        toggle_defaults,
+        used_argument_names,
+    )
     if NODE_LINK_CHECK_SCRIPT_PATH in generic_paths and "Policy" not in argument_defaults:
-        argument_items.append("Policy:PROXY")
+        argument_items.append(("Policy", "PROXY"))
     if argument_items:
-        output.append("#!arguments=" + ",".join(argument_items))
+        output.append("#!arguments=" + urllib.parse.urlencode(argument_items))
 
     for section_name in SECTION_ORDER:
         lines = sections[section_name]

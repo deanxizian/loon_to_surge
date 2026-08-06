@@ -8,9 +8,10 @@
 #!loon_version=3.4.0(962)
 #!homepage=https://hub.kelee.one
 #!date=2026-07-02 19:32:38
+#!requirement=CORE_VERSION>=20
 
 [URL Rewrite]
-^https:\/\/jiafeigou-1251885898\.cos\.ap-guangzhou\.myqcloud\.com\/forever\/web_server\/app_config\/banner_\d+ - reject
+^https:\/\/jiafeigou-1251885898\.cos\.ap-guangzhou\.myqcloud\.com\/forever\/web_server\/app_config\/banner_\d+ _ reject
 
 [Map Local]
 ^https:\/\/fast\.jfgou\.com:1443\/api\/web\/v\d\/no\/app\/advertisement\/ data-type=text data="{}" status-code=200 header="Content-Type:application/json"

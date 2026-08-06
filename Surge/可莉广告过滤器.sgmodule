@@ -7,6 +7,7 @@
 #!loon_version=3.4.0(962)
 #!homepage=https://hub.kelee.one
 #!date=2026-06-01 17:11:35
+#!requirement=CORE_VERSION>=20
 
 [Rule]
 DOMAIN,acdn.adnxs.com,REJECT,extended-matching,pre-matching
@@ -33,35 +34,35 @@ DOMAIN,mallapi2.qinlinkeji.com,REJECT,extended-matching,pre-matching
 DOMAIN,open-pixon.ads-pixiv.net,REJECT,extended-matching,pre-matching
 
 [URL Rewrite]
-^https?:\/\/api-access\.pangolin-sdk-toutiao\.com\/api\/ad\/union\/sdk - reject
-^https:\/\/cdn\.web\.chelaile\.net\.cn\/info-flow\/index\.html - reject
-^http:\/\/mercury-gateway\.ixiaochuan\.cn\/mercury\/v1\/ad\/ - reject
-^https?:\/\/home\.mi\.com\/cgi-op\/api\/v\d\/recommendation\/banner - reject
-^https?:\/\/(api-mifit|api-mifit-\w+)\.huami\.com\/discovery\/mi\/discovery\/\w+_ad\? - reject
-^https:\/\/api-mifit-cn2\.huami\.com\/discovery\/mi\/cards\/startpage_ad - reject
-^https:\/\/apiwz\.midukanshu\.com\/advert\/getPopup$ - reject
-^https:\/\/apiwz\.midukanshu\.com\/advert\/treasureInfo$ - reject
-^https:\/\/apiwz\.midukanshu\.com\/config\/getAds$ - reject
-^http:\/\/img\.dailmo\.com\/img\/61\/23c7125bfe6166d69f3bff5b0ca4d31e\.jpg - reject
-^http:\/\/img\.dailmo\.com\/img\/50\/edb40c6392f848df37f9c31d8a6f90f6\.jpg - reject
-^http:\/\/img\.dailmo\.com\/img\/6\/90585d9e96c73dd49644af57d8501624\.jpg - reject
-^http:\/\/img\.dailmo\.com\/img\/5\/6cb2aa237ce1f65944aa1ecb29fbdeef\.jpg - reject
-^http:\/\/img\.allahall\.com\/img\/61\/23c7125bfe6166d69f3bff5b0ca4d31e\.jpg - reject
-^http:\/\/img\.allahall\.com\/img\/50\/edb40c6392f848df37f9c31d8a6f90f6\.jpg - reject
-^http:\/\/img\.allahall\.com\/img\/6\/90585d9e96c73dd49644af57d8501624\.jpg - reject
-^http:\/\/img\.allahall\.com\/img\/5\/6cb2aa237ce1f65944aa1ecb29fbdeef\.jpg - reject
-^http:\/\/img\.allahall\.com\/img\/59\/6a13a75dfe46ebfdac96bd27ef098885\.jpg - reject
-^https:\/\/api\.(pinduoduo|yangkeduo)\.com\/api\/cappuccino\/splash - reject
-^https:\/\/gw\.alicdn\.com\/mt\/ - reject
-^https:\/\/gw\.alicdn\.com\/tfs\/.+\d{3,4}-\d{4} - reject
-^https:\/\/gw\.alicdn\.com\/tps\/.+\d{3,4}-\d{4} - reject
-^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.taobao\.idle\.home\.welcome - reject
-^http:\/\/home\.umetrip\.com\/gateway\/api\/umetrip\/native - reject
-^http:\/\/umerp\.umetrip\.com\/gateway\/api\/umetrip\/native - reject
-^https:\/\/client\.app\.coc\.10086\.cn\/biz-orange\/DN\/init\/startInit$ - reject
-^https?:\/\/tower\.ubixioe\.com\/mob\/mediation - reject
-^https?:\/\/sdk1xyajs\.data\.kuiniuca\.com - reject
-^https:\/\/app\.10099\.com\.cn\/contact-web\/api\/version\/getFlashScreenPage - reject
+^https?:\/\/api-access\.pangolin-sdk-toutiao\.com\/api\/ad\/union\/sdk _ reject
+^https:\/\/cdn\.web\.chelaile\.net\.cn\/info-flow\/index\.html _ reject
+^http:\/\/mercury-gateway\.ixiaochuan\.cn\/mercury\/v1\/ad\/ _ reject
+^https?:\/\/home\.mi\.com\/cgi-op\/api\/v\d\/recommendation\/banner _ reject
+^https?:\/\/(api-mifit|api-mifit-\w+)\.huami\.com\/discovery\/mi\/discovery\/\w+_ad\? _ reject
+^https:\/\/api-mifit-cn2\.huami\.com\/discovery\/mi\/cards\/startpage_ad _ reject
+^https:\/\/apiwz\.midukanshu\.com\/advert\/getPopup$ _ reject
+^https:\/\/apiwz\.midukanshu\.com\/advert\/treasureInfo$ _ reject
+^https:\/\/apiwz\.midukanshu\.com\/config\/getAds$ _ reject
+^http:\/\/img\.dailmo\.com\/img\/61\/23c7125bfe6166d69f3bff5b0ca4d31e\.jpg _ reject
+^http:\/\/img\.dailmo\.com\/img\/50\/edb40c6392f848df37f9c31d8a6f90f6\.jpg _ reject
+^http:\/\/img\.dailmo\.com\/img\/6\/90585d9e96c73dd49644af57d8501624\.jpg _ reject
+^http:\/\/img\.dailmo\.com\/img\/5\/6cb2aa237ce1f65944aa1ecb29fbdeef\.jpg _ reject
+^http:\/\/img\.allahall\.com\/img\/61\/23c7125bfe6166d69f3bff5b0ca4d31e\.jpg _ reject
+^http:\/\/img\.allahall\.com\/img\/50\/edb40c6392f848df37f9c31d8a6f90f6\.jpg _ reject
+^http:\/\/img\.allahall\.com\/img\/6\/90585d9e96c73dd49644af57d8501624\.jpg _ reject
+^http:\/\/img\.allahall\.com\/img\/5\/6cb2aa237ce1f65944aa1ecb29fbdeef\.jpg _ reject
+^http:\/\/img\.allahall\.com\/img\/59\/6a13a75dfe46ebfdac96bd27ef098885\.jpg _ reject
+^https:\/\/api\.(pinduoduo|yangkeduo)\.com\/api\/cappuccino\/splash _ reject
+^https:\/\/gw\.alicdn\.com\/mt\/ _ reject
+^https:\/\/gw\.alicdn\.com\/tfs\/.+\d{3,4}-\d{4} _ reject
+^https:\/\/gw\.alicdn\.com\/tps\/.+\d{3,4}-\d{4} _ reject
+^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.taobao\.idle\.home\.welcome _ reject
+^http:\/\/home\.umetrip\.com\/gateway\/api\/umetrip\/native _ reject
+^http:\/\/umerp\.umetrip\.com\/gateway\/api\/umetrip\/native _ reject
+^https:\/\/client\.app\.coc\.10086\.cn\/biz-orange\/DN\/init\/startInit$ _ reject
+^https?:\/\/tower\.ubixioe\.com\/mob\/mediation _ reject
+^https?:\/\/sdk1xyajs\.data\.kuiniuca\.com _ reject
+^https:\/\/app\.10099\.com\.cn\/contact-web\/api\/version\/getFlashScreenPage _ reject
 
 [Body Rewrite]
 http-response ^https?:\/\/cmds\.omesoft\.com\/HypnotistWS\.asmx <GetADResult>\.\*\?<\/GetADResult> <GetADResult>{"ret":0,"msg":"正常","err_code":0,"data":{"ad":[]}}</GetADResult>

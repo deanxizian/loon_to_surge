@@ -8,6 +8,7 @@
 #!loon_version=3.5.0(969)
 #!homepage=https://hub.kelee.one
 #!date=2026-07-31 23:26:04
+#!requirement=CORE_VERSION>=20
 
 [Body Rewrite]
 http-response-jq ^https:\/\/tcast-o\.api\.leiniao\.com\/tcast\/v\d\/config\/function\? '.data |= map(select(.module == "tools"))'

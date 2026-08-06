@@ -8,6 +8,7 @@
 #!loon_version=3.4.0(962)
 #!homepage=https://hub.kelee.one
 #!date=2026-07-01 00:19:10
+#!requirement=CORE_VERSION>=20
 
 [Map Local]
 ^https:\/\/api\.tiantiantiaosheng\.com\/api\d\/abtest\/ads_v\d\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"

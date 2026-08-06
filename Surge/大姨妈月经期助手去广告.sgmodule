@@ -8,9 +8,10 @@
 #!loon_version=3.4.0(962)
 #!homepage=https://hub.kelee.one
 #!date=2026-07-03 08:57:49
+#!requirement=CORE_VERSION>=20
 
 [URL Rewrite]
-^https:\/\/shop18476221\.m\.youzan\.com\/wscshop\/showcase\/feature\? - reject
+^https:\/\/shop18476221\.m\.youzan\.com\/wscshop\/showcase\/feature\? _ reject
 
 [Body Rewrite]
 http-response-jq ^https:\/\/forumapi\.yoloho\.com\/index\/recommend\/listV\d\? '.recommendList |= map(select(.voType == 0))'

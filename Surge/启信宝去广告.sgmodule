@@ -8,9 +8,10 @@
 #!loon_version=3.4.0(962)
 #!homepage=https://hub.kelee.one
 #!date=2026-06-01 17:11:35
+#!requirement=CORE_VERSION>=20
 
 [URL Rewrite]
-^https:\/\/qxb-minicode-pic-osscache\.qixin\.com\/web\/ - reject
+^https:\/\/qxb-minicode-pic-osscache\.qixin\.com\/web\/ _ reject
 
 [Map Local]
 ^https:\/\/appc\.qixin\.com\/v4\/general\/getSearchPlaceholderRedirect$ data-type=text data="{}" status-code=200 header="Content-Type:application/json"

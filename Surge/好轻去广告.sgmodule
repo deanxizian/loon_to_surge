@@ -8,6 +8,7 @@
 #!loon_version=3.5.0(969)
 #!homepage=https://hub.kelee.one
 #!date=2026-07-15 10:19:17
+#!requirement=CORE_VERSION>=20
 
 [Body Rewrite]
 http-response-jq ^https:\/\/apisvr\.iyunmai\.com\/api\/ios\/apps\/get-online-parameter-list\.json\? '.data.rows |= map(select(.name | IN("AC_startTime","AC_endTime","AC_enable","AC_url","AC_challenge_tip","AC_challenge_tip_id","AC_pt_tip","AC_pt_tip_id","AC_pt_go_tmall_jd","month7_activity","AC_xmas_isOpen","home_show_info","new_user_credit_exchange_info","AC_share_recommendUrl","AC_share_recommendUrl_2","AC_share_recommendUrl_3") | not))'

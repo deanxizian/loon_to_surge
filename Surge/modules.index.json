@@ -133,16 +133,6 @@
         ]
     },
     {
-        "source": "AppleWeatherEnhancer.lpx",
-        "output": "Apple天气增强.sgmodule",
-        "name": "Apple天气增强",
-        "sections": [
-            "Rule",
-            "Script",
-            "MITM"
-        ]
-    },
-    {
         "source": "AutoHome_remove_ads.lpx",
         "output": "汽车之家去广告.sgmodule",
         "name": "汽车之家去广告",
@@ -150,15 +140,6 @@
             "Map Local",
             "Script",
             "MITM"
-        ]
-    },
-    {
-        "source": "Auto_Join_TF.lpx",
-        "output": "自动加入TestFlight.sgmodule",
-        "name": "自动加入TestFlight",
-        "sections": [
-            "Rule",
-            "Script"
         ]
     },
     {
@@ -272,19 +253,6 @@
         ]
     },
     {
-        "source": "Bilibili_remove_ads.lpx",
-        "output": "哔哩哔哩去广告.sgmodule",
-        "name": "哔哩哔哩去广告",
-        "sections": [
-            "Rule",
-            "Header Rewrite",
-            "Body Rewrite",
-            "Map Local",
-            "Script",
-            "MITM"
-        ]
-    },
-    {
         "source": "BitqiuPan_remove_ads.lpx",
         "output": "比特球云盘去广告.sgmodule",
         "name": "比特球云盘去广告",
@@ -331,16 +299,6 @@
         "sections": [
             "Body Rewrite",
             "Map Local",
-            "Script",
-            "MITM"
-        ]
-    },
-    {
-        "source": "BoxJs.lpx",
-        "output": "BoxJs.sgmodule",
-        "name": "BoxJs",
-        "sections": [
-            "Rule",
             "Script",
             "MITM"
         ]
@@ -856,15 +814,6 @@
         ]
     },
     {
-        "source": "HongKongToolbar_remove_ads.lpx",
-        "output": "Hong Kong Toolbar去广告.sgmodule",
-        "name": "Hong Kong Toolbar去广告",
-        "sections": [
-            "Rule",
-            "MITM"
-        ]
-    },
-    {
         "source": "Huxiu_remove_ads.lpx",
         "output": "虎嗅去广告.sgmodule",
         "name": "虎嗅去广告",
@@ -1102,17 +1051,6 @@
         "output": "掌上英雄联盟去广告.sgmodule",
         "name": "掌上英雄联盟去广告",
         "sections": [
-            "Map Local",
-            "MITM"
-        ]
-    },
-    {
-        "source": "Line_remove_ads.lpx",
-        "output": "Line去广告.sgmodule",
-        "name": "Line去广告",
-        "sections": [
-            "Rule",
-            "URL Rewrite",
             "Map Local",
             "MITM"
         ]
@@ -1438,14 +1376,6 @@
         ]
     },
     {
-        "source": "Prevent_DNS_Leaks.lpx",
-        "output": "DNS防泄露.sgmodule",
-        "name": "DNS防泄露",
-        "sections": [
-            "Rule"
-        ]
-    },
-    {
         "source": "PuPuMall_remove_ads.lpx",
         "output": "朴朴超市去广告.sgmodule",
         "name": "朴朴超市去广告",
@@ -1647,16 +1577,6 @@
         ]
     },
     {
-        "source": "Script-Hub.lpx",
-        "output": "Script-Hub.sgmodule",
-        "name": "Script-Hub",
-        "sections": [
-            "Rule",
-            "Script",
-            "MITM"
-        ]
-    },
-    {
         "source": "SeasunJX3_remove_ads.lpx",
         "output": "剑网三无界去广告.sgmodule",
         "name": "剑网三无界去广告",
@@ -1807,16 +1727,6 @@
         ]
     },
     {
-        "source": "Sub-Store.lpx",
-        "output": "Sub-Store.sgmodule",
-        "name": "Sub-Store",
-        "sections": [
-            "Rule",
-            "Script",
-            "MITM"
-        ]
-    },
-    {
         "source": "TCLnScreen_remove_ads.lpx",
         "output": "多屏互动去广告.sgmodule",
         "name": "多屏互动去广告",
@@ -1916,16 +1826,6 @@
         ]
     },
     {
-        "source": "TestFlightRegionUnlock.lpx",
-        "output": "TestFlight地区解锁.sgmodule",
-        "name": "TestFlight地区解锁",
-        "sections": [
-            "Rule",
-            "Body Rewrite",
-            "MITM"
-        ]
-    },
-    {
         "source": "TianQiTong_remove_ads.lpx",
         "output": "天气通去广告.sgmodule",
         "name": "天气通去广告",
@@ -1963,16 +1863,6 @@
         "name": "图怪兽去广告",
         "sections": [
             "Map Local",
-            "MITM"
-        ]
-    },
-    {
-        "source": "TubeMax_remove_ads.lpx",
-        "output": "TubeMax去广告.sgmodule",
-        "name": "TubeMax去广告",
-        "sections": [
-            "Rule",
-            "URL Rewrite",
             "MITM"
         ]
     },

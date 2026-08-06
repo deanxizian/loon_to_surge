@@ -10,7 +10,7 @@
 #!date=2026-06-01 17:11:35
 
 [URL Rewrite]
-^https:\/\/cili\.xfuse\.fun\/s\/ - reject
+^https:\/\/cili\.xfuse\.fun\/s\/ _ reject
 
 [MITM]
 hostname = %APPEND% cili.xfuse.fun, i.micecube.com, img.mofyi.com
