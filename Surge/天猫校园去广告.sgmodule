@@ -8,7 +8,7 @@
 #!loon_version=3.4.0(962)
 #!homepage=https://hub.kelee.one
 #!date=2026-06-30 18:13:11
-#!requirement=CORE_VERSION>=20
+#!requirement=CORE_VERSION>=6008000
 
 [Body Rewrite]
 http-response-jq ^https:\/\/acs\.m\.taobao\.com\/gw\/mtop\.tmall\.kangaroo\.core\.service\.route\.fixrespagerecommend\/ 'delpaths([["data","resultValue","data","normal-banner-resource-code"]])'

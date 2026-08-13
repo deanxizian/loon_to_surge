@@ -10,18 +10,26 @@ import shutil
 import subprocess
 import sys
 import tempfile
-import urllib.parse
 from typing import Any
 
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from convert_kelee_to_surge import (  # noqa: E402
+    BASE_MODULE_FEATURE_REQUIREMENT,
+    DOMAIN_RULE_TYPES,
     FATAL_REPORT_KINDS,
+    IP_RULE_TYPES,
+    LOGICAL_RULE_TYPES,
     MODULE_RULE_POLICIES,
+    PRE_MATCHING_RULE_TYPES,
+    RULE_TYPE_OPTIONS,
     SECTION_ORDER,
+    SUPPORTED_RULE_TYPES,
+    SURGE_5_14_FEATURE_REQUIREMENT,
     VERIFIED_SURGE_GENERIC_SCRIPT_PATHS,
     split_top_level,
+    strip_wrapping_parentheses,
     unquote_property_value,
 )
 
@@ -42,8 +50,6 @@ INFORMATIONAL_REPORT_KINDS = {
 }
 MAP_LOCAL_DATA_TYPES = {"base64", "file", "text", "tiny-gif"}
 MAP_LOCAL_OPTIONS = {"data", "data-type", "header", "status-code"}
-DOMAIN_RULE_TYPES = {"DOMAIN", "DOMAIN-SUFFIX", "DOMAIN-KEYWORD"}
-IP_RULE_TYPES = {"IP-CIDR", "IP-CIDR6"}
 SCRIPT_COMMON_OPTIONS = {"argument", "debug", "engine", "script-path", "script-update-interval", "timeout", "type"}
 SCRIPT_TYPE_OPTIONS = {
     "cron": {"cronexp", "wake-system"},
@@ -135,19 +141,18 @@ def module_arguments(text: str, file: str, errors: list[str]) -> set[str]:
         errors.append(f"{file}: must contain at most one #!arguments line")
 
     payload = lines[0].removeprefix("#!arguments=")
-    if re.search(r"%(?![0-9A-Fa-f]{2})", payload):
-        errors.append(f"{file}: #!arguments contains invalid percent encoding")
-    try:
-        pairs = urllib.parse.parse_qsl(payload, keep_blank_values=True, strict_parsing=True)
-    except ValueError as exc:
-        errors.append(f"{file}: invalid #!arguments query string: {exc}")
+    if not payload:
+        errors.append(f"{file}: #!arguments must declare at least one argument")
         return set()
-
     arguments: set[str] = set()
-    for key, _ in pairs:
+    for item in payload.split(","):
+        key, separator, default = item.partition(":")
+        key = key.strip()
         if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", key):
             errors.append(f"{file}: invalid module argument name: {key!r}")
             continue
+        if separator and any(char in default for char in ("\r", "\n")):
+            errors.append(f"{file}: invalid line break in default for module argument: {key}")
         if key in arguments:
             errors.append(f"{file}: duplicate module argument name: {key}")
         arguments.add(key)
@@ -160,6 +165,38 @@ def effective_section_line(section: str, line: str) -> str | None:
     if line.startswith(("#", ";", "//")):
         return None
     return line
+
+
+def validate_nested_rule_matcher(prefix: str, matcher: str, errors: list[str]) -> None:
+    text = strip_wrapping_parentheses(matcher)
+    parts = split_top_level(text, ",")
+    if len(parts) < 2:
+        errors.append(f"{prefix}: invalid logical Rule matcher: {matcher}")
+        return
+
+    rule_type = parts[0].strip().upper()
+    if rule_type not in SUPPORTED_RULE_TYPES:
+        errors.append(f"{prefix}: unsupported logical Rule matcher type: {rule_type or '<empty>'}")
+        return
+
+    options = {part.strip().lower() for part in parts[2:]}
+    unknown_options = sorted(options - RULE_TYPE_OPTIONS[rule_type])
+    if unknown_options:
+        errors.append(f"{prefix}: unsupported {rule_type} matcher option(s): {unknown_options}")
+    if rule_type in DOMAIN_RULE_TYPES | {"URL-REGEX"} and "extended-matching" not in options:
+        errors.append(f"{prefix}: logical domain or URL matcher is missing extended-matching: {matcher}")
+    if rule_type in IP_RULE_TYPES and "no-resolve" not in options:
+        errors.append(f"{prefix}: logical IP matcher is missing no-resolve: {matcher}")
+    if "pre-matching" in options:
+        errors.append(f"{prefix}: nested logical matcher contains pre-matching: {matcher}")
+
+    if rule_type in LOGICAL_RULE_TYPES:
+        group = strip_wrapping_parentheses(parts[1])
+        children = split_top_level(group, ",")
+        if not children:
+            errors.append(f"{prefix}: logical Rule matcher contains no children: {matcher}")
+        for child in children:
+            validate_nested_rule_matcher(prefix, child, errors)
 
 
 def validate_section_line(file: str, number: int, section: str, line: str, errors: list[str]) -> None:
@@ -188,6 +225,12 @@ def validate_section_line(file: str, number: int, section: str, line: str, error
         rule_type = parts[0].strip().upper()
         policy = parts[2].strip().upper()
         options = {part.strip().lower() for part in parts[3:]}
+        if rule_type not in SUPPORTED_RULE_TYPES:
+            errors.append(f"{prefix}: unsupported Rule type: {rule_type or '<empty>'}")
+            return
+        unknown_options = sorted(options - RULE_TYPE_OPTIONS[rule_type])
+        if unknown_options:
+            errors.append(f"{prefix}: unsupported {rule_type} Rule option(s): {unknown_options}")
         if policy not in MODULE_RULE_POLICIES:
             errors.append(
                 f"{prefix}: module Rule policy must be DIRECT, REJECT, or REJECT-TINYGIF: {line}"
@@ -196,13 +239,23 @@ def validate_section_line(file: str, number: int, section: str, line: str, error
             errors.append(f"{prefix}: domain or URL rule is missing extended-matching: {line}")
         if not policy.startswith("REJECT") and "pre-matching" in options:
             errors.append(f"{prefix}: non-REJECT rule contains pre-matching: {line}")
-        if rule_type in DOMAIN_RULE_TYPES and policy.startswith("REJECT") and "pre-matching" not in options:
-            errors.append(f"{prefix}: REJECT domain rule is missing pre-matching: {line}")
         if rule_type in IP_RULE_TYPES:
             if "no-resolve" not in options:
                 errors.append(f"{prefix}: IP rule is missing no-resolve: {line}")
-            if policy.startswith("REJECT") and "pre-matching" not in options:
-                errors.append(f"{prefix}: REJECT IP rule is missing pre-matching: {line}")
+        if (
+            rule_type not in LOGICAL_RULE_TYPES
+            and rule_type in PRE_MATCHING_RULE_TYPES
+            and policy.startswith("REJECT")
+            and "pre-matching" not in options
+        ):
+            errors.append(f"{prefix}: REJECT rule is missing pre-matching: {line}")
+        if rule_type in LOGICAL_RULE_TYPES:
+            group = strip_wrapping_parentheses(parts[1])
+            children = split_top_level(group, ",")
+            if not children:
+                errors.append(f"{prefix}: logical Rule contains no matchers: {line}")
+            for child in children:
+                validate_nested_rule_matcher(prefix, child, errors)
         return
 
     if section == "URL Rewrite":
@@ -256,7 +309,7 @@ def validate_section_line(file: str, number: int, section: str, line: str, error
         if data_type != "tiny-gif" and "data" not in options:
             errors.append(f"{prefix}: Map Local is missing data")
         status = options.get("status-code")
-        if status is None or not re.fullmatch(r"\d{3}", status) or not 100 <= int(status) <= 599:
+        if status is None or not re.fullmatch(r"\d{3}", status) or not 200 <= int(status) <= 999:
             errors.append(f"{prefix}: invalid or missing Map Local status-code")
         if data_type == "base64":
             try:
@@ -463,8 +516,40 @@ def validate_surge_modules(
         indexes = [SECTION_ORDER.index(name) for name in order if name in SECTION_ORDER]
         if indexes != sorted(indexes):
             errors.append(f"{path.name}: invalid section order: {order}")
-        if ("Body Rewrite" in sections or "Map Local" in sections) and "#!requirement=CORE_VERSION>=20" not in text.splitlines():
-            errors.append(f"{path.name}: Body Rewrite or Map Local requires #!requirement=CORE_VERSION>=20")
+        requirement_lines = [line for line in text.splitlines() if line.startswith("#!requirement=")]
+        if len(requirement_lines) > 1:
+            errors.append(f"{path.name}: must contain at most one #!requirement line")
+        has_base_module_feature = (
+            "Body Rewrite" in sections
+            or "Map Local" in sections
+            or any(line.startswith("#!arguments=") for line in text.splitlines())
+            or any(
+                "extended-matching" in line
+                for _, line in sections.get("Rule", [])
+            )
+        )
+        has_jq_rewrite = any(
+            re.match(r"^http-(?:request|response)-jq\s", line)
+            for _, line in sections.get("Body Rewrite", [])
+        )
+        has_modern_rule_feature = any(
+            "pre-matching" in {part.strip().lower() for part in split_top_level(line, ",")[3:]}
+            or re.search(r"(?:^|\()URL-REGEX,", line) is not None
+            for _, line in sections.get("Rule", [])
+        )
+        expected_requirement = (
+            SURGE_5_14_FEATURE_REQUIREMENT
+            if has_jq_rewrite or has_modern_rule_feature
+            else BASE_MODULE_FEATURE_REQUIREMENT
+            if has_base_module_feature
+            else None
+        )
+        if expected_requirement and requirement_lines != [f"#!requirement={expected_requirement}"]:
+            errors.append(
+                f"{path.name}: expected #!requirement={expected_requirement} for its HTTP rewrite features"
+            )
+        elif not expected_requirement and requirement_lines:
+            errors.append(f"{path.name}: unexpected #!requirement without a version-gated module feature")
 
         panel_script_names: set[str] = set()
         script_names: set[str] = set()
@@ -505,7 +590,7 @@ def validate_surge_modules(
             "Loon Rewrite V2": r"^(?:request|response)\s+if\s+.+\s+then\s+",
             "Loon enable": r"\benable\s*=",
             "Loon enabled?": r"\benabled\?\s*=",
-            "legacy module placeholder": r"\{\{\{[^{}]+\}\}\}",
+            "bare Loon argument placeholder": r"(?<!\{)\{[A-Za-z_][A-Za-z0-9_.-]*\}(?!\})",
             "Loon mock option": r"\b(?:data-path|mock-data-is-base64)=",
         }
         for label, pattern in forbidden.items():
@@ -517,15 +602,21 @@ def validate_surge_modules(
         replacement_text = "\n".join(
             line for line in text.splitlines() if not line.startswith("#!arguments=")
         )
-        referenced = set(re.findall(r"%([A-Za-z_][A-Za-z0-9_]*)%", replacement_text))
+        referenced = set(re.findall(r"\{\{\{([A-Za-z_][A-Za-z0-9_]*)\}\}\}", replacement_text))
         built_in_placeholders = {"APPEND", "DEVICE_NAME", "GATEWAY_ADDRESS", "INSERT", "PROFILE_DIR", "SSID"}
-        candidate_arguments = {
-            name for name in referenced if name not in built_in_placeholders and not re.fullmatch(r"[0-9A-Fa-f]{2}", name)
+        legacy_percent_placeholders = {
+            name
+            for name in re.findall(r"%([A-Za-z_][A-Za-z0-9_]*)%", replacement_text)
+            if name not in built_in_placeholders and not re.fullmatch(r"[0-9A-Fa-f]{2}", name)
         }
-        missing_arguments = sorted(candidate_arguments - declared)
+        if legacy_percent_placeholders:
+            errors.append(
+                f"{path.name}: legacy percent module argument placeholders: {sorted(legacy_percent_placeholders)}"
+            )
+        missing_arguments = sorted(referenced - declared)
         if missing_arguments:
             errors.append(f"{path.name}: undeclared module arguments: {missing_arguments}")
-        unused_arguments = sorted(declared - candidate_arguments)
+        unused_arguments = sorted(declared - referenced)
         if unused_arguments:
             errors.append(f"{path.name}: unused module arguments: {unused_arguments}")
 

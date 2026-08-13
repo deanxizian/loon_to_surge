@@ -35,12 +35,12 @@ GitHub Actions 每天 00:00（Asia/Shanghai）运行：
 .github/workflows/update-kelee-modules.yml
 ```
 
-流程会抓取最新 Kelee 模块，重新生成 `Loon/` 和 `Surge/`，如有变化则自动提交。
+流程会抓取最新 Kelee 模块，重新生成 `Loon/` 和 `Surge/`，如有变化则自动提交。抓取结果为空、条目缺少有效 HTTP(S) URL、URL 重复、下载不完整，或模块总数一次下降超过 20% 时，任务会在替换现有文件前失败；确认上游确实进行了大规模删除后，才可手工使用 `--allow-large-drop` 放行。
 
 ## 本地转换
 
 ```powershell
-python scripts\convert_kelee_to_surge.py --input-dir Loon --output-dir Surge --report-path Surge\convert-report.json
+python scripts\update_kelee_modules.py
 python scripts\validate_surge_modules.py --loon-dir Loon --surge-dir Surge --report-path Surge\convert-report.json
 ```
 
@@ -56,7 +56,6 @@ python -m unittest discover -s tests
 - [Loon Rewrite V2](https://nsloon.app/docs/Rewrite/rewrite_v2/)：新版 Rewrite 的语法、类型、Action 和执行顺序依据。
 - [QingRex/LoonKissSurge](https://github.com/QingRex/LoonKissSurge)：参考 Kelee 成品模块的 Surge 输出形态，包括 section 组织、`Map Local`、`http-response-jq`、`extended-matching`、`pre-matching` 等。
 - [Script-Hub-Org/Script-Hub](https://github.com/Script-Hub-Org/Script-Hub)：参考 `enable={...}` 转 Surge 行前缀开关，以及规则标记处理边界。
-- [Surge Module Manual](https://manual.nssurge.com/others/module.html)：作为模块参数、平台、版本要求和模块 Rule 策略的最终依据。
-- [Surge Manual](https://manual.nssurge.com/)：作为其他 Surge 配置语法和规则参数的最终依据。
+- [Surge Manual](https://manual.nssurge.com/)：作为 Surge 模块、配置语法和规则参数的最终依据。
 
 更完整的转换规则和真机验证步骤见 [RULES.md](RULES.md)。

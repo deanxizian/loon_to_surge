@@ -8,7 +8,7 @@
 #!loon_version=3.4.0(962)
 #!homepage=https://hub.kelee.one
 #!date=2026-06-30 23:28:03
-#!requirement=CORE_VERSION>=20
+#!requirement=CORE_VERSION>=6008000
 
 [URL Rewrite]
 ^https:\/\/fanyi-app\.baidu\.com\/static\/react-activity\/page\/courseBoutique\.html\? _ reject

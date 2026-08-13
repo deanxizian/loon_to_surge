@@ -7,7 +7,7 @@
 #!loon_version=3.4.0(962)
 #!homepage=https://hub.kelee.one
 #!date=2026-07-04 20:05:14
-#!requirement=CORE_VERSION>=20
+#!requirement=CORE_VERSION>=6008000
 
 [Rule]
 DOMAIN-KEYWORD,httpdns,REJECT,extended-matching,pre-matching

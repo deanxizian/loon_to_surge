@@ -13,8 +13,9 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from convert_kelee_to_surge import convert_file, convert_kelee_to_surge, convert_mock_response_options  # noqa: E402
+from fetch_kelee_modules import validate_plugin_list  # noqa: E402
 from loon_rewrite_v2 import RewriteV2Error, parse_rewrite_v2_line  # noqa: E402
-from validate_surge_modules import validate_section_line, validate_surge_modules  # noqa: E402
+from validate_surge_modules import module_arguments, validate_section_line, validate_surge_modules  # noqa: E402
 
 
 class ConvertMockResponseOptionsTest(unittest.TestCase):
@@ -51,6 +52,52 @@ class ConvertMockResponseOptionsTest(unittest.TestCase):
             converted,
             'data-type=file data="https://example.com/response.json" status-code=200 '
             'header="Content-Type:application/json"',
+        )
+
+    def test_status_below_surge_map_local_range_is_rejected(self) -> None:
+        with self.assertRaisesRegex(ValueError, "200 and 999"):
+            convert_mock_response_options('data-type=text data="" status-code=199')
+
+    def test_status_above_surge_map_local_range_is_rejected(self) -> None:
+        with self.assertRaisesRegex(ValueError, "200 and 999"):
+            convert_mock_response_options('data-type=text data="" status-code=1000')
+
+
+class ValidatePluginListTest(unittest.TestCase):
+    def test_valid_list_is_returned(self) -> None:
+        plugins = [{"url": "https://example.com/one.lpx"}, {"url": "loon://import?plugin=https://example.com/two.lpx"}]
+
+        self.assertEqual(validate_plugin_list({"lists": plugins}, previous_count=2), plugins)
+
+    def test_empty_or_invalid_list_is_rejected(self) -> None:
+        for data in (
+            {"lists": []},
+            {"lists": [{}]},
+            {"lists": ["https://example.com/one.lpx"]},
+            {"lists": [{"url": "file:///tmp/one.lpx"}]},
+        ):
+            with self.subTest(data=data), self.assertRaises(RuntimeError):
+                validate_plugin_list(data, previous_count=2)
+
+    def test_duplicate_source_urls_are_rejected(self) -> None:
+        data = {
+            "lists": [
+                {"url": "https://example.com/one.lpx"},
+                {"url": "loon://import?plugin=https%3A%2F%2Fexample.com%2Fone.lpx"},
+            ]
+        }
+
+        with self.assertRaisesRegex(RuntimeError, "duplicate module URL"):
+            validate_plugin_list(data, previous_count=2)
+
+    def test_large_drop_requires_an_explicit_override(self) -> None:
+        plugins = [{"url": f"https://example.com/{index}.lpx"} for index in range(7)]
+
+        with self.assertRaisesRegex(RuntimeError, "dropped from 10 to 7"):
+            validate_plugin_list({"lists": plugins}, previous_count=10)
+        self.assertEqual(
+            validate_plugin_list({"lists": plugins}, previous_count=10, allow_large_drop=True),
+            plugins,
         )
 
 
@@ -106,7 +153,80 @@ DOMAIN,image.example.com,REJECT-TINYGIF
         self.assertIn("DOMAIN,direct.example.com,DIRECT,extended-matching", output)
         self.assertIn("DOMAIN,ads.example.com,REJECT,extended-matching,pre-matching", output)
         self.assertIn("DOMAIN,image.example.com,REJECT-TINYGIF,extended-matching,pre-matching", output)
+        self.assertIn("#!requirement=CORE_VERSION>=6008000", output)
         self.assertEqual(report, [])
+
+    def test_domain_extended_matching_uses_base_feature_requirement(self) -> None:
+        output, report = self.convert_lpx(
+            """#!name=Sample
+
+[Rule]
+DOMAIN,direct.example.com,DIRECT
+"""
+        )
+
+        self.assertIn("#!requirement=CORE_VERSION>=20", output)
+        self.assertEqual(report, [])
+
+    def test_url_regex_extended_matching_uses_conservative_modern_requirement(self) -> None:
+        output, report = self.convert_lpx(
+            r'''#!name=Sample
+
+[Rule]
+URL-REGEX,^https:\/\/example\.com,DIRECT
+'''
+        )
+
+        self.assertIn(r"URL-REGEX,^https:\/\/example\.com,DIRECT,extended-matching", output)
+        self.assertIn("#!requirement=CORE_VERSION>=6008000", output)
+        self.assertEqual(report, [])
+
+    def test_verified_loon_ipasn_rule_is_renamed_and_marked(self) -> None:
+        output, report = self.convert_lpx(
+            """#!name=Sample
+
+[Rule]
+IPASN,13335,REJECT
+"""
+        )
+
+        self.assertIn("IP-ASN,13335,REJECT,no-resolve,pre-matching", output)
+        self.assertEqual(report, [])
+
+    def test_unknown_rule_type_is_a_fatal_report(self) -> None:
+        output, report = self.convert_lpx(
+            """#!name=Sample
+
+[Rule]
+LOON-ONLY,value,REJECT
+"""
+        )
+
+        self.assertNotIn("LOON-ONLY", output)
+        self.assertEqual([item["kind"] for item in report], ["unsupported-rule"])
+
+    def test_unknown_rule_option_is_a_fatal_report(self) -> None:
+        output, report = self.convert_lpx(
+            """#!name=Sample
+
+[Rule]
+DOMAIN,blocked.example.com,REJECT,loon-only-option
+"""
+        )
+
+        self.assertNotIn("loon-only-option", output)
+        self.assertEqual([item["kind"] for item in report], ["unsupported-rule"])
+
+    def test_unknown_non_empty_section_is_a_fatal_report(self) -> None:
+        _, report = self.convert_lpx(
+            """#!name=Sample
+
+[Host]
+example.com = 192.0.2.1
+"""
+        )
+
+        self.assertEqual([item["kind"] for item in report], ["unsupported-section"])
 
     def test_reject_200_maps_to_an_empty_body(self) -> None:
         output, report = self.convert_lpx(
@@ -154,16 +274,16 @@ cron {Cron} script-path=https://example.com/cron.js, tag=Cron, enable={Run}
 """
         )
 
-        self.assertIn("%Capture%Capture = type=http-request", output)
-        self.assertIn("%Run%Run = type=http-response", output)
-        self.assertIn('%Run%Cron = type=cron, cronexp="%Cron%"', output)
-        self.assertIn("#!arguments=Capture=%23&Run=&Cron=0+1+%2A+%2A+%2A", output)
+        self.assertIn("{{{Capture}}}Capture = type=http-request", output)
+        self.assertIn("{{{Run}}}Run = type=http-response", output)
+        self.assertIn('{{{Run}}}Cron = type=cron, cronexp="{{{Cron}}}"', output)
+        self.assertIn("#!arguments=Capture:#,Run,Cron:0 1 * * *", output)
         self.assertEqual(
             [item["kind"] for item in report],
             ["script-enable-toggle-emitted", "script-enable-toggle-emitted", "script-enable-toggle-emitted"],
         )
 
-    def test_argument_names_and_defaults_use_current_surge_query_syntax(self) -> None:
+    def test_argument_names_and_defaults_use_current_surge_table_syntax(self) -> None:
         output, report = self.convert_lpx(
             """#!name=Sample
 
@@ -175,8 +295,9 @@ http-request ^https://example.com script-path=https://example.com/a.js, tag=Samp
 """
         )
 
-        self.assertIn("#!arguments=Client_Mode=two+words", output)
-        self.assertIn('argument="%Client_Mode%"', output)
+        self.assertIn("#!arguments=Client_Mode:two words", output)
+        self.assertIn('argument="{{{Client_Mode}}}"', output)
+        self.assertIn("#!requirement=CORE_VERSION>=20", output)
         self.assertEqual(report, [])
 
     def test_argument_name_normalization_collision_is_fatal(self) -> None:
@@ -194,6 +315,20 @@ http-request ^https://example.com script-path=https://example.com/a.js, tag=Samp
 
         self.assertEqual([item["kind"] for item in report], ["argument-name-collision"])
 
+    def test_argument_default_with_comma_is_fatal(self) -> None:
+        _, report = self.convert_lpx(
+            """#!name=Sample
+
+[Argument]
+Value=input, "one,two", tag=Value
+
+[Script]
+http-request ^https://example.com script-path=https://example.com/a.js, tag=Sample, argument={Value}
+"""
+        )
+
+        self.assertEqual([item["kind"] for item in report], ["argument-default"])
+
     def test_unused_argument_is_removed_and_reported(self) -> None:
         output, report = self.convert_lpx(
             """#!name=Sample
@@ -207,8 +342,8 @@ http-request ^https://example.com script-path=https://example.com/a.js, tag=Samp
 """
         )
 
-        self.assertIn("#!arguments=Used=value", output)
-        self.assertNotIn("Unused=", output)
+        self.assertIn("#!arguments=Used:value", output)
+        self.assertNotIn("Unused", output)
         self.assertEqual([item["kind"] for item in report], ["argument-unused-dropped"])
 
     def test_system_metadata_is_mapped_to_supported_surge_values(self) -> None:
@@ -255,6 +390,19 @@ DOMAIN,example.com,DIRECT
         self.assertEqual(body_report, [])
         self.assertEqual(map_report, [])
 
+    def test_jq_body_rewrite_uses_verified_conservative_core_requirement(self) -> None:
+        output, report = self.convert_lpx(
+            r'''#!name=Sample
+
+[Rewrite]
+^https:\/\/api\.example\.com response-body-json-jq '.data'
+'''
+        )
+
+        self.assertIn("#!requirement=CORE_VERSION>=6008000", output)
+        self.assertNotIn("#!requirement=CORE_VERSION>=20\n", output)
+        self.assertEqual(report, [])
+
     def test_url_rewrite_reject_uses_official_placeholder(self) -> None:
         output, report = self.convert_lpx(
             r'''#!name=Sample
@@ -297,10 +445,10 @@ generic script-path=https://kelee.one/Resource/JavaScript/NodeLinkCheck/NodeLink
         self.assertIn(
             "Panel = type=generic, "
             "script-path=https://kelee.one/Resource/JavaScript/NodeLinkCheck/NodeLinkCheck.js, timeout=10, "
-            'argument="policy=%Policy%"',
+            'argument="policy={{{Policy}}}"',
             output,
         )
-        self.assertIn("#!arguments=Policy=PROXY", output)
+        self.assertIn("#!arguments=Policy:PROXY", output)
         self.assertIn("#!desc=Checks the proxy chain for a Surge policy using Sub-Store node data.", output)
         self.assertNotIn("#!openUrl=", output)
         self.assertNotIn("img-url", output)
@@ -320,12 +468,12 @@ generic script-path=https://kelee.one/Resource/JavaScript/NodeLinkCheck/NodeLink
         )
 
         self.assertIn(
-            '%Panel%Panel = type=generic, '
+            '{{{Panel}}}Panel = type=generic, '
             'script-path=https://kelee.one/Resource/JavaScript/NodeLinkCheck/NodeLinkCheck.js, '
-            'script-update-interval=3600, debug=true, argument="policy=%Policy%&%Mode%"',
+            'script-update-interval=3600, debug=true, argument="policy={{{Policy}}}&{{{Mode}}}"',
             output,
         )
-        self.assertIn("#!arguments=Panel=&Mode=compact&Policy=PROXY", output)
+        self.assertIn("#!arguments=Panel,Mode:compact,Policy:PROXY", output)
         self.assertEqual(
             [item["kind"] for item in report],
             ["generic-script-adapted", "script-enable-toggle-emitted"],
@@ -436,8 +584,8 @@ http-response ^https://main.example.com script-path=https://example.com/main.js,
 
         self.assertIn("#Feature = type=http-request", output)
         self.assertIn("Main = type=http-response", output)
-        self.assertIn('argument="[%Feature%]"', output)
-        self.assertIn("#!arguments=Feature=false", output)
+        self.assertIn('argument="[{{{Feature}}}]"', output)
+        self.assertIn("#!arguments=Feature:false", output)
         self.assertEqual([item["kind"] for item in report], ["script-enable-shared-commented"])
 
     def test_rewrite_v2_redirect_preserves_arguments_and_url_captures(self) -> None:
@@ -455,9 +603,9 @@ hostname=t.me
 '''
         )
 
-        self.assertIn("#!arguments=app=tg", output)
+        self.assertIn("#!arguments=app:tg", output)
         self.assertIn(
-            r"^https:\/\/t\.me\/([A-Za-z0-9_-]+)\/?$ %app%://resolve?domain=$1 307",
+            r"^https:\/\/t\.me\/([A-Za-z0-9_-]+)\/?$ {{{app}}}://resolve?domain=$1 307",
             output,
         )
         self.assertIn("hostname = %APPEND% t.me", output)
@@ -527,6 +675,31 @@ response if ${url} ~= /^https:\/\/api\.example\.com\/mock$/ then response.body.m
         )
         self.assertEqual(report, [])
 
+    def test_rewrite_v2_response_mock_accepts_surge_status_upper_bound(self) -> None:
+        output, report = self.convert_lpx(
+            r'''#!name=Sample
+
+[Rewrite]
+response if ${url} ~= /^https:\/\/api\.example\.com\/mock$/ then response.body.mock("text", "custom", 999)
+'''
+        )
+
+        self.assertIn("status-code=999", output)
+        self.assertEqual(report, [])
+
+    def test_rewrite_v2_response_mock_rejects_status_above_surge_range(self) -> None:
+        output, report = self.convert_lpx(
+            r'''#!name=Sample
+
+[Rewrite]
+response if ${url} ~= /^https:\/\/api\.example\.com\/mock$/ then response.body.mock("text", "custom", 1000)
+'''
+        )
+
+        self.assertNotIn("[Map Local]", output)
+        self.assertEqual([item["kind"] for item in report], ["unsupported-rewrite"])
+        self.assertIn("between 200 and 999", report[0]["message"])
+
     def test_rewrite_v2_complex_conditions_are_reported_instead_of_flattened(self) -> None:
         output, report = self.convert_lpx(
             r'''#!name=Sample
@@ -566,6 +739,31 @@ request if ${url} ~= /^https:\/\/api\.example\.com\/ads/ then reject_dict(204) |
         self.assertNotIn("[Map Local]", json_output)
         self.assertEqual([item["kind"] for item in json_report], ["unsupported-rewrite"])
         self.assertIn("Multiple terminal", json_report[0]["message"])
+
+    def test_rewrite_v2_map_local_status_below_200_is_rejected(self) -> None:
+        output, report = self.convert_lpx(
+            r'''#!name=Sample
+
+[Rewrite]
+request if ${url} ~= /^https:\/\/api\.example\.com\/ads/ then reject_dict(199)
+'''
+        )
+
+        self.assertNotIn("[Map Local]", output)
+        self.assertEqual([item["kind"] for item in report], ["unsupported-rewrite"])
+        self.assertIn("200-999", report[0]["message"])
+
+    def test_legacy_map_local_status_below_200_is_rejected(self) -> None:
+        output, report = self.convert_lpx(
+            r'''#!name=Sample
+
+[Rewrite]
+^https:\/\/api\.example\.com mock-response-body data-type=text data="" status-code=199
+'''
+        )
+
+        self.assertNotIn("[Map Local]", output)
+        self.assertEqual([item["kind"] for item in report], ["unsupported-rewrite"])
 
     def test_rewrite_v2_parser_rejects_unescaped_string_quotes(self) -> None:
         with self.assertRaisesRegex(RewriteV2Error, "Unescaped double quote"):
@@ -764,6 +962,27 @@ class ValidateRuleLineTest(unittest.TestCase):
         )
         self.assertTrue(any("no-resolve" in item for item in self.validate("IP-CIDR,192.0.2.0/24,REJECT")))
 
+    def test_unknown_rule_type_is_rejected(self) -> None:
+        self.assertTrue(any("unsupported Rule type" in item for item in self.validate("LOON-ONLY,value,REJECT")))
+
+    def test_unknown_rule_option_is_rejected(self) -> None:
+        self.assertTrue(
+            any(
+                "unsupported DOMAIN Rule option" in item
+                for item in self.validate(
+                    "DOMAIN,ads.example.com,REJECT,extended-matching,pre-matching,loon-only-option"
+                )
+            )
+        )
+
+    def test_unknown_nested_logical_matcher_is_rejected(self) -> None:
+        self.assertTrue(
+            any(
+                "unsupported logical Rule matcher type" in item
+                for item in self.validate("AND,((LOON-ONLY,value),(PROTOCOL,TCP)),REJECT")
+            )
+        )
+
 
 class ValidateUrlRewriteLineTest(unittest.TestCase):
     def validate(self, line: str) -> list[str]:
@@ -782,14 +1001,39 @@ class ValidateMapLocalLineTest(unittest.TestCase):
         validate_section_line("Sample.sgmodule", 1, "Map Local", line, errors)
         return errors
 
-    def test_status_code_must_be_in_http_range(self) -> None:
+    def test_status_code_must_be_in_surge_map_local_range(self) -> None:
         self.assertEqual(self.validate('^https://example.com data-type=text data="" status-code=204'), [])
+        self.assertEqual(self.validate('^https://example.com data-type=text data="" status-code=999'), [])
         self.assertTrue(
             any(
                 "status-code" in item
-                for item in self.validate('^https://example.com data-type=text data="" status-code=999')
+                for item in self.validate('^https://example.com data-type=text data="" status-code=199')
             )
         )
+        self.assertTrue(
+            any(
+                "status-code" in item
+                for item in self.validate('^https://example.com data-type=text data="" status-code=1000')
+            )
+        )
+
+
+class ValidateModuleArgumentsTest(unittest.TestCase):
+    def validate(self, text: str) -> tuple[set[str], list[str]]:
+        errors: list[str] = []
+        arguments = module_arguments(text, "Sample.sgmodule", errors)
+        return arguments, errors
+
+    def test_current_surge_table_syntax_is_accepted(self) -> None:
+        arguments, errors = self.validate("#!arguments=Mode:compact,Capture:#,Run\n")
+
+        self.assertEqual(arguments, {"Mode", "Capture", "Run"})
+        self.assertEqual(errors, [])
+
+    def test_legacy_query_string_syntax_is_rejected(self) -> None:
+        _, errors = self.validate("#!arguments=Mode=compact&Capture=%23\n")
+
+        self.assertTrue(any("invalid module argument name" in item for item in errors))
 
 
 class ValidateScriptLineTest(unittest.TestCase):

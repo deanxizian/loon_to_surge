@@ -9,7 +9,7 @@
 #!homepage=https://hub.kelee.one
 #!date=2026-06-01 17:11:35
 #!system=ios
-#!requirement=CORE_VERSION>=20
+#!requirement=CORE_VERSION>=6008000
 
 [Body Rewrite]
 http-response-jq ^https:\/\/confssl\d?\.iweimai\.cn\/wm_ios_update\.json\? 'if (try (getpath([]) | has("isShowCJAd")) catch false) then (setpath(["isShowCJAd"]; 0)) else . end'

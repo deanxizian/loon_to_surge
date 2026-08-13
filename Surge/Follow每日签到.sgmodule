@@ -8,10 +8,11 @@
 #!loon_version=3.4.0(962)
 #!homepage=https://github.com/luestr/ProxyResource/blob/main/Resource/Markdown/FollowRSS/README.md
 #!date=2026-06-01 17:11:35
-#!arguments=token=&cookie=&cron=0+1+%2A+%2A+%2A
+#!requirement=CORE_VERSION>=20
+#!arguments=token,cookie,cron:0 1 * * *
 
 [Script]
-Follow每日签到 = type=cron, cronexp="%cron%", script-path=https://kelee.one/Resource/JavaScript/FollowRSS/FollowRSS_checkin.js, timeout=120, argument="[%token%,%cookie%]"
+Follow每日签到 = type=cron, cronexp="{{{cron}}}", script-path=https://kelee.one/Resource/JavaScript/FollowRSS/FollowRSS_checkin.js, timeout=120, argument="[{{{token}}},{{{cookie}}}]"
 
 [MITM]
 hostname = %APPEND% api.follow.is

@@ -8,7 +8,7 @@
 #!loon_version=3.4.0(962)
 #!homepage=https://hub.kelee.one
 #!date=2026-07-01 22:53:08
-#!requirement=CORE_VERSION>=20
+#!requirement=CORE_VERSION>=6008000
 
 [Body Rewrite]
 http-response-jq ^https:\/\/compus\.xiaofubao\.com\/compus\/user\/getUserExt$ 'delpaths([["data","adPopSwitch"]])'

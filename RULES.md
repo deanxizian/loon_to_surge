@@ -35,6 +35,8 @@
 
 生成时会先写入临时目录，转换完成后再替换 `Surge` 目录和报告文件。若生成内容没有变化，`convert-report.json` 里的 `generated_at` 会尽量保持不变。报告中的 `total`、`converted`、`excluded` 分别表示 Loon 输入数、Surge 输出数和主动排除数；Surge 清单与排除报告必须完整覆盖全部 Loon 输入。
 
+输入只接受非空的 `[Argument]`、`[General]`、`[Rule]`、`[Rewrite]`、`[Script]` 和 `[MITM]`。出现其他非空 section，或仅大小写不同的重复 section 时，会记录 `unsupported-section` 并终止发布，避免静默丢掉上游新语法。
+
 ## 元数据
 
 Loon 文件里的 `#!` 元数据按以下规则输出：
@@ -43,7 +45,8 @@ Loon 文件里的 `#!` 元数据按以下规则输出：
 - 固定添加：`#!category=iKeLee`
 - 继续保留：`openUrl`、`open`、`tag`、`system_version`、`loon_version`、`homepage`、`date`
 - `system` 只输出 Surge 官方支持的 `ios` 或 `mac`：Loon 的 `iOS/iPadOS` 映射为 `ios`，`macOS` 映射为 `mac`；同时覆盖 iOS 和 macOS 时省略限制，`watchOS` 没有 Surge 对应目标。
-- 含 `[Body Rewrite]` 或内联 `[Map Local]` 的模块添加 `#!requirement=CORE_VERSION>=20`。
+- 使用模块参数、域名 `extended-matching`、普通 `[Body Rewrite]` 或 `[Map Local]` 的模块添加 `#!requirement=CORE_VERSION>=20`，这是官方已列出的基础兼容门槛。
+- 含 `http-request-jq`、`http-response-jq`、`pre-matching` 或 URL-REGEX `extended-matching` 的模块添加保守门槛 `#!requirement=CORE_VERSION>=6008000`。Surge Manual/Release Notes 只给出这些新特性的客户端最低版本（iOS 5.14 / Mac 5.9），未给出这一旧版本对应的精确 Core 数字；`6008000` 是官方版本表中已确认支持它们的共同 Core（iOS 5.21 / Mac 6.8），会排除部分可能兼容的旧客户端，但不会向不支持这些特性的版本宣称可用。
 
 模块文件名使用模块 `name`，并清理 Windows 不合法文件名字符。重名时自动追加 `-2`、`-3`。
 
@@ -55,9 +58,10 @@ Loon `[Argument]` 会转换为 Surge `#!arguments=`。
 
 - 每行取 `=` 左侧作为参数名。
 - 每行逗号分隔后的第二项作为默认值。
-- 按标准 query-string 输出 `参数名=默认值&参数名2=默认值2`，默认值进行 URL 编码。
+- 按 Surge 当前表格语法输出 `参数名:默认值,参数名2:默认值2`，不做 URL 编码。
 - 参数名只保留 ASCII 字母、数字和下划线；其他字符转换为 `_`，数字开头时加 `ARG_`。归一化后重名会阻止发布。
-- 脚本参数、cron 或 Rewrite 里的 Loon 占位符 `{Name}` / `${Name}` 会转换成 Surge 模块占位符 `%Name%`。
+- 脚本参数、cron 或 Rewrite 里的 Loon 占位符 `{Name}` / `${Name}` 会转换成 Surge 模块占位符 `{{{Name}}}`。
+- 默认值含逗号或换行时无法无歧义写入当前 Surge 参数表，会记录 `argument-default` 并终止发布。
 - 未被任何生成行引用的 Loon 参数会删除，并记录 `argument-unused-dropped`。
 
 示例：
@@ -70,7 +74,7 @@ Cron=select, "0 1 * * *", "0 2 * * *", tag=Cron
 转换为：
 
 ```ini
-#!arguments=Cron=0+1+%2A+%2A+%2A
+#!arguments=Cron:0 1 * * *
 ```
 
 ## General
@@ -96,6 +100,8 @@ always-real-ip = %APPEND% example.com
 - 会去掉规则行尾的独立 `//` 注释。
 - 逗号两侧空格会标准化。
 - 空行和注释行不会进入输出。
+- 只接受已核对 Loon 与 Surge 语义的类型：`DOMAIN`、`DOMAIN-SUFFIX`、`DOMAIN-KEYWORD`、`IP-CIDR`、`IP-CIDR6`、`GEOIP`、`IPASN`/`IP-ASN`、`AND`、`OR`、`NOT`、`DEST-PORT`、`PROTOCOL`、`SRC-PORT`、`URL-REGEX`、`USER-AGENT`。
+- Loon 的 `IPASN` 会规范为 Surge 的 `IP-ASN`。规则 option 也按类型限制为 Surge 已确认支持的 `extended-matching`、`no-resolve`、`pre-matching` 组合，并递归检查逻辑规则子 matcher；未知类型或 option 会记录 `unsupported-rule` 并终止发布，不能原样透传。
 
 ### 裸域名
 
@@ -191,6 +197,7 @@ response if ${url} ~= /^https:\/\/example\.com/ then response.json.delete("data.
 
 - `url.replace`、`redirect(302|307, ...)` 转为 `[URL Rewrite]`。
 - `reject`、`reject_img`、`reject_dict`、`reject_array` 转为 `[Map Local]`，保留状态码、Body 和 Content-Type；`reject_video` 暂不转换。
+- Loon V2 的 `reject*` 状态码范围是 `100–599`，Surge Map Local 是 `200–999`，因此只有两端交集 `200–599` 能转换；Loon 合法但 Surge 不接受的 `100–199` 会终止发布。
 - `request.header.*`、`response.header.*` 的 `add`、`set`、`del`、`replace` 转为 `[Header Rewrite]`。`set` 使用 `header-del` 后接 `header-add`，避免重复 Header。
 - `request.body.replace`、`response.body.replace` 转为 `[Body Rewrite]` 正则替换。
 - `request.json.*`、`response.json.*` 的 `add`、`delete`、`replace`、`jq` 转为 Surge JQ Body Rewrite。
@@ -273,6 +280,7 @@ pattern data-type=text data="" status-code=200
 - `mock-data-is-base64=true` 转为 `data-type=base64`
 - 内联 `data="..."` 如果包含会影响 Surge 解析的引号或换行，会转为 base64，并补合适的 `Content-Type`
 - 未指定 `status-code` 时默认补 `status-code=200`
+- `status-code` 只接受 Surge Manual 规定的 `200` 至 `999`；超出范围会终止发布
 
 ### Body Rewrite
 
@@ -349,7 +357,7 @@ Name = type=http-request, pattern=pattern, script-path=https://example.com/a.js
 
 其中 `requires-body=false` 和 `binary-body-mode=false` 会省略。
 
-`argument` 会统一加双引号，内部 `{Name}` 会转换为 `%Name%`。
+`argument` 会统一加双引号，内部 `{Name}` 会转换为 `{{{Name}}}`。
 
 ### cron
 
@@ -362,7 +370,7 @@ cron {Cron} script-path=https://example.com/job.js, tag=Job
 转换为：
 
 ```ini
-Job = type=cron, cronexp="%Cron%", script-path=https://example.com/job.js
+Job = type=cron, cronexp="{{{Cron}}}", script-path=https://example.com/job.js
 ```
 
 保留的属性：
@@ -403,7 +411,7 @@ Loon 的 `img-url` 只用于其 generic 脚本界面，Surge `[Script]` 没有�
 
 这两个脚本不是简单改名：
 
-- `NodeLinkCheck.js` 自带 Surge 分支并原生读取 `$argument.policy`。转换后增加模块参数 `Policy`（默认 `PROXY`），脚本参数为 `policy=%Policy%`，避免脚本在没有参数时退回配置中的第一个策略组；同时移除只描述 Loon 长按节点流程的 `openUrl`，并注明依赖 Sub-Store 节点数据。
+- `NodeLinkCheck.js` 自带 Surge 分支并原生读取 `$argument.policy`。转换后增加模块参数 `Policy`（默认 `PROXY`），脚本参数为 `policy={{{Policy}}}`，避免脚本在没有参数时退回配置中的第一个策略组；同时移除只描述 Loon 长按节点流程的 `openUrl`，并注明依赖 Sub-Store 节点数据。
 - `1.1.1.1.panel.js` 自带 Surge Panel 返回字段。转换后增加与 Script 同名并关联的 `[Panel]`，查询当前 Surge 路由，同时替换掉 Loon 的“长按节点”说明。
 
 两项适配均记录 `generic-script-adapted`，便于复核实际行为。
@@ -431,10 +439,10 @@ http-request ^https://example.com script-path=https://example.com/a.js, tag=Capt
 转换为：
 
 ```ini
-#!arguments=Capture=%23
+#!arguments=Capture:#
 
 [Script]
-%Capture%Capture = type=http-request, pattern=^https://example.com, script-path=https://example.com/a.js
+{{{Capture}}}Capture = type=http-request, pattern=^https://example.com, script-path=https://example.com/a.js
 ```
 
 默认值规则：
@@ -451,11 +459,11 @@ http-request ^https://example.com script-path=https://example.com/a.js, tag=Capt
 
 ### enable 参数同时也是脚本入参
 
-如果同一个参数既用于 `enable={Arg}`，又用于 `argument={Arg}` 或 cron 表达式，为避免把普通入参默认值改成 `#`，当前不会使用 `%Arg%` 行前缀开关。
+如果同一个参数既用于 `enable={Arg}`，又用于 `argument={Arg}` 或 cron 表达式，为避免把普通入参默认值改成 `#`，当前不会使用 `{{{Arg}}}` 行前缀开关。
 
 处理方式：
 
-- 保留 `#!arguments=Arg=false` 这类原始布尔默认值。
+- 保留 `#!arguments=Arg:false` 这类原始布尔默认值。
 - 根据默认值静态注释或保留对应脚本行。
 - 写入报告 `script-enable-shared-commented` 或 `script-enable-shared-kept`。
 
@@ -497,8 +505,10 @@ hostname = %APPEND% example.com, *.example.org
 - `unsupported-rewrite`：Rewrite 动作不支持或无法解析。
 - `unsupported-header-rewrite`：Header rewrite 无法解析。
 - `unsupported-script`：Script 行不支持或无法解析。
+- `unsupported-rule`：Loon Rule 类型/option 未知、字段不完整或逻辑 matcher 无法安全转换。
+- `unsupported-section`：Loon 出现未知的非空 section，或仅大小写不同的重复 section。
 - `argument-parse`：Argument 行无法解析。
-- `argument-default`：Argument 行找不到默认值。
+- `argument-default`：Argument 行找不到默认值，或默认值含当前 Surge 参数表无法无歧义表示的逗号或换行。
 - `argument-name-collision`：参数名归一化后重名。
 - `mitm-unsupported`：MITM 行不支持。
 - `unsupported-system`：Loon 平台限制无法映射为 Surge 的 `ios/mac`。
@@ -516,6 +526,7 @@ hostname = %APPEND% example.com, *.example.org
 - 不给非拒绝类规则添加 `pre-matching`。
 - 不把共享脚本参数强行改成 `#` 开关。
 - 不把未经核实的 Loon generic 当作 Surge generic 发布。
+- 不原样透传未知 Rule 类型，也不静默忽略未知的非空 Loon section。
 - 不静默吞掉未知语法，无法安全转换时终止整次生成并保留上一版产物。
 
 ## 当前验证口径
@@ -534,12 +545,13 @@ git diff --check
 - 没有 Loon `enable=` 或 `enabled?=` 残留。
 - 没有 Loon Rewrite V2 的 `request if ... then` 或 `response if ... then` 残留。
 - 所有 `http-request-jq`、`http-response-jq` 表达式均通过真实 `jq` 编译。
-- 没有旧式 `{{{Arg}}}` 或裸 `{Arg}` 占位符残留，模块参数应使用 `%Arg%`。
-- `#!arguments` 能按标准 query-string 解码，参数名唯一，且每个参数都被生成内容引用。
+- 没有旧式 `%Arg%` 或裸 `{Arg}` 占位符残留，模块参数应使用 `{{{Arg}}}`。
+- `#!arguments` 使用 `name:default,name2:default` 表格语法，参数名唯一，且每个参数都被生成内容引用。
 - URL Rewrite 的拒绝行使用 `_ reject`。
-- 模块 `[Rule]` 只含 `DIRECT`、`REJECT`、`REJECT-TINYGIF`。
+- 模块 `[Rule]` 只含已核对的规则类型，并且策略只含 `DIRECT`、`REJECT`、`REJECT-TINYGIF`。
 - `#!system` 只可能是 `ios` 或 `mac`。
-- 含 `[Body Rewrite]` 或 `[Map Local]` 的模块带有 `#!requirement=CORE_VERSION>=20`。
+- 模块参数、域名 `extended-matching`、普通 `[Body Rewrite]` / `[Map Local]` 使用 `CORE_VERSION>=20`；JQ、`pre-matching` 和 URL-REGEX `extended-matching` 使用保守门槛 `CORE_VERSION>=6008000`。
+- 所有 Map Local `status-code` 都在 `200` 至 `999`。
 - Surge 清单与 `module-excluded` 报告合起来完整覆盖全部 Loon 模块。
 - 每个动态 `[Panel]` 引用的 `script-name` 都存在于同一模块的 `[Script]`。
 - 非拒绝策略没有 `pre-matching`。
@@ -555,10 +567,10 @@ git diff --check
 
 使用 `WPS每日签到.sgmodule`：
 
-1. 导入后打开模块参数，确认 `CaptureCookie` 默认值显示为 `#` 而不是 `%23`，`CRONEXP` 显示为 `0 8 * * *` 而不是带 `+` 的编码文本，且无未使用的 `DAY`。
+1. 导入后打开模块参数，确认 `CaptureCookie` 默认值显示为 `#`，`CRONEXP` 显示为 `0 8 * * *`，且无未使用的 `DAY`。
 2. 保持 `CaptureCookie=#`，重新应用模块；捕获 Cookie 的 http-request 脚本应保持禁用。
 3. 将 `CaptureCookie` 清空并重新应用；该脚本应启用，cron 表达式仍应完整保留空格。
-4. 若 Surge 不允许保存空参数、保留了 `%CaptureCookie%`，或脚本状态与预期相反，则 `enable={Arg}` 行前缀方案不能视为可用。
+4. 若 Surge 不允许保存空参数、保留了 `{{{CaptureCookie}}}`，或脚本状态与预期相反，则 `enable={Arg}` 行前缀方案不能视为可用。
 
 ### 2. Rewrite V2 转换
 
@@ -574,7 +586,7 @@ git diff --check
 
 1. 启用 MITM 和模块，清除目标 App 缓存后重新发起请求。
 2. 在最近请求中确认命中了对应 URL，响应被修改，日志中没有正则、JQ、Body Rewrite 或 Map Local 错误。
-3. JQ Body Rewrite 官方最低版本是 Surge iOS 5.14 / Mac 5.9；`CORE_VERSION>=20` 只覆盖基础 Body Rewrite 与内联 Map Local，因此 JQ 模块应使用最新版 Surge 实测。
+3. JQ Body Rewrite 官方最低版本是 Surge iOS 5.14 / Mac 5.9。项目为 JQ 模块使用已确认兼容的保守门槛 `CORE_VERSION>=6008000`（iOS 5.21 / Mac 6.8 对应的共同 Core）；仍应使用最新版 Surge 实测。
 
 ### 4. generic 与 Panel
 

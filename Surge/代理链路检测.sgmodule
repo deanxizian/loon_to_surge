@@ -7,7 +7,8 @@
 #!loon_version=3.4.0(962)
 #!homepage=https://hub.kelee.one
 #!date=2026-06-01 17:11:35
-#!arguments=Policy=PROXY
+#!requirement=CORE_VERSION>=20
+#!arguments=Policy:PROXY
 
 [Script]
-代理链路检测 = type=generic, script-path=https://kelee.one/Resource/JavaScript/NodeLinkCheck/NodeLinkCheck.js, argument="policy=%Policy%"
+代理链路检测 = type=generic, script-path=https://kelee.one/Resource/JavaScript/NodeLinkCheck/NodeLinkCheck.js, argument="policy={{{Policy}}}"

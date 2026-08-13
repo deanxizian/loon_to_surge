@@ -8,6 +8,7 @@
 #!loon_version=3.4.0(962)
 #!homepage=https://hub.kelee.one
 #!date=2026-06-30 17:11:12
+#!requirement=CORE_VERSION>=6008000
 
 [Rule]
 DOMAIN,ad.myfriday.cn,REJECT,extended-matching,pre-matching

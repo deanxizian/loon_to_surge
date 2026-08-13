@@ -6,7 +6,6 @@ import json
 import re
 import shutil
 import tempfile
-import urllib.parse
 import urllib.request
 from collections import OrderedDict
 from datetime import datetime
@@ -64,9 +63,29 @@ SECTION_ORDER = (
 )
 JQ_PATH_CACHE: dict[str, str] = {}
 LOON_USER_AGENT = "Loon/860 CFNetwork/3826.500.111.2.2 Darwin/24.4.0"
+BASE_MODULE_FEATURE_REQUIREMENT = "CORE_VERSION>=20"
+SURGE_5_14_FEATURE_REQUIREMENT = "CORE_VERSION>=6008000"
+SUPPORTED_LOON_SECTIONS = frozenset({"argument", "general", "rule", "rewrite", "script", "mitm"})
 DOMAIN_RULE_TYPES = {"DOMAIN", "DOMAIN-SUFFIX", "DOMAIN-KEYWORD"}
-IP_RULE_TYPES = {"IP-CIDR", "IP-CIDR6"}
+IP_RULE_TYPES = {"IP-CIDR", "IP-CIDR6", "GEOIP", "IP-ASN"}
 LOGICAL_RULE_TYPES = {"AND", "OR", "NOT"}
+RULE_TYPE_ALIASES = {"IPASN": "IP-ASN"}
+SUPPORTED_RULE_TYPES = frozenset(
+    DOMAIN_RULE_TYPES
+    | IP_RULE_TYPES
+    | LOGICAL_RULE_TYPES
+    | {"DEST-PORT", "PROTOCOL", "SRC-PORT", "URL-REGEX", "USER-AGENT"}
+)
+RULE_TYPE_OPTIONS = {
+    **{rule_type: {"extended-matching", "pre-matching"} for rule_type in DOMAIN_RULE_TYPES},
+    **{rule_type: {"no-resolve", "pre-matching"} for rule_type in IP_RULE_TYPES},
+    **{rule_type: {"pre-matching"} for rule_type in LOGICAL_RULE_TYPES},
+    "DEST-PORT": {"pre-matching"},
+    "PROTOCOL": set(),
+    "SRC-PORT": {"pre-matching"},
+    "URL-REGEX": {"extended-matching"},
+    "USER-AGENT": set(),
+}
 PRE_MATCHING_RULE_TYPES = {
     "DOMAIN",
     "DOMAIN-SUFFIX",
@@ -90,6 +109,8 @@ FATAL_REPORT_KINDS = {
     "general-pass-through",
     "jq-path-inline-failed",
     "mitm-unsupported",
+    "unsupported-rule",
+    "unsupported-section",
     "unsupported-header-rewrite",
     "unsupported-rewrite",
     "unsupported-script",
@@ -137,6 +158,10 @@ JQ_COMPATIBILITY_REWRITES = (
     ),
     (')else .end;removeParentIfNameMatches', ') else . end;removeParentIfNameMatches'),
 )
+
+
+class RuleConversionError(ValueError):
+    pass
 
 
 def timestamp() -> str:
@@ -258,7 +283,7 @@ def surge_argument_name(name: str) -> str:
 
 
 def surge_argument_placeholder(name: str) -> str:
-    return f"%{surge_argument_name(name)}%"
+    return "{{{" + surge_argument_name(name) + "}}}"
 
 
 def convert_placeholder(text: str) -> str:
@@ -715,7 +740,11 @@ def convert_logical_matcher_group(text: str) -> str:
     converted: list[str] = []
     for item in split_top_level(inner, ","):
         matcher = strip_wrapping_parentheses(item)
+        if not matcher:
+            raise RuleConversionError("Logical rule contains an empty matcher")
         converted.append(f"({convert_rule_line(matcher, matcher_only=True)})")
+    if not converted:
+        raise RuleConversionError("Logical rule contains no matchers")
     return "(" + ",".join(converted) + ")"
 
 
@@ -725,7 +754,7 @@ def matcher_supports_pre_matching(text: str) -> bool:
     if not parts:
         return False
 
-    rule_type = parts[0].strip().upper()
+    rule_type = RULE_TYPE_ALIASES.get(parts[0].strip().upper(), parts[0].strip().upper())
     if rule_type in LOGICAL_RULE_TYPES and len(parts) >= 2:
         return logical_group_supports_pre_matching(parts[1])
     return rule_type in PRE_MATCHING_RULE_TYPES
@@ -743,10 +772,32 @@ def convert_rule_line(line: str, matcher_only: bool = False) -> str:
     if not parts:
         return normalized
 
-    rule_type = parts[0].strip().upper()
-    if rule_type in LOGICAL_RULE_TYPES and len(parts) >= 2:
+    source_rule_type = parts[0].strip().upper()
+    rule_type = RULE_TYPE_ALIASES.get(source_rule_type, source_rule_type)
+    if rule_type not in SUPPORTED_RULE_TYPES:
+        raise RuleConversionError(f"Unsupported Loon rule type: {source_rule_type or '<empty>'}")
+    parts[0] = rule_type
+
+    min_parts = 2 if matcher_only else 3
+    if len(parts) < min_parts:
+        raise RuleConversionError(f"{rule_type} rule has too few fields")
+
+    option_start = 2 if matcher_only else 3
+    unknown_options = [
+        part.strip()
+        for part in parts[option_start:]
+        if part.strip().lower() not in RULE_TYPE_OPTIONS[rule_type]
+    ]
+    if unknown_options:
+        raise RuleConversionError(
+            f"Unsupported {rule_type} rule option(s): {', '.join(unknown_options)}"
+        )
+
+    if rule_type in LOGICAL_RULE_TYPES:
         parts[1] = convert_logical_matcher_group(parts[1])
-        if not matcher_only and len(parts) >= 3:
+        if matcher_only:
+            remove_rule_option(parts, "pre-matching", 2)
+        else:
             option_start = 3
             if is_reject_policy(parts[2].strip().upper()) and logical_group_supports_pre_matching(parts[1]):
                 ensure_rule_option(parts, "pre-matching", option_start)
@@ -754,30 +805,22 @@ def convert_rule_line(line: str, matcher_only: bool = False) -> str:
                 remove_rule_option(parts, "pre-matching", option_start)
         return ",".join(parts)
 
-    min_parts = 2 if matcher_only else 3
-    if len(parts) < min_parts:
-        return normalized
-
-    option_start = 2 if matcher_only else 3
     policy = "" if matcher_only else parts[2].strip().upper()
     reject_policy = is_reject_policy(policy)
 
     if rule_type in DOMAIN_RULE_TYPES:
         ensure_rule_option(parts, "extended-matching", option_start)
-        if not matcher_only:
-            if reject_policy:
-                ensure_rule_option(parts, "pre-matching", option_start)
-            else:
-                remove_rule_option(parts, "pre-matching", option_start)
     elif rule_type == "URL-REGEX":
         ensure_rule_option(parts, "extended-matching", option_start)
     elif rule_type in IP_RULE_TYPES:
         ensure_rule_option(parts, "no-resolve", option_start)
-        if not matcher_only:
-            if reject_policy:
-                ensure_rule_option(parts, "pre-matching", option_start)
-            else:
-                remove_rule_option(parts, "pre-matching", option_start)
+
+    if matcher_only:
+        remove_rule_option(parts, "pre-matching", option_start)
+    elif reject_policy and rule_type in PRE_MATCHING_RULE_TYPES:
+        ensure_rule_option(parts, "pre-matching", option_start)
+    else:
+        remove_rule_option(parts, "pre-matching", option_start)
 
     return ",".join(parts)
 
@@ -914,7 +957,11 @@ def convert_mock_response_options(text: str) -> str:
         mock = ensure_mock_option(mock, "status-code", "200")
         mock = ensure_mock_option(mock, "header", '"Content-Type:text/plain"')
 
-    return ensure_mock_option(mock, "status-code", "200")
+    mock = ensure_mock_option(mock, "status-code", "200")
+    status_text = mock_option_value(mock, "status-code")
+    if status_text is None or not re.fullmatch(r"\d{3}", status_text) or not 200 <= int(status_text) <= 999:
+        raise ValueError("Surge Map Local status-code must be between 200 and 999")
+    return mock
 
 
 def quote_property_value(value: str) -> str:
@@ -1101,6 +1148,12 @@ def v2_map_local_inline(pattern: str, body: str, status: int, content_type: str 
     return result
 
 
+def v2_surge_map_local_status(status: int, description: str) -> int:
+    if not 200 <= status <= 999:
+        raise RewriteV2Error(f"{description} {status} is outside Surge Map Local's 200-999 range")
+    return status
+
+
 def convert_v2_url_action(
     action: V2Action,
     phase: str,
@@ -1149,11 +1202,17 @@ def convert_v2_reject_action(action: V2Action, phase: str, pattern: str) -> list
     if action.name == "reject":
         if len(action.arguments) not in (1, 2):
             raise RewriteV2Error(f"reject expects 1 or 2 arguments, got {len(action.arguments)}")
-        status = v2_integer(action.arguments[0], "reject status", 100, 599)
+        status = v2_surge_map_local_status(
+            v2_integer(action.arguments[0], "reject status", 100, 599),
+            "reject status",
+        )
         body = v2_constant_string(action.arguments[1], "reject body") if len(action.arguments) == 2 else ""
         return [("Map Local", v2_map_local_inline(pattern, body, status, "text/plain" if body else None))]
 
-    status = v2_integer(single_v2_arguments(action, 1)[0], f"{action.name} status", 100, 599)
+    status = v2_surge_map_local_status(
+        v2_integer(single_v2_arguments(action, 1)[0], f"{action.name} status", 100, 599),
+        f"{action.name} status",
+    )
     if action.name == "reject_img":
         return [("Map Local", f"{pattern} data-type=tiny-gif status-code={status}")]
     if action.name == "reject_dict":
@@ -1309,7 +1368,14 @@ def convert_v2_mock_action(action: V2Action, phase: str, pattern: str) -> list[t
     if content_kind not in LOON_MOCK_CONTENT_TYPES:
         raise RewriteV2Error(f"{action.name} uses unsupported content type: {content_kind}")
     content_type = LOON_MOCK_CONTENT_TYPES[content_kind]
-    status = v2_integer(action.arguments[2], f"{action.name} status", 100, 599) if len(action.arguments) >= 3 else 200
+    status = (
+        v2_surge_map_local_status(
+            v2_integer(action.arguments[2], f"{action.name} status", 200, 999),
+            f"{action.name} status",
+        )
+        if len(action.arguments) >= 3
+        else 200
+    )
     base64_mode = action.arguments[3] if len(action.arguments) >= 4 else False
     if not isinstance(base64_mode, bool):
         raise RewriteV2Error(f"{action.name} Base64 flag must be Boolean")
@@ -1439,7 +1505,12 @@ def convert_rewrite_line(
     elif action == "reject-200":
         sections["Map Local"].append(f'{pattern} data-type=text data="" status-code=200')
     elif action == "mock-response-body":
-        sections["Map Local"].append(f"{pattern} {convert_mock_response_options(rest)}")
+        try:
+            converted_mock = convert_mock_response_options(rest)
+        except ValueError as exc:
+            add_report(report, file, "unsupported-rewrite", str(exc), line)
+            return
+        sections["Map Local"].append(f"{pattern} {converted_mock}")
     elif action == "response-body-json-jq":
         expression = convert_jq_expression(rest, report, file, line)
         if expression is not None:
@@ -1664,8 +1735,47 @@ def convert_argument_lines(
             )
             continue
         default_value = toggle_defaults[name] if name in toggle_defaults else parts[1].strip()
-        items.append((converted_name, unquote_property_value(default_value)))
+        converted_default = unquote_property_value(default_value)
+        if any(char in converted_default for char in (",", "\r", "\n")):
+            add_report(
+                report,
+                file,
+                "argument-default",
+                "Surge module argument defaults cannot safely contain commas or line breaks.",
+                line,
+            )
+            continue
+        items.append((converted_name, converted_default))
     return items
+
+
+def format_surge_arguments(items: list[tuple[str, str]]) -> str:
+    return ",".join(f"{name}:{default}" if default else name for name, default in items)
+
+
+def surge_module_requirement(
+    sections: OrderedDict[str, list[str]],
+    has_arguments: bool,
+) -> str | None:
+    has_jq_rewrite = any(
+        re.match(r"^http-(?:request|response)-jq\s", line)
+        for line in sections["Body Rewrite"]
+    )
+    has_modern_rule_feature = any(
+        "pre-matching" in {part.strip().lower() for part in split_top_level(line, ",")[3:]}
+        or re.search(r"(?:^|\()URL-REGEX,", line) is not None
+        for line in sections["Rule"]
+    )
+    if has_jq_rewrite or has_modern_rule_feature:
+        return SURGE_5_14_FEATURE_REQUIREMENT
+    if (
+        sections["Body Rewrite"]
+        or sections["Map Local"]
+        or has_arguments
+        or any("extended-matching" in line for line in sections["Rule"])
+    ):
+        return BASE_MODULE_FEATURE_REQUIREMENT
+    return None
 
 
 def safe_module_filename(name: str, seen: dict[str, int]) -> str:
@@ -1730,6 +1840,34 @@ def section_lines(source_sections: dict[str, list[str]], name: str) -> list[str]
 
 def has_section(source_sections: dict[str, list[str]], name: str) -> bool:
     return bool(section_lines(source_sections, name))
+
+
+def report_unsupported_source_sections(
+    source_sections: dict[str, list[str]],
+    report: list[dict[str, str]],
+    file: str,
+) -> None:
+    normalized_names: dict[str, str] = {}
+    for section_name, lines in source_sections.items():
+        normalized = section_name.lower()
+        if normalized in normalized_names and lines:
+            add_report(
+                report,
+                file,
+                "unsupported-section",
+                f"Duplicate Loon section names differ only by case: [{normalized_names[normalized]}] and [{section_name}]",
+                f"[{section_name}]",
+            )
+            continue
+        normalized_names[normalized] = section_name
+        if normalized not in SUPPORTED_LOON_SECTIONS and lines:
+            add_report(
+                report,
+                file,
+                "unsupported-section",
+                f"Unsupported non-empty Loon section: [{section_name}]",
+                f"[{section_name}] {lines[0]}",
+            )
 
 
 def unsupported_module_rule_policies(source_sections: dict[str, list[str]]) -> list[tuple[str, str]]:
@@ -1810,6 +1948,7 @@ def convert_file(
     seen_files: dict[str, int],
 ) -> dict[str, Any] | None:
     metadata, source_sections = parse_lpx(path)
+    report_unsupported_source_sections(source_sections, report, path.name)
     unsupported_rules = unsupported_module_rule_policies(source_sections)
     if unsupported_rules:
         policies = ", ".join(dict.fromkeys(policy for _, policy in unsupported_rules))
@@ -1924,7 +2063,10 @@ def convert_file(
                 sections["Map Local"].append(f"{pattern} data-type=tiny-gif status-code=200")
                 continue
 
-        sections["Rule"].append(convert_rule_line(line))
+        try:
+            sections["Rule"].append(convert_rule_line(line))
+        except RuleConversionError as exc:
+            add_report(report, path.name, "unsupported-rule", str(exc), line)
 
     for line in section_lines(source_sections, "Rewrite"):
         convert_rewrite_line(line, sections, report, path.name, set(argument_defaults))
@@ -1941,20 +2083,6 @@ def convert_file(
         else:
             add_report(report, path.name, "mitm-unsupported", "Unsupported MitM line", line)
 
-    output: list[str] = []
-    surge_system = convert_system_metadata(metadata.get("system"), report, path.name)
-    for key in ("name", "desc", "author", "icon"):
-        if key in metadata:
-            output.append(f"#!{key}={metadata[key]}")
-    output.append("#!category=iKeLee")
-    for key in ("openUrl", "open", "tag", "system_version", "loon_version", "homepage", "date"):
-        if key in metadata:
-            output.append(f"#!{key}={metadata[key]}")
-    if surge_system:
-        output.append(f"#!system={surge_system}")
-    if sections["Body Rewrite"] or sections["Map Local"]:
-        output.append("#!requirement=CORE_VERSION>=20")
-
     toggle_defaults = collect_enable_toggle_defaults(script_lines, argument_defaults, shared_enable_argument_names)
     used_argument_names: set[str] = set()
     for section_name, lines in source_sections.items():
@@ -1969,8 +2097,24 @@ def convert_file(
     )
     if NODE_LINK_CHECK_SCRIPT_PATH in generic_paths and "Policy" not in argument_defaults:
         argument_items.append(("Policy", "PROXY"))
+
+    output: list[str] = []
+    surge_system = convert_system_metadata(metadata.get("system"), report, path.name)
+    for key in ("name", "desc", "author", "icon"):
+        if key in metadata:
+            output.append(f"#!{key}={metadata[key]}")
+    output.append("#!category=iKeLee")
+    for key in ("openUrl", "open", "tag", "system_version", "loon_version", "homepage", "date"):
+        if key in metadata:
+            output.append(f"#!{key}={metadata[key]}")
+    if surge_system:
+        output.append(f"#!system={surge_system}")
+    requirement = surge_module_requirement(sections, bool(argument_items))
+    if requirement:
+        output.append(f"#!requirement={requirement}")
+
     if argument_items:
-        output.append("#!arguments=" + urllib.parse.urlencode(argument_items))
+        output.append("#!arguments=" + format_surge_arguments(argument_items))
 
     for section_name in SECTION_ORDER:
         lines = sections[section_name]

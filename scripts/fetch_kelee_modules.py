@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import shutil
 import tempfile
 import time
@@ -18,6 +19,7 @@ except ModuleNotFoundError:
 
 LOON_USER_AGENT = "Loon/860 CFNetwork/3826.500.111.2.2 Darwin/24.4.0"
 WINDOWS_INVALID_FILENAME_CHARS = set('<>:"/\\|?*')
+MIN_RETAINED_MODULE_RATIO = 0.8
 
 
 def timestamp() -> str:
@@ -105,7 +107,43 @@ def replace_file(source: Path, target: Path, root: Path) -> None:
     shutil.move(str(source), str(target))
 
 
-def fetch_kelee_modules(base_url: str, output_dir: str) -> None:
+def validate_plugin_list(
+    data: object,
+    previous_count: int,
+    allow_large_drop: bool = False,
+) -> list[dict[str, object]]:
+    if not isinstance(data, dict) or not isinstance(data.get("lists"), list):
+        raise RuntimeError("Kelee list.json must contain a lists array")
+
+    plugins = data["lists"]
+    if not plugins:
+        raise RuntimeError("Kelee list.json contains no modules; refusing to replace the existing module tree")
+
+    source_urls: set[str] = set()
+    for index, plugin in enumerate(plugins, start=1):
+        if not isinstance(plugin, dict) or not isinstance(plugin.get("url"), str) or not plugin["url"].strip():
+            raise RuntimeError(f"Kelee list.json module {index} has no valid URL")
+        source_url = plugin_url(plugin["url"].strip())
+        parsed = urllib.parse.urlparse(source_url)
+        if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+            raise RuntimeError(f"Kelee list.json module {index} resolves to an unsupported URL: {source_url}")
+        normalized_url = parsed._replace(fragment="").geturl()
+        if normalized_url in source_urls:
+            raise RuntimeError(f"Kelee list.json contains a duplicate module URL: {normalized_url}")
+        source_urls.add(normalized_url)
+
+    if previous_count and not allow_large_drop:
+        minimum_count = math.ceil(previous_count * MIN_RETAINED_MODULE_RATIO)
+        if len(plugins) < minimum_count:
+            raise RuntimeError(
+                f"Kelee module count dropped from {previous_count} to {len(plugins)}, below the "
+                f"{MIN_RETAINED_MODULE_RATIO:.0%} safety threshold; review upstream and rerun with "
+                "--allow-large-drop if the removal is intentional"
+            )
+    return plugins
+
+
+def fetch_kelee_modules(base_url: str, output_dir: str, allow_large_drop: bool = False) -> None:
     root = Path.cwd().resolve()
     output_root = root / output_dir
     raw_list_path = output_root / "list.json"
@@ -123,14 +161,15 @@ def fetch_kelee_modules(base_url: str, output_dir: str) -> None:
         temp_raw_list_path.write_bytes(raw_json)
 
         data = json.loads(raw_json.decode("utf-8"))
-        plugins = data.get("lists", [])
+        previous_count = sum(1 for _ in output_root.glob("*.lpx"))
+        plugins = validate_plugin_list(data, previous_count, allow_large_drop)
         seen_names: dict[str, int] = {}
         index: list[dict[str, object]] = []
         failures: list[dict[str, object]] = []
 
         total = len(plugins)
         for current, plugin in enumerate(plugins, start=1):
-            source_url = plugin_url(plugin.get("url", ""))
+            source_url = plugin_url(str(plugin.get("url", "")).strip())
             file_name = safe_filename_from_url(source_url, seen_names)
             target_path = temp_output_root / file_name
             print(f"Downloading {current}/{total}: {plugin.get('name', file_name)}")
@@ -199,8 +238,9 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Fetch Loon modules from Kelee PluginHub.")
     parser.add_argument("--base-url", default="https://hub.kelee.one")
     parser.add_argument("--output-dir", default="Loon")
+    parser.add_argument("--allow-large-drop", action="store_true")
     args = parser.parse_args()
-    fetch_kelee_modules(args.base_url, args.output_dir)
+    fetch_kelee_modules(args.base_url, args.output_dir, args.allow_large_drop)
 
 
 if __name__ == "__main__":

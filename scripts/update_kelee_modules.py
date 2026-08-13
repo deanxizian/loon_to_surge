@@ -18,9 +18,10 @@ def main() -> None:
     parser.add_argument("--loon-dir", default="Loon")
     parser.add_argument("--surge-dir", default="Surge")
     parser.add_argument("--report-path", default="Surge/convert-report.json")
+    parser.add_argument("--allow-large-drop", action="store_true")
     args = parser.parse_args()
 
-    fetch_kelee_modules(args.base_url, args.loon_dir)
+    fetch_kelee_modules(args.base_url, args.loon_dir, args.allow_large_drop)
     convert_kelee_to_surge(args.loon_dir, args.surge_dir, args.report_path)
     summary = validate_surge_modules(args.loon_dir, args.surge_dir, args.report_path, require_jq=True)
     print(f"Validated {summary['modules']} Surge modules.")
