@@ -549,6 +549,15 @@
         ]
     },
     {
+        "source": "DjDuoDuo_remove_ads.lpx",
+        "output": "DJ多多去广告.sgmodule",
+        "name": "DJ多多去广告",
+        "sections": [
+            "Script",
+            "MITM"
+        ]
+    },
+    {
         "source": "Dlabel_remove_ads.lpx",
         "output": "Dlabel云标签去广告.sgmodule",
         "name": "Dlabel云标签去广告",
@@ -1051,6 +1060,17 @@
         "output": "掌上英雄联盟去广告.sgmodule",
         "name": "掌上英雄联盟去广告",
         "sections": [
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "LZMH_remove_ads.lpx",
+        "output": "联掌门户去广告.sgmodule",
+        "name": "联掌门户去广告",
+        "sections": [
+            "URL Rewrite",
+            "Body Rewrite",
             "Map Local",
             "MITM"
         ]
@@ -1681,6 +1701,15 @@
             "Body Rewrite",
             "Map Local",
             "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Sofascore_remove_ads.lpx",
+        "output": "Sofascore去广告.sgmodule",
+        "name": "Sofascore去广告",
+        "sections": [
+            "Map Local",
             "MITM"
         ]
     },
@@ -2437,6 +2466,15 @@
         "sections": [
             "URL Rewrite",
             "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "marki_remove_ads.lpx",
+        "output": "马克水印相机去广告.sgmodule",
+        "name": "马克水印相机去广告",
+        "sections": [
             "Map Local",
             "MITM"
         ]
