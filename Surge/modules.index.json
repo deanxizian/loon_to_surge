@@ -626,6 +626,15 @@
         ]
     },
     {
+        "source": "EasyBike_remove_ads.lpx",
+        "output": "哈罗去广告.sgmodule",
+        "name": "哈罗去广告",
+        "sections": [
+            "Script",
+            "MITM"
+        ]
+    },
+    {
         "source": "EasyCharge_remove_ads.lpx",
         "output": "e充电去广告.sgmodule",
         "name": "e充电去广告",
@@ -1234,6 +1243,17 @@
             "URL Rewrite",
             "Body Rewrite",
             "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "MotorFans_remove_ads.lpx",
+        "output": "摩托范去广告.sgmodule",
+        "name": "摩托范去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "Script",
             "MITM"
         ]
     },
