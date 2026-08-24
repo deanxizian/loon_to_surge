@@ -79,6 +79,16 @@
         ]
     },
     {
+        "source": "5EPlay_remove_ads.lpx",
+        "output": "5EPlay去广告.sgmodule",
+        "name": "5EPlay去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
         "source": "91160_remove_ads.lpx",
         "output": "健康160去广告.sgmodule",
         "name": "健康160去广告",
@@ -907,6 +917,15 @@
         "name": "驾校一点通去广告",
         "sections": [
             "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Jin10Data_remove_ads.lpx",
+        "output": "金十数据去广告.sgmodule",
+        "name": "金十数据去广告",
+        "sections": [
             "Map Local",
             "MITM"
         ]
