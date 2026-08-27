@@ -145,7 +145,7 @@ def module_arguments(text: str, file: str, errors: list[str]) -> set[str]:
         errors.append(f"{file}: #!arguments must declare at least one argument")
         return set()
     arguments: set[str] = set()
-    for item in payload.split(","):
+    for item in split_top_level(payload, ","):
         key, separator, default = item.partition(":")
         key = key.strip()
         if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", key):

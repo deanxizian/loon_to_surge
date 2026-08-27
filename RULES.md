@@ -6,7 +6,7 @@
 
 - Loon Rewrite V2 官方文档：作为新版 Rewrite 的语法、类型、Action 顺序和执行阶段依据。
 - QingRex/LoonKissSurge：主要对照其 Kelee 成品模块的 Surge 输出形态，包括 section 组织、`Map Local`、`http-response-jq`、`extended-matching`、`pre-matching` 等规则标记。
-- Script-Hub-Org/Script-Hub：主要参考 `enable={...}` 转 Surge 行前缀开关的方式，以及规则标记处理的边界。
+- Script-Hub-Org/Script-Hub：主要参考 `enable={...}` 转 Surge 行前缀开关、参数引号与顶层分隔处理，以及规则标记处理的边界。
 - Loon Script 与 Script API 官方文档：用于确认 `generic` 可接收被操作节点的 `$environment.params.node/nodeInfo`。
 - Surge 官方文档：作为最终语法边界，覆盖模块结构、`#!arguments`、`#!system`、`#!requirement`、`[Rule]`、`[Script]`、`[Map Local]`、`[MITM]` 和 `pre-matching` 的适用范围；Surge generic/Panel 只使用自身的普通脚本上下文及 `$input/$trigger`，不假设存在 Loon 的被选节点上下文。
 
@@ -46,7 +46,7 @@ Loon 文件里的 `#!` 元数据按以下规则输出：
 - 继续保留：`openUrl`、`open`、`tag`、`system_version`、`loon_version`、`homepage`、`date`
 - `system` 只输出 Surge 官方支持的 `ios` 或 `mac`：Loon 的 `iOS/iPadOS` 映射为 `ios`，`macOS` 映射为 `mac`；同时覆盖 iOS 和 macOS 时省略限制，`watchOS` 没有 Surge 对应目标。
 - 使用模块参数、域名 `extended-matching`、普通 `[Body Rewrite]` 或 `[Map Local]` 的模块添加 `#!requirement=CORE_VERSION>=20`，这是官方已列出的基础兼容门槛。
-- 含 `http-request-jq`、`http-response-jq`、`pre-matching` 或 URL-REGEX `extended-matching` 的模块添加保守门槛 `#!requirement=CORE_VERSION>=6008000`。Surge Manual/Release Notes 只给出这些新特性的客户端最低版本（iOS 5.14 / Mac 5.9），未给出这一旧版本对应的精确 Core 数字；`6008000` 是官方版本表中已确认支持它们的共同 Core（iOS 5.21 / Mac 6.8），会排除部分可能兼容的旧客户端，但不会向不支持这些特性的版本宣称可用。
+- 含 `http-request-jq`、`http-response-jq`、`pre-matching`、URL-REGEX `extended-matching`，或使用引号保护含逗号参数默认值的模块添加保守门槛 `#!requirement=CORE_VERSION>=6008000`。Surge Manual/Release Notes 只给出部分新特性的客户端最低版本（JQ 为 iOS 5.14 / Mac 5.9，引号值为 iOS 5.21 / Mac 6.8）；`6008000` 是官方版本表中已确认共同支持这些语法的 Core，会排除部分可能兼容的旧客户端，但不会向不支持这些特性的版本宣称可用。
 
 模块文件名使用模块 `name`，并清理 Windows 不合法文件名字符。重名时自动追加 `-2`、`-3`。
 
@@ -61,7 +61,7 @@ Loon `[Argument]` 会转换为 Surge `#!arguments=`。
 - 按 Surge 当前表格语法输出 `参数名:默认值,参数名2:默认值2`，不做 URL 编码。
 - 参数名只保留 ASCII 字母、数字和下划线；其他字符转换为 `_`，数字开头时加 `ARG_`。归一化后重名会阻止发布。
 - 脚本参数、cron 或 Rewrite 里的 Loon 占位符 `{Name}` / `${Name}` 会转换成 Surge 模块占位符 `{{{Name}}}`。
-- 默认值含逗号或换行时无法无歧义写入当前 Surge 参数表，会记录 `argument-default` 并终止发布。
+- 默认值含逗号时使用双引号保护，并按 Surge 引号值语法转义反斜杠和双引号；对应模块要求 `CORE_VERSION>=6008000`。实际换行仍会记录 `argument-default` 并终止发布。
 - 未被任何生成行引用的 Loon 参数会删除，并记录 `argument-unused-dropped`。
 
 示例：
@@ -191,7 +191,7 @@ response if ${url} ~= /^https:\/\/example\.com/ then response.json.delete("data.
 
 - 单个 `${url} ~= /regex/`，可使用 `as name` 捕获并在 URL 替换或重定向中引用 `${name.n}`。
 - 单个 `${url} == "constant"`，转换为完整 URL 正则。
-- URL 正则暂不接受 `i`、`m`、`s` flags，避免在没有确认 Surge 等价语义时改变匹配范围。
+- URL、Header 和 Body 正则暂不接受 `i`、`m`、`s` flags，避免在没有确认 Surge 等价语义时改变匹配范围；包含这类 Rewrite V2 正则的模块会整项排除并记录 `module-excluded`，不会生成删掉相关行的残缺模块。
 
 当前可安全转换的 Action：
 
@@ -207,7 +207,7 @@ response if ${url} ~= /^https:\/\/example\.com/ then response.json.delete("data.
 
 多个 Action 只有在都能落入同一个 Surge section、且仍能保持从左到右执行语义时才会展开。方法、请求或响应 Header、响应状态码、逻辑组合条件，以及请求 Body Mock、响应 Mock 与 Header 的混合 Action 等，当前都不会被弱化为仅 URL 匹配。
 
-任何无法安全转换的 V2 行都会产生 `unsupported-rewrite`。该类型属于致命转换错误：全量任务会在替换 `Surge/` 前失败，上一版已验证产物保持不变。
+带正则 flags 的 V2 模块会按上述规则整项排除，因此不会阻塞其他模块更新。其他无法安全转换的 V2 行仍会产生 `unsupported-rewrite`；该类型属于致命转换错误，全量任务会在替换 `Surge/` 前失败，上一版已验证产物保持不变。
 
 ### URL Rewrite
 
@@ -491,7 +491,7 @@ hostname = %APPEND% example.com, *.example.org
 
 - `argument-unused-dropped`：Loon 声明了参数，但任何生成行都未引用，参数已从 Surge 输出删除。
 - `generic-script-adapted`：已核实的 generic 使用其原生 Surge 接口补充了 Policy 参数或 Panel 配置。
-- `module-excluded`：模块含有 Surge 模块不允许的 Rule 策略、未经核实的 Loon generic 脚本或其他不可安全发布的模块级问题，已从 Surge 输出和索引中排除。
+- `module-excluded`：模块含有 Surge 模块不允许的 Rule 策略、未经核实的 Loon generic 脚本、没有已验证 Surge 等价语义的 Rewrite V2 正则 flags，或其他不可安全发布的模块级问题，已从 Surge 输出和索引中排除。
 - `script-enable-toggle-emitted`：`enable={Arg}` 已转为 Surge 行前缀开关。
 - `script-enable-shared-commented`：`enable` 参数同时是脚本入参，脚本行按默认值静态注释，参数默认值保留。
 - `script-enable-direct-commented`：`enable=false` 已转为注释脚本行。
@@ -508,7 +508,7 @@ hostname = %APPEND% example.com, *.example.org
 - `unsupported-rule`：Loon Rule 类型/option 未知、字段不完整或逻辑 matcher 无法安全转换。
 - `unsupported-section`：Loon 出现未知的非空 section，或仅大小写不同的重复 section。
 - `argument-parse`：Argument 行无法解析。
-- `argument-default`：Argument 行找不到默认值，或默认值含当前 Surge 参数表无法无歧义表示的逗号或换行。
+- `argument-default`：Argument 行找不到默认值，或默认值含无法写入单行 Surge 参数表的实际换行。
 - `argument-name-collision`：参数名归一化后重名。
 - `mitm-unsupported`：MITM 行不支持。
 - `unsupported-system`：Loon 平台限制无法映射为 Surge 的 `ios/mac`。

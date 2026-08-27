@@ -12,7 +12,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from convert_kelee_to_surge import convert_file, convert_kelee_to_surge, convert_mock_response_options  # noqa: E402
+from convert_kelee_to_surge import (  # noqa: E402
+    convert_file,
+    convert_kelee_to_surge,
+    convert_mock_response_options,
+    format_surge_argument_default,
+)
 from fetch_kelee_modules import validate_plugin_list  # noqa: E402
 from loon_rewrite_v2 import RewriteV2Error, parse_rewrite_v2_line  # noqa: E402
 from validate_surge_modules import module_arguments, validate_section_line, validate_surge_modules  # noqa: E402
@@ -315,8 +320,8 @@ http-request ^https://example.com script-path=https://example.com/a.js, tag=Samp
 
         self.assertEqual([item["kind"] for item in report], ["argument-name-collision"])
 
-    def test_argument_default_with_comma_is_fatal(self) -> None:
-        _, report = self.convert_lpx(
+    def test_argument_default_with_comma_is_quoted_and_requires_modern_surge(self) -> None:
+        output, report = self.convert_lpx(
             """#!name=Sample
 
 [Argument]
@@ -327,7 +332,12 @@ http-request ^https://example.com script-path=https://example.com/a.js, tag=Samp
 """
         )
 
-        self.assertEqual([item["kind"] for item in report], ["argument-default"])
+        self.assertIn('#!arguments=Value:"one,two"', output)
+        self.assertIn("#!requirement=CORE_VERSION>=6008000", output)
+        self.assertEqual(report, [])
+
+    def test_argument_default_with_comma_escapes_backslashes(self) -> None:
+        self.assertEqual(format_surge_argument_default("one,two\\"), '"one,two\\\\"')
 
     def test_unused_argument_is_removed_and_reported(self) -> None:
         output, report = self.convert_lpx(
@@ -687,6 +697,20 @@ response if ${url} ~= /^https:\/\/api\.example\.com\/mock$/ then response.body.m
         self.assertIn("status-code=999", output)
         self.assertEqual(report, [])
 
+    def test_rewrite_v2_regex_flags_exclude_the_whole_module(self) -> None:
+        output, report = self.convert_lpx_result(
+            r'''#!name=Sample
+
+[Rewrite]
+request if ${url} ~= /^https:\/\/api\.example\.com\/ads/i then reject_dict(200)
+'''
+        )
+
+        self.assertIsNone(output)
+        self.assertEqual([item["kind"] for item in report], ["module-excluded"])
+        self.assertIn("no verified Surge equivalent", report[0]["message"])
+        self.assertIn("/i", report[0]["message"])
+
     def test_rewrite_v2_response_mock_rejects_status_above_surge_range(self) -> None:
         output, report = self.convert_lpx(
             r'''#!name=Sample
@@ -933,6 +957,45 @@ DOMAIN,proxy.example.com,PROXY
             self.assertEqual([item["source"] for item in manifest], ["Regular.lpx"])
             self.assertEqual(summary["modules"], 1)
 
+    def test_full_conversion_continues_when_v2_regex_flags_are_excluded(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            loon = root / "Loon"
+            loon.mkdir()
+            (loon / "Regular.lpx").write_text(
+                """#!name=Regular
+
+[Rule]
+DOMAIN,ads.example.com,REJECT
+""",
+                encoding="utf-8",
+            )
+            (loon / "Flagged.lpx").write_text(
+                r'''#!name=Flagged
+
+[Rewrite]
+request if ${url} ~= /^https:\/\/api\.example\.com\/ads/i then reject_dict(200)
+''',
+                encoding="utf-8",
+            )
+
+            previous_cwd = Path.cwd()
+            try:
+                os.chdir(root)
+                convert_kelee_to_surge("Loon", "Surge", "Surge/convert-report.json")
+                summary = validate_surge_modules("Loon", "Surge", "Surge/convert-report.json")
+            finally:
+                os.chdir(previous_cwd)
+
+            report = json.loads((root / "Surge" / "convert-report.json").read_text(encoding="utf-8"))
+            manifest = json.loads((root / "Surge" / "modules.index.json").read_text(encoding="utf-8"))
+            self.assertEqual(report["total"], 2)
+            self.assertEqual(report["converted"], 1)
+            self.assertEqual(report["excluded"], 1)
+            self.assertEqual([item["kind"] for item in report["items"]], ["module-excluded"])
+            self.assertEqual([item["source"] for item in manifest], ["Regular.lpx"])
+            self.assertEqual(summary["modules"], 1)
+
 
 class ValidateRuleLineTest(unittest.TestCase):
     def validate(self, line: str) -> list[str]:
@@ -1028,6 +1091,18 @@ class ValidateModuleArgumentsTest(unittest.TestCase):
         arguments, errors = self.validate("#!arguments=Mode:compact,Capture:#,Run\n")
 
         self.assertEqual(arguments, {"Mode", "Capture", "Run"})
+        self.assertEqual(errors, [])
+
+    def test_quoted_default_with_comma_is_accepted(self) -> None:
+        arguments, errors = self.validate('#!arguments=Value:"one,two",Mode:compact\n')
+
+        self.assertEqual(arguments, {"Value", "Mode"})
+        self.assertEqual(errors, [])
+
+    def test_quoted_default_ending_in_backslash_is_split_correctly(self) -> None:
+        arguments, errors = self.validate('#!arguments=Value:"one,folder\\\\",Mode:compact\n')
+
+        self.assertEqual(arguments, {"Value", "Mode"})
         self.assertEqual(errors, [])
 
     def test_legacy_query_string_syntax_is_rejected(self) -> None:

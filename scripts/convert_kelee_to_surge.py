@@ -49,6 +49,10 @@ except ModuleNotFoundError:
     )
 
 
+class UnverifiedRewriteV2RegexFlags(RewriteV2Error):
+    """Raised when Loon regex flags have no verified Surge equivalent."""
+
+
 WINDOWS_INVALID_FILENAME_CHARS = set('<>:"/\\|?*')
 SECTION_ORDER = (
     "General",
@@ -189,18 +193,19 @@ def split_top_level(text: str | None, delimiter: str = ",") -> list[str]:
     round_depth = 0
     square_depth = 0
     curly_depth = 0
-    previous = ""
+    escaped = False
 
     for char in text:
         if quote:
             builder.append(char)
-            if char == quote and previous != "\\":
+            if char == quote and not escaped:
                 quote = ""
-            previous = char
+            escaped = not escaped if char == "\\" else False
             continue
 
         if char in ("'", '"'):
             quote = char
+            escaped = False
             builder.append(char)
         elif char == "(":
             round_depth += 1
@@ -1063,9 +1068,7 @@ def v2_regex_pattern(value: V2Value, description: str) -> str:
     if not isinstance(value, V2Regex):
         raise RewriteV2Error(f"{description} must be a regular expression")
     if value.flags:
-        raise RewriteV2Error(
-            f"{description} uses Loon regex flags /{value.flags}; no equivalent is emitted without verified Surge semantics"
-        )
+        raise UnverifiedRewriteV2RegexFlags(f"{description} uses Loon regex flags /{value.flags}")
     return value.pattern
 
 
@@ -1417,7 +1420,7 @@ def convert_rewrite_v2_line(
     report: list[dict[str, str]],
     file: str,
     argument_names: set[str],
-) -> None:
+) -> str | None:
     try:
         rewrite = parse_rewrite_v2_line(line)
         condition = parse_url_only_condition(rewrite.condition)
@@ -1451,8 +1454,11 @@ def convert_rewrite_v2_line(
 
         for section, converted_line in converted:
             sections[section].append(converted_line)
+    except UnverifiedRewriteV2RegexFlags as exc:
+        return str(exc)
     except RewriteV2Error as exc:
         add_report(report, file, "unsupported-rewrite", f"Rewrite V2: {exc}", line)
+    return None
 
 
 def convert_rewrite_line(
@@ -1461,10 +1467,9 @@ def convert_rewrite_line(
     report: list[dict[str, str]],
     file: str,
     argument_names: set[str] | None = None,
-) -> None:
+) -> str | None:
     if is_rewrite_v2_line(line):
-        convert_rewrite_v2_line(line, sections, report, file, argument_names or set())
-        return
+        return convert_rewrite_v2_line(line, sections, report, file, argument_names or set())
 
     inline_match = re.match(r"^(http-request|http-response)\s+(\S+)\s+(\S+)(?:\s+(.*))?$", line)
     if inline_match:
@@ -1736,12 +1741,12 @@ def convert_argument_lines(
             continue
         default_value = toggle_defaults[name] if name in toggle_defaults else parts[1].strip()
         converted_default = unquote_property_value(default_value)
-        if any(char in converted_default for char in (",", "\r", "\n")):
+        if any(char in converted_default for char in ("\r", "\n")):
             add_report(
                 report,
                 file,
                 "argument-default",
-                "Surge module argument defaults cannot safely contain commas or line breaks.",
+                "Surge module argument defaults cannot contain line breaks.",
                 line,
             )
             continue
@@ -1749,13 +1754,22 @@ def convert_argument_lines(
     return items
 
 
+def format_surge_argument_default(value: str) -> str:
+    if "," not in value:
+        return value
+    escaped = value.replace("\\", "\\\\").replace('"', '\\"')
+    return f'"{escaped}"'
+
+
 def format_surge_arguments(items: list[tuple[str, str]]) -> str:
-    return ",".join(f"{name}:{default}" if default else name for name, default in items)
+    return ",".join(
+        f"{name}:{format_surge_argument_default(default)}" if default else name for name, default in items
+    )
 
 
 def surge_module_requirement(
     sections: OrderedDict[str, list[str]],
-    has_arguments: bool,
+    argument_items: list[tuple[str, str]],
 ) -> str | None:
     has_jq_rewrite = any(
         re.match(r"^http-(?:request|response)-jq\s", line)
@@ -1766,12 +1780,13 @@ def surge_module_requirement(
         or re.search(r"(?:^|\()URL-REGEX,", line) is not None
         for line in sections["Rule"]
     )
-    if has_jq_rewrite or has_modern_rule_feature:
+    has_quoted_argument_default = any("," in default for _, default in argument_items)
+    if has_jq_rewrite or has_modern_rule_feature or has_quoted_argument_default:
         return SURGE_5_14_FEATURE_REQUIREMENT
     if (
         sections["Body Rewrite"]
         or sections["Map Local"]
-        or has_arguments
+        or argument_items
         or any("extended-matching" in line for line in sections["Rule"])
     ):
         return BASE_MODULE_FEATURE_REQUIREMENT
@@ -2069,7 +2084,17 @@ def convert_file(
             add_report(report, path.name, "unsupported-rule", str(exc), line)
 
     for line in section_lines(source_sections, "Rewrite"):
-        convert_rewrite_line(line, sections, report, path.name, set(argument_defaults))
+        regex_flag_reason = convert_rewrite_line(line, sections, report, path.name, set(argument_defaults))
+        if regex_flag_reason:
+            add_report(
+                report,
+                path.name,
+                "module-excluded",
+                "Module was excluded from Surge output because Rewrite V2 regex flags have no verified "
+                f"Surge equivalent; {regex_flag_reason}.",
+                line,
+            )
+            return None
 
     for line in script_lines:
         convert_script_line(line, sections["Script"], report, path.name, argument_defaults, shared_enable_argument_names)
@@ -2109,7 +2134,7 @@ def convert_file(
             output.append(f"#!{key}={metadata[key]}")
     if surge_system:
         output.append(f"#!system={surge_system}")
-    requirement = surge_module_requirement(sections, bool(argument_items))
+    requirement = surge_module_requirement(sections, argument_items)
     if requirement:
         output.append(f"#!requirement={requirement}")
 

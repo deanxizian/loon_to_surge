@@ -1,11 +1,11 @@
 {
-    "generated_at": "2026-08-24 16:28:54 +00:00",
+    "generated_at": "2026-08-27 09:17:18 +08:00",
     "input_dir": "Loon",
     "output_dir": "Surge",
-    "total": 267,
+    "total": 270,
     "converted": 255,
-    "excluded": 12,
-    "warnings": 19,
+    "excluded": 15,
+    "warnings": 22,
     "items": [
         {
             "file": "AppleWeatherEnhancer.lpx",
@@ -68,10 +68,22 @@
             "line": "DOMAIN-SUFFIX, dnsleaktest.com, PROXY"
         },
         {
+            "file": "Qbb_remove_ads.lpx",
+            "kind": "module-excluded",
+            "message": "Module was excluded from Surge output because Rewrite V2 regex flags have no verified Surge equivalent; URL condition uses Loon regex flags /i.",
+            "line": "request if ${url} ~= /^https:\\/\\/api\\.qbb6\\.com\\/ad\\//i then reject_dict(200)"
+        },
+        {
             "file": "Script-Hub.lpx",
             "kind": "module-excluded",
             "message": "Module was excluded from Surge output because module rules may only use DIRECT, REJECT, or REJECT-TINYGIF; found: PROXY.",
             "line": "DOMAIN, scripthub.vercel.app, PROXY"
+        },
+        {
+            "file": "SinaStock_remove_ads.lpx",
+            "kind": "module-excluded",
+            "message": "Module was excluded from Surge output because Rewrite V2 regex flags have no verified Surge equivalent; URL condition uses Loon regex flags /i.",
+            "line": "response if ${url} ~= /^https:\\/\\/news\\.cj\\.sina\\.cn\\/app\\/v1\\/news724\\/list\\?/i then response.json.delete(\"result.data.ad\")"
         },
         {
             "file": "Sub-Store.lpx",
@@ -108,6 +120,12 @@
             "kind": "argument-unused-dropped",
             "message": "Declared Loon argument is not referenced by any converted module line and was removed.",
             "line": "DAY=input, \"1\", tag=兑换天数, desc=每日签到时自动兑换的天数，可不做更改。"
+        },
+        {
+            "file": "Weidian_remove_ads.lpx",
+            "kind": "module-excluded",
+            "message": "Module was excluded from Surge output because Rewrite V2 regex flags have no verified Surge equivalent; URL condition uses Loon regex flags /i.",
+            "line": "request if ${url} ~= /^https:\\/\\/thor\\.weidian\\.com\\/ares\\/home\\.splash\\//i then reject_dict(200)"
         },
         {
             "file": "Zhibo8_remove_ads.lpx",

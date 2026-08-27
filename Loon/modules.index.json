@@ -1,8 +1,8 @@
 {
     "source": "https://hub.kelee.one",
-    "fetched_at": "2026-08-24 16:28:54 +00:00",
-    "total": 267,
-    "downloaded": 267,
+    "fetched_at": "2026-08-27 09:08:31 +08:00",
+    "total": 270,
+    "downloaded": 270,
     "failed": 0,
     "modules": [
         {
@@ -3557,6 +3557,25 @@
         },
         {
             "index": 180,
+            "name": "亲宝宝去广告",
+            "desc": "移除开屏广告、弹窗广告、广告下发、用户行为上报，精简搜索页、育儿页和我的页面，拦截商城页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Qbb.png",
+            "date": "2026-08-26 11:08:19",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "install_url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Qbb_remove_ads.lpx",
+            "source_url": "https://kelee.one/Tool/Loon/Lpx/Qbb_remove_ads.lpx",
+            "file": "Qbb_remove_ads.lpx"
+        },
+        {
+            "index": 181,
             "name": "蜻蜓FM去广告",
             "desc": "移除开屏广告、信息流广告、各类相关内容推荐，精简我的页面。",
             "tag": [
@@ -3575,7 +3594,7 @@
             "file": "QtingFM_remove_ads.lpx"
         },
         {
-            "index": 181,
+            "index": 182,
             "name": "汽水音乐去广告",
             "desc": "移除开屏广告、弹窗广告、播放器推广、歌曲详情界面视频推广、播放页面的歌曲视频，精简首页和我的页面。",
             "tag": [
@@ -3594,7 +3613,7 @@
             "file": "SodaMusic_remove_ads.lpx"
         },
         {
-            "index": 182,
+            "index": 183,
             "name": "启信宝去广告",
             "desc": "移除开屏广告、应用内弹窗、首页轮播图、悬浮部件和个性化推荐信息流。",
             "tag": [
@@ -3613,7 +3632,7 @@
             "file": "QiXinBao_remove_ads.lpx"
         },
         {
-            "index": 183,
+            "index": 184,
             "name": "全民K歌去广告",
             "desc": "移除开屏广告、歌房页面弹窗广告、消息页广告和我的页面广告。",
             "tag": [
@@ -3632,7 +3651,7 @@
             "file": "QQKSong_remove_ads.lpx"
         },
         {
-            "index": 184,
+            "index": 185,
             "name": "瑞幸咖啡去广告",
             "desc": "移除开屏广告、弹窗和各类横幅推广。",
             "tag": [
@@ -3651,7 +3670,7 @@
             "file": "LuckinCoffee_remove_ads.lpx"
         },
         {
-            "index": 185,
+            "index": 186,
             "name": "省钱快报去广告",
             "desc": "移除开屏广告、横幅广告、商品推荐，精简我的页面。",
             "tag": [
@@ -3670,7 +3689,7 @@
             "file": "YueDanBa_remove_ads.lpx"
         },
         {
-            "index": 186,
+            "index": 187,
             "name": "什么值得买去广告",
             "desc": "移除开屏广告、信息流广告、各类横幅广告、搜索页广告、文章内广告，移除活动皮肤、精简我的页面。",
             "tag": [
@@ -3689,7 +3708,7 @@
             "file": "smzdm_remove_ads.lpx"
         },
         {
-            "index": 187,
+            "index": 188,
             "name": "收银通商户端去广告",
             "desc": "移除开屏广告和首页推广",
             "tag": [
@@ -3708,7 +3727,7 @@
             "file": "ShouYinTongMerchant_remove_ads.lpx"
         },
         {
-            "index": 188,
+            "index": 189,
             "name": "顺丰速运去广告",
             "desc": "移除开屏广告、首页下拉抽屉、首页推广、应用内悬浮窗、横幅广告，移除主题，精简我的页面。",
             "tag": [
@@ -3727,7 +3746,7 @@
             "file": "SF-Express_remove_ads.lpx"
         },
         {
-            "index": 189,
+            "index": 190,
             "name": "书旗小说去广告",
             "desc": "移除书城横幅广告、听书广告、阅读广告、章末推荐、福利入口、悬浮窗、推荐搜索词，精简我的页面。",
             "tag": [
@@ -3746,7 +3765,7 @@
             "file": "ShuQiCenterReader_remove_ads.lpx"
         },
         {
-            "index": 190,
+            "index": 191,
             "name": "数字心动去广告",
             "desc": "移除开屏广告、首页顶部标签、轮播图、悬浮挂件、热门搜索、信息流广告。",
             "tag": [
@@ -3765,7 +3784,7 @@
             "file": "DigitalHeartbeat_remove_ads.lpx"
         },
         {
-            "index": 191,
+            "index": 192,
             "name": "随手记去广告",
             "desc": "移除开屏广告、神象云账本内部广告、我的页面广告，移除社区入口。",
             "tag": [
@@ -3784,7 +3803,7 @@
             "file": "KingdeeMyMoney_remove_ads.lpx"
         },
         {
-            "index": 192,
+            "index": 193,
             "name": "淘宝去广告",
             "desc": "过滤淘宝开屏广告",
             "tag": [
@@ -3803,7 +3822,7 @@
             "file": "Taobao_remove_ads.lpx"
         },
         {
-            "index": 193,
+            "index": 194,
             "name": "淘票票去广告",
             "desc": "移除开屏广告、悬浮广告、轮播图广告和弹窗广告，移除搜索填充词和为你推荐。",
             "tag": [
@@ -3822,7 +3841,7 @@
             "file": "Taopiaopiao_remove_ads.lpx"
         },
         {
-            "index": 194,
+            "index": 195,
             "name": "他趣去广告",
             "desc": "移除各类弹窗、横幅，精简我的页面。",
             "tag": [
@@ -3841,7 +3860,7 @@
             "file": "Taqu_remove_ads.lpx"
         },
         {
-            "index": 195,
+            "index": 196,
             "name": "腾讯视频去广告",
             "desc": "过滤腾讯视频客户端广告，如遇失效，则需要重新安装腾讯视频客户端。由于此插件不再维护，客户端版本高于8.9.40可能会导致此插件失效，请勿升级客户端。",
             "tag": [
@@ -3860,7 +3879,7 @@
             "file": "Tencent_Video_remove_ads.lpx"
         },
         {
-            "index": 196,
+            "index": 197,
             "name": "腾讯文档去广告",
             "desc": "移除开屏广告、首页横幅推广。",
             "tag": [
@@ -3879,7 +3898,7 @@
             "file": "TXDocs_remove_ads.lpx"
         },
         {
-            "index": 197,
+            "index": 198,
             "name": "天猫校园去广告",
             "desc": "移除广告配置、开屏广告、弹窗广告、AI助手、促销模块，精简我的页面。",
             "tag": [
@@ -3898,7 +3917,7 @@
             "file": "TmallCampus_remove_ads.lpx"
         },
         {
-            "index": 198,
+            "index": 199,
             "name": "天气通去广告",
             "desc": "移除开屏广告、横幅广告、弹窗广告，精简底栏及我的页面。",
             "tag": [
@@ -3917,7 +3936,7 @@
             "file": "TianQiTong_remove_ads.lpx"
         },
         {
-            "index": 199,
+            "index": 200,
             "name": "天气预报去广告",
             "desc": "移除开屏广告、弹窗广告、横幅广告、悬浮挂件，精简我的页面。",
             "tag": [
@@ -3936,7 +3955,7 @@
             "file": "iReaderCityWeather_remove_ads.lpx"
         },
         {
-            "index": 200,
+            "index": 201,
             "name": "天天跳绳去广告",
             "desc": "移除开屏广告、横幅广告、弹窗广告、活动推广，精简首页标签和搜索页面。",
             "tag": [
@@ -3955,7 +3974,7 @@
             "file": "CrazyRope_remove_ads.lpx"
         },
         {
-            "index": 201,
+            "index": 202,
             "name": "图怪兽去广告",
             "desc": "移除开屏广告、弹窗广告、各页面横幅推广。",
             "tag": [
@@ -3974,7 +3993,7 @@
             "file": "TuGuaiShou_remove_ads.lpx"
         },
         {
-            "index": 202,
+            "index": 203,
             "name": "推栏去广告",
             "desc": "过滤推栏广告",
             "tag": [
@@ -3993,7 +4012,7 @@
             "file": "Daily_remove_ads.lpx"
         },
         {
-            "index": 203,
+            "index": 204,
             "name": "挖财记账去广告",
             "desc": "移除弹窗广告、推广语横幅和右下角悬浮广告。",
             "tag": [
@@ -4012,7 +4031,7 @@
             "file": "WaCaiJiZhang_remove_ads.lpx"
         },
         {
-            "index": 204,
+            "index": 205,
             "name": "挖财记账去广告",
             "desc": "移除开屏广告、横幅广告，顶部推广、活动配置。",
             "tag": [
@@ -4031,7 +4050,7 @@
             "file": "Wacai_remove_ads.lpx"
         },
         {
-            "index": 205,
+            "index": 206,
             "name": "网易大神去广告",
             "desc": "移除开屏广告，精简大量冗余的配置文件，精简我的页面。",
             "tag": [
@@ -4050,7 +4069,7 @@
             "file": "NetEaseGodlike_remove_ads.lpx"
         },
         {
-            "index": 206,
+            "index": 207,
             "name": "网易新闻去广告",
             "desc": "移除开屏广告、置顶新闻、热搜列表和搜索栏填充词。",
             "tag": [
@@ -4069,7 +4088,7 @@
             "file": "NeteaseNews_remove_ads.lpx"
         },
         {
-            "index": 207,
+            "index": 208,
             "name": "网易有道词典去广告",
             "desc": "移除开屏广告、弹窗广告、右上角推广。",
             "tag": [
@@ -4088,7 +4107,7 @@
             "file": "YoudaoDict_remove_ads.lpx"
         },
         {
-            "index": 208,
+            "index": 209,
             "name": "网易邮箱大师去广告",
             "desc": "移除网易邮箱大师开屏广告、签到任务提醒，精简侧拉抽屉和我的页面。",
             "tag": [
@@ -4107,7 +4126,7 @@
             "file": "MailMaster_remove_ads.lpx"
         },
         {
-            "index": 209,
+            "index": 210,
             "name": "网易云音乐去广告",
             "desc": "过滤网易云音乐广告，并允许自定义界面。",
             "tag": [
@@ -4130,7 +4149,7 @@
             "file": "NeteaseCloudMusic_remove_ads.lpx"
         },
         {
-            "index": 210,
+            "index": 211,
             "name": "完美世界电竞去广告",
             "desc": "移除开屏广告，精简搜索页。",
             "tag": [
@@ -4149,7 +4168,7 @@
             "file": "PerfectWorldEsport_remove_ads.lpx"
         },
         {
-            "index": 211,
+            "index": 212,
             "name": "微博轻享版去广告",
             "desc": "移除开屏广告、时间线广告及评论区广告，移除发现页面横幅推广、最常访问、主页访客及热门视频，移除搜索填充词。",
             "tag": [
@@ -4168,7 +4187,7 @@
             "file": "Weibo_intl_remove_ads.lpx"
         },
         {
-            "index": 212,
+            "index": 213,
             "name": "微博去广告",
             "desc": "过滤微博广告及去除各部分推广模块",
             "tag": [
@@ -4191,7 +4210,26 @@
             "file": "Weibo_remove_ads.lpx"
         },
         {
-            "index": 213,
+            "index": 214,
+            "name": "微店去广告",
+            "desc": "移除开屏广告、弹窗广告、猜你喜欢、猜你想搜、关注推荐，精简搜索页和我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/Weidian.png",
+            "date": "2026-08-26 07:17:57",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "install_url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/Weidian_remove_ads.lpx",
+            "source_url": "https://kelee.one/Tool/Loon/Lpx/Weidian_remove_ads.lpx",
+            "file": "Weidian_remove_ads.lpx"
+        },
+        {
+            "index": 215,
             "name": "威锋去广告",
             "desc": "移除开屏广告、信息流广告、文末广告、首页轮播图推广。",
             "tag": [
@@ -4210,7 +4248,7 @@
             "file": "WPForum_remove_ads.lpx"
         },
         {
-            "index": 214,
+            "index": 216,
             "name": "微脉圈去广告",
             "desc": "移除开屏广告、聊天页横幅提示及发现页面的横幅广告。",
             "tag": [
@@ -4229,7 +4267,7 @@
             "file": "Weimai_remove_ads.lpx"
         },
         {
-            "index": 215,
+            "index": 217,
             "name": "微信公众号去广告",
             "desc": "过滤微信公众号广告",
             "tag": [
@@ -4248,7 +4286,7 @@
             "file": "Weixin_Official_Accounts_remove_ads.lpx"
         },
         {
-            "index": 216,
+            "index": 218,
             "name": "微信外部链接解锁",
             "desc": "解锁微信外部链接访问限制，跳过中间界面。支付宝链接、被封禁链接进行通知弹窗跳转，在微信中用快照显示被封禁的链接（可选），在微信中进行强制重定向（可选），群聊及扫码均可使用，可选项可在脚本的2~3行更改，也可在BoxJs中更改。",
             "tag": [
@@ -4267,7 +4305,7 @@
             "file": "Weixin_external_links_unlock.lpx"
         },
         {
-            "index": 217,
+            "index": 219,
             "name": "微信小程序去广告",
             "desc": "收录常用小程序的去广告，作者署名在插件内。",
             "tag": [
@@ -4286,7 +4324,7 @@
             "file": "WexinMiniPrograms_Remove_ads.lpx"
         },
         {
-            "index": 218,
+            "index": 220,
             "name": "沃尔玛去广告",
             "desc": "移除操作引导、商品详情页用户调研、搜索填充词和搜索发现，精简我的页面。",
             "tag": [
@@ -4305,7 +4343,7 @@
             "file": "Walmart_remove_ads.lpx"
         },
         {
-            "index": 219,
+            "index": 221,
             "name": "蜗牛睡眠去广告",
             "desc": "移除音乐页面横幅、日报告解决方案商品推广，移除我的页面服务推广。",
             "tag": [
@@ -4324,7 +4362,7 @@
             "file": "SnailSleep_remove_ads.lpx"
         },
         {
-            "index": 220,
+            "index": 222,
             "name": "无他相机去广告",
             "desc": "移除开屏广告、拍摄页面广告、右小角广告，精简底栏。",
             "tag": [
@@ -4343,7 +4381,7 @@
             "file": "WutaCamera_remove_ads.lpx"
         },
         {
-            "index": 221,
+            "index": 223,
             "name": "下厨房去广告",
             "desc": "移除开屏广告、页面推广及横幅，精简首页标签。",
             "tag": [
@@ -4362,7 +4400,7 @@
             "file": "XiaChuFang_remove_ads.lpx"
         },
         {
-            "index": 222,
+            "index": 224,
             "name": "香港抖音去广告",
             "desc": "精简左右侧边栏、移除底栏切换，其余内容后续再完善。",
             "tag": [
@@ -4381,7 +4419,7 @@
             "file": "HKDouYin_remove_ads.lpx"
         },
         {
-            "index": 223,
+            "index": 225,
             "name": "向日葵去广告",
             "desc": "移除开屏广告、广告横幅。",
             "tag": [
@@ -4400,7 +4438,7 @@
             "file": "OraySunlogin_remove_ads.lpx"
         },
         {
-            "index": 224,
+            "index": 226,
             "name": "闲鱼去广告",
             "desc": "移除开屏广告、商品信息流广告、关注推荐、搜索栏填充词、首页签到入口及悬浮广告，精简我的页面。",
             "tag": [
@@ -4419,7 +4457,7 @@
             "file": "FleaMarket_remove_ads.lpx"
         },
         {
-            "index": 225,
+            "index": 227,
             "name": "小白智慧打印去广告",
             "desc": "移除开屏广告、首页推广金刚位、热门内容推荐、横幅广告、搜索填充词、搜索发现，精简我的页面。账户页面错误是已知问题，无需反馈。",
             "tag": [
@@ -4438,7 +4476,7 @@
             "file": "XiaobaiPrint_remove_ads.lpx"
         },
         {
-            "index": 226,
+            "index": 228,
             "name": "小蚕霸王餐去广告",
             "desc": "移除开屏广告、首页横幅推广、红包推广、更新弹窗。",
             "tag": [
@@ -4461,7 +4499,7 @@
             "file": "XiaoCan_remove_ads.lpx"
         },
         {
-            "index": 227,
+            "index": 229,
             "name": "小店掌柜去广告",
             "desc": "移除开屏广告、活动推广和页面跳转。",
             "tag": [
@@ -4480,7 +4518,7 @@
             "file": "ShopKeeperAdmin_remove_ads.lpx"
         },
         {
-            "index": 228,
+            "index": 230,
             "name": "小黑盒去广告",
             "desc": "移除开屏广告和热点板块信息流广告",
             "tag": [
@@ -4499,7 +4537,7 @@
             "file": "XiaoHeiHe_remove_ads.lpx"
         },
         {
-            "index": 229,
+            "index": 231,
             "name": "小红书去广告",
             "desc": "过滤信息流推广，移除图片及视频水印，如有异常，请先清除缓存再尝试。",
             "tag": [
@@ -4522,7 +4560,7 @@
             "file": "RedPaper_remove_ads.lpx"
         },
         {
-            "index": 230,
+            "index": 232,
             "name": "小桔充电去广告",
             "desc": "移除横幅广告、弹窗广告，精简我的页面。",
             "tag": [
@@ -4541,7 +4579,7 @@
             "file": "XiaojukejiCharge_remove_ads.lpx"
         },
         {
-            "index": 231,
+            "index": 233,
             "name": "小喵看书去广告",
             "desc": "移除小喵看书章末广告",
             "tag": [
@@ -4560,7 +4598,7 @@
             "file": "MiaoRead_remove_ads.lpx"
         },
         {
-            "index": 232,
+            "index": 234,
             "name": "小米音箱去广告",
             "desc": "移除开屏广告、应用内横幅广告及弹窗广告。",
             "tag": [
@@ -4579,7 +4617,7 @@
             "file": "XiaomiSpeaker_remove_ads.lpx"
         },
         {
-            "index": 233,
+            "index": 235,
             "name": "小睡眠去广告",
             "desc": "移除开屏广告、信息流广告、弹窗广告、轮播图广告、侧边栏横幅广告，精简搜索页面。",
             "tag": [
@@ -4598,7 +4636,7 @@
             "file": "HeartideBrainWave_remove_ads.lpx"
         },
         {
-            "index": 234,
+            "index": 236,
             "name": "小象超市去广告",
             "desc": "移除开屏广告、应用内弹窗、猜你想买、横幅推广和悬浮窗。",
             "tag": [
@@ -4617,7 +4655,7 @@
             "file": "iMaiCai_remove_ads.lpx"
         },
         {
-            "index": 235,
+            "index": 237,
             "name": "小宇宙去广告",
             "desc": "移除开屏广告、搜索框推荐词和AI总结。",
             "tag": [
@@ -4636,7 +4674,7 @@
             "file": "CosmosPodcast_remove_ads.lpx"
         },
         {
-            "index": 236,
+            "index": 238,
             "name": "喜马拉雅去广告",
             "desc": "移除开屏广告、播放器广告、各类推荐内容，精简频道和我的页面。",
             "tag": [
@@ -4655,7 +4693,7 @@
             "file": "Himalaya_remove_ads.lpx"
         },
         {
-            "index": 237,
+            "index": 239,
             "name": "行者户外去广告",
             "desc": "移除弹窗广告、发现页面横幅推广的推广金刚位，移除我的页面横幅推广。",
             "tag": [
@@ -4674,7 +4712,26 @@
             "file": "OnTheWay_remove_ads.lpx"
         },
         {
-            "index": 238,
+            "index": 240,
+            "name": "新浪财经去广告",
+            "desc": "移除开屏广告、弹窗广告、横幅广告、信息流广告，精简我的页面。",
+            "tag": [
+                "去广告"
+            ],
+            "icon": "https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/SinaStock.png",
+            "date": "2026-08-26 14:19:33",
+            "author": [
+                {
+                    "name": "可莉🅥",
+                    "homepage": "https://github.com/luestr/ProxyResource/blob/main/README.md"
+                }
+            ],
+            "install_url": "loon://import?plugin=https://kelee.one/Tool/Loon/Lpx/SinaStock_remove_ads.lpx",
+            "source_url": "https://kelee.one/Tool/Loon/Lpx/SinaStock_remove_ads.lpx",
+            "file": "SinaStock_remove_ads.lpx"
+        },
+        {
+            "index": 241,
             "name": "雪球去广告",
             "desc": "移除开屏广告、各类横幅广告、信息流广告、帖内广告、新用户定向广告、各类弹窗、股票精选推荐、基金精选推荐、聪明的投资者推荐、私募推荐、直播推荐。",
             "tag": [
@@ -4693,7 +4750,7 @@
             "file": "Snowball_remove_ads.lpx"
         },
         {
-            "index": 239,
+            "index": 242,
             "name": "学习通去广告",
             "desc": "移除开屏广告、横幅推广，精简校园补给站频道。",
             "tag": [
@@ -4712,7 +4769,7 @@
             "file": "ChaoXingStudy_remove_ads.lpx"
         },
         {
-            "index": 240,
+            "index": 243,
             "name": "迅雷去广告",
             "desc": "移除开屏广告、首页横幅广告、左上角广告入口，精简我的页面。",
             "tag": [
@@ -4731,7 +4788,7 @@
             "file": "XunLei_remove_ads.lpx"
         },
         {
-            "index": 241,
+            "index": 244,
             "name": "医考帮去广告",
             "desc": "移除横幅推广、弹窗、首页悬浮挂件。",
             "tag": [
@@ -4750,7 +4807,7 @@
             "file": "YiKaoBang_remove_ads.lpx"
         },
         {
-            "index": 242,
+            "index": 245,
             "name": "一刻相册去广告",
             "desc": "移除开屏广告、横幅广告和弹窗推广。",
             "tag": [
@@ -4769,7 +4826,7 @@
             "file": "BaiduPhoto_remove_ads.lpx"
         },
         {
-            "index": 243,
+            "index": 246,
             "name": "萤石云视频去广告",
             "desc": "移除开屏广告、首页推广、我的页面推广。",
             "tag": [
@@ -4788,7 +4845,7 @@
             "file": "VideoGo_remove_ads.lpx"
         },
         {
-            "index": 244,
+            "index": 247,
             "name": "一甜相机去广告",
             "desc": "移除开屏广告、悬浮广告及图片选择器横幅广告。",
             "tag": [
@@ -4807,7 +4864,7 @@
             "file": "Yitian_remove_ads.lpx"
         },
         {
-            "index": 245,
+            "index": 248,
             "name": "易校园去广告",
             "desc": "移除开屏广告、横幅广告、弹窗广告、悬浮广告、文末广告、消息广告、校园头条，精简首页金刚位和我的页面。",
             "tag": [
@@ -4826,7 +4883,7 @@
             "file": "YiSchool_remove_ads.lpx"
         },
         {
-            "index": 246,
+            "index": 249,
             "name": "有道翻译官去广告",
             "desc": "移除开屏广告、横幅推广，精简首页。",
             "tag": [
@@ -4845,7 +4902,7 @@
             "file": "YoudaoTrans_remove_ads.lpx"
         },
         {
-            "index": 247,
+            "index": 250,
             "name": "有道云笔记去广告",
             "desc": "移除开屏广告、弹窗广告及横幅广告。",
             "tag": [
@@ -4864,7 +4921,7 @@
             "file": "YoudaoNote_remove_ads.lpx"
         },
         {
-            "index": 248,
+            "index": 251,
             "name": "优酷视频去广告",
             "desc": "移除开屏广告、视频广告、信息流广告。其余广告由于请求已加密，故无法移除。",
             "tag": [
@@ -4887,7 +4944,7 @@
             "file": "YouKu_Video_remove_ads.lpx"
         },
         {
-            "index": 249,
+            "index": 252,
             "name": "阅友去广告",
             "desc": "移除开屏广告、弹窗广告和阅读页面广告，移除底栏福利按钮。",
             "tag": [
@@ -4906,7 +4963,7 @@
             "file": "Yueyou_remove_ads.lpx"
         },
         {
-            "index": 250,
+            "index": 253,
             "name": "云鲸智能去广告",
             "desc": "移除开屏广告、横幅推广，禁用商城。",
             "tag": [
@@ -4925,7 +4982,7 @@
             "file": "NarwelRobots_remove_ads.lpx"
         },
         {
-            "index": 251,
+            "index": 254,
             "name": "掌上无畏契约去广告",
             "desc": "移除开屏广告、弹窗推广、搜索热搜、搜索热榜。",
             "tag": [
@@ -4944,7 +5001,7 @@
             "file": "ValorantBible_remove_ads.lpx"
         },
         {
-            "index": 252,
+            "index": 255,
             "name": "掌上英雄联盟去广告",
             "desc": "移除开屏广告、弹窗推广、搜索热搜、搜索热榜、底栏推广图标。",
             "tag": [
@@ -4963,7 +5020,7 @@
             "file": "LOL_Bible_remove_ads.lpx"
         },
         {
-            "index": 253,
+            "index": 256,
             "name": "掌阅去广告",
             "desc": "移除开屏广告、悬浮广告、弹窗广告、朗读音色广告及我的页面广告，移除各页面的横幅轮播图。",
             "tag": [
@@ -4982,7 +5039,7 @@
             "file": "iReader_remove_ads.lpx"
         },
         {
-            "index": 254,
+            "index": 257,
             "name": "直播吧去广告",
             "desc": "移除信息流广告、横幅广告、弹窗广告、皮肤配置、悬浮挂件、热门搜索，移除青少年模式，精简我的页面。",
             "tag": [
@@ -5001,7 +5058,7 @@
             "file": "Zhibo8_remove_ads.lpx"
         },
         {
-            "index": 255,
+            "index": 258,
             "name": "智慧苏州去广告",
             "desc": "移除开屏广告、横幅，移除信息流推广。",
             "tag": [
@@ -5020,7 +5077,7 @@
             "file": "SuZhouCitizenCard_remove_ads.lpx"
         },
         {
-            "index": 256,
+            "index": 259,
             "name": "知乎去广告",
             "desc": "移除HTTPDNS和QUIC传输配置，移除开屏广告、信息流广告、回答页广告，移除回答页下的相关回答、专栏卡片及圈子卡片，移除直答页面推荐知识库和提问推荐，移除评论区评论氛围满意度调查，精简首页顶部标签及我的页面。",
             "tag": [
@@ -5039,7 +5096,7 @@
             "file": "Zhihu_remove_ads.lpx"
         },
         {
-            "index": 257,
+            "index": 260,
             "name": "智联招聘去广告",
             "desc": "移除开屏广告、弹窗、职位页面推广和各类横幅推广。此插件需要IPA签名方可使用，App Store用户请勿使用此插件，务必点击下方主页链接查看详细教程。",
             "tag": [
@@ -5058,7 +5115,7 @@
             "file": "ZhiLianZhaoPin_remove_ads.lpx"
         },
         {
-            "index": 258,
+            "index": 261,
             "name": "知识星球去水印",
             "desc": "移除内容的水印编号",
             "tag": [],
@@ -5075,7 +5132,7 @@
             "file": "UnnooQuan_remove_watermark.lpx"
         },
         {
-            "index": 259,
+            "index": 262,
             "name": "中国人保去广告",
             "desc": "移除中国人保开屏广告和应用内广告",
             "tag": [
@@ -5094,7 +5151,7 @@
             "file": "PICC_Insurance_remove_ads.lpx"
         },
         {
-            "index": 260,
+            "index": 263,
             "name": "中国天气去广告",
             "desc": "移除开屏广告、弹窗广告、横幅广告，移除焦点视频、精简我的页面。",
             "tag": [
@@ -5113,7 +5170,7 @@
             "file": "WeatherChina_remove_ads.lpx"
         },
         {
-            "index": 261,
+            "index": 264,
             "name": "中国移动云盘去广告",
             "desc": "移除中国移动云盘开屏广告及应用内广告，首页的多余卡片可滑到最底部自定义隐藏掉，插件对此不做处理。",
             "tag": [
@@ -5132,7 +5189,7 @@
             "file": "mobileClouds_remove_ads.lpx"
         },
         {
-            "index": 262,
+            "index": 265,
             "name": "中华万年历去广告",
             "desc": "移除开屏广告、弹窗、信息流推广，精简我的页面。",
             "tag": [
@@ -5151,7 +5208,7 @@
             "file": "EtouchEcalendar_remove_ads.lpx"
         },
         {
-            "index": 263,
+            "index": 266,
             "name": "转转去广告",
             "desc": "移除开屏广告、应用内悬浮窗、信息流推广、商品推荐、首页弹窗，精简我的页面。",
             "tag": [
@@ -5170,7 +5227,7 @@
             "file": "ZhuanZhuan_remove_ads.lpx"
         },
         {
-            "index": 264,
+            "index": 267,
             "name": "自动加入TestFlight",
             "desc": "自动监控TestFlight名额，一旦有新的名额即刻加入。",
             "tag": [
@@ -5197,7 +5254,7 @@
             "file": "Auto_Join_TF.lpx"
         },
         {
-            "index": 265,
+            "index": 268,
             "name": "纵横小说去广告",
             "desc": "移除纵横小说开屏广告和弹窗",
             "tag": [
@@ -5216,7 +5273,7 @@
             "file": "ZongHeng_remove_ads.lpx"
         },
         {
-            "index": 266,
+            "index": 269,
             "name": "最右去广告",
             "desc": "移除开屏广告、信息流广告和广告轮播图。",
             "tag": [
