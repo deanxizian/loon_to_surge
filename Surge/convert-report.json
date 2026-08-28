@@ -1,11 +1,11 @@
 {
-    "generated_at": "2026-08-27 09:17:18 +08:00",
+    "generated_at": "2026-08-28 00:42:47 +00:00",
     "input_dir": "Loon",
     "output_dir": "Surge",
-    "total": 270,
+    "total": 272,
     "converted": 255,
-    "excluded": 15,
-    "warnings": 22,
+    "excluded": 17,
+    "warnings": 24,
     "items": [
         {
             "file": "AppleWeatherEnhancer.lpx",
@@ -60,6 +60,12 @@
             "kind": "module-excluded",
             "message": "Module was excluded from Surge output because generic script compatibility is not verified: https://kelee.one/Resource/JavaScript/Node_detection_tool/NetworkEntryAndExitQueries.js, https://kelee.one/Resource/JavaScript/Node_detection_tool/LocationDetection.js, https://kelee.one/Resource/JavaScript/Node_detection_tool/NodeUnlockDetection.js. Loon generic scripts may depend on selected-node context that Surge does not provide.",
             "line": "generic script-path=https://kelee.one/Resource/JavaScript/Node_detection_tool/NetworkEntryAndExitQueries.js, timeout=10, tag=入口落地查询,img-url=globe.asia.australia.system"
+        },
+        {
+            "file": "PICOOC_remove_ads.lpx",
+            "kind": "module-excluded",
+            "message": "Module was excluded from Surge output because Rewrite V2 regex flags have no verified Surge equivalent; URL condition uses Loon regex flags /i.",
+            "line": "request if ${url} ~= /^https:\\/\\/api2\\.picooc\\.com\\/v\\d\\/api\\/focus\\/strategy\\/execute\\?/i then reject_dict(200)"
         },
         {
             "file": "Prevent_DNS_Leaks.lpx",
@@ -138,6 +144,12 @@
             "kind": "rewrite-empty-skipped",
             "message": "Empty JQ expression was skipped because Surge requires a non-empty JQ program.",
             "line": "^https:\\/\\/comment-card\\.iqiyi\\.com\\/views_comment\\/3\\.0\\/long_video_comments\\? response-body-json-jq ''"
+        },
+        {
+            "file": "iWallBiZhi_remove_ads.lpx",
+            "kind": "module-excluded",
+            "message": "Module was excluded from Surge output because Rewrite V2 regex flags have no verified Surge equivalent; URL condition uses Loon regex flags /i.",
+            "line": "request if ${url} ~= /^https:\\/\\/api\\.fzxhmy\\.com\\/seek\\/trendingword\\?/i then reject_dict(200)"
         }
     ]
 }
