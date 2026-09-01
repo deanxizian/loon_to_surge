@@ -418,7 +418,9 @@ Loon 的 `img-url` 只用于其 generic 脚本界面，Surge `[Script]` 没有�
 
 含有其他 generic `script-path` 的 Loon 模块会整项排除，不生成 `.sgmodule`，也不写入 Surge 索引，并记录 `module-excluded`。这样避免发布可导入但运行时因缺少 Loon 上下文而报错或检测错误节点的模块。新脚本必须先核对其 Surge 分支和实际调用语义，再加入精确白名单。
 
-所有 Script 类型都要求非空 `script-path`。未知属性、冲突的重复属性或无效布尔值会记录为 `unsupported-script` 并阻止发布；相同值的重复属性会安全去重并记录 `script-property-corrected`。
+当前只转换 Loon 旧版 `[Script]` 行。新版 `request/response if ... then script(...)` 同时引入条件表达式、正则 flags 和新的属性结构；在没有逐项确认 Surge 等价语义前，包含 Script V2 的模块会整项排除并记录 `module-excluded`，不会阻断其他模块更新，也不会生成只保留部分功能的 Surge 模块。
+
+所有旧版 Script 类型都要求非空 `script-path`。未知属性、冲突的重复属性或无效布尔值会记录为 `unsupported-script` 并阻止发布；相同值的重复属性会安全去重并记录 `script-property-corrected`。
 
 ## Script enable 开关
 
@@ -491,7 +493,7 @@ hostname = %APPEND% example.com, *.example.org
 
 - `argument-unused-dropped`：Loon 声明了参数，但任何生成行都未引用，参数已从 Surge 输出删除。
 - `generic-script-adapted`：已核实的 generic 使用其原生 Surge 接口补充了 Policy 参数或 Panel 配置。
-- `module-excluded`：模块含有 Surge 模块不允许的 Rule 策略、未经核实的 Loon generic 脚本、没有已验证 Surge 等价语义的 Rewrite V2 正则 flags，或其他不可安全发布的模块级问题，已从 Surge 输出和索引中排除。
+- `module-excluded`：模块含有 Surge 模块不允许的 Rule 策略、未经核实的 Loon generic 脚本、没有已验证 Surge 等价语义的 Rewrite V2 正则 flags、尚未支持的 Script V2，或其他不可安全发布的模块级问题，已从 Surge 输出和索引中排除。
 - `script-enable-toggle-emitted`：`enable={Arg}` 已转为 Surge 行前缀开关。
 - `script-enable-shared-commented`：`enable` 参数同时是脚本入参，脚本行按默认值静态注释，参数默认值保留。
 - `script-enable-direct-commented`：`enable=false` 已转为注释脚本行。
@@ -526,6 +528,7 @@ hostname = %APPEND% example.com, *.example.org
 - 不给非拒绝类规则添加 `pre-matching`。
 - 不把共享脚本参数强行改成 `#` 开关。
 - 不把未经核实的 Loon generic 当作 Surge generic 发布。
+- 不把尚未核实条件、正则和属性映射的 Loon Script V2 强行改写为 Surge Script。
 - 不原样透传未知 Rule 类型，也不静默忽略未知的非空 Loon section。
 - 不静默吞掉未知语法，无法安全转换时终止整次生成并保留上一版产物。
 

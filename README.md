@@ -25,7 +25,7 @@ Surge/*.sgmodule
 Surge/convert-report.json
 ```
 
-成功生成后的 warning 是需要知情的转换事项。Surge 官方规定模块规则只能使用 `DIRECT`、`REJECT`、`REJECT-TINYGIF`，因此含 `PROXY`、`REJECT-DROP` 等策略的模块会整项排除；依赖 Loon 专属运行上下文的未知 `generic` 模块，以及使用无已验证 Surge 等价语义的 Rewrite V2 正则 flags 的模块也不会强行转换，均记录为 `module-excluded`。已核实具有 Surge 分支的脚本会使用原生参数或 Panel 配置并记录 `generic-script-adapted`。其他无法安全转换的语法会直接使任务失败，并在覆盖前保留上一版 Surge 产物。
+成功生成后的 warning 是需要知情的转换事项。Surge 官方规定模块规则只能使用 `DIRECT`、`REJECT`、`REJECT-TINYGIF`，因此含 `PROXY`、`REJECT-DROP` 等策略的模块会整项排除；依赖 Loon 专属运行上下文的未知 `generic` 模块、使用无已验证 Surge 等价语义的 Rewrite V2 正则 flags，或使用尚未核实转换语义的 Script V2 的模块也不会强行转换，均记录为 `module-excluded`。已核实具有 Surge 分支的脚本会使用原生参数或 Panel 配置并记录 `generic-script-adapted`。其他无法安全转换的语法会直接使任务失败，并在覆盖前保留上一版 Surge 产物。
 
 ## 自动更新
 

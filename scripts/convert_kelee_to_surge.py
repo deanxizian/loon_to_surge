@@ -1605,6 +1605,10 @@ def script_enable_prefix(
     return ""
 
 
+def is_script_v2_line(line: str) -> bool:
+    return re.match(r"^(?:request|response)\s+if\b", line, flags=re.IGNORECASE) is not None
+
+
 def convert_script_line(
     line: str,
     output: list[str],
@@ -2095,6 +2099,18 @@ def convert_file(
                 line,
             )
             return None
+
+    script_v2_line = next((line for line in script_lines if is_script_v2_line(line)), None)
+    if script_v2_line:
+        add_report(
+            report,
+            path.name,
+            "module-excluded",
+            "Module was excluded from Surge output because Loon Script V2 compatibility is not verified; "
+            "conditional script execution and regex flags are not emitted without verified Surge semantics.",
+            script_v2_line,
+        )
+        return None
 
     for line in script_lines:
         convert_script_line(line, sections["Script"], report, path.name, argument_defaults, shared_enable_argument_names)

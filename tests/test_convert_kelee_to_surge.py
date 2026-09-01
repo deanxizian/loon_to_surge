@@ -539,6 +539,20 @@ generic script-path=https://example.com/unknown.js, tag=Unknown
             self.assertEqual([item["kind"] for item in report], ["module-excluded"])
             self.assertIn("https://example.com/unknown.js", report[0]["message"])
 
+    def test_unverified_script_v2_excludes_the_entire_module(self) -> None:
+        output, report = self.convert_lpx_result(
+            r'''#!name=Sample
+
+[Script]
+response if ${url} ~= /^https:\/\/api\.example\.com\/v1/ then script("https://example.com/a.js") with tag="Sample", requires_body=true
+'''
+        )
+
+        self.assertIsNone(output)
+        self.assertEqual([item["kind"] for item in report], ["module-excluded"])
+        self.assertIn("Script V2 compatibility is not verified", report[0]["message"])
+        self.assertIn("then script", report[0]["line"])
+
     def test_unknown_or_incomplete_script_properties_are_fatal_reports(self) -> None:
         output, report = self.convert_lpx(
             """#!name=Sample
@@ -975,6 +989,45 @@ DOMAIN,ads.example.com,REJECT
 
 [Rewrite]
 request if ${url} ~= /^https:\/\/api\.example\.com\/ads/i then reject_dict(200)
+''',
+                encoding="utf-8",
+            )
+
+            previous_cwd = Path.cwd()
+            try:
+                os.chdir(root)
+                convert_kelee_to_surge("Loon", "Surge", "Surge/convert-report.json")
+                summary = validate_surge_modules("Loon", "Surge", "Surge/convert-report.json")
+            finally:
+                os.chdir(previous_cwd)
+
+            report = json.loads((root / "Surge" / "convert-report.json").read_text(encoding="utf-8"))
+            manifest = json.loads((root / "Surge" / "modules.index.json").read_text(encoding="utf-8"))
+            self.assertEqual(report["total"], 2)
+            self.assertEqual(report["converted"], 1)
+            self.assertEqual(report["excluded"], 1)
+            self.assertEqual([item["kind"] for item in report["items"]], ["module-excluded"])
+            self.assertEqual([item["source"] for item in manifest], ["Regular.lpx"])
+            self.assertEqual(summary["modules"], 1)
+
+    def test_full_conversion_continues_when_script_v2_is_excluded(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            loon = root / "Loon"
+            loon.mkdir()
+            (loon / "Regular.lpx").write_text(
+                """#!name=Regular
+
+[Rule]
+DOMAIN,ads.example.com,REJECT
+""",
+                encoding="utf-8",
+            )
+            (loon / "ScriptV2.lpx").write_text(
+                r'''#!name=Script V2
+
+[Script]
+response if ${url} ~= /^https:\/\/api\.example\.com\/v1/ then script("https://example.com/a.js") with tag="Sample", requires_body=true
 ''',
                 encoding="utf-8",
             )
