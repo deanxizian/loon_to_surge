@@ -1,11 +1,11 @@
 {
-    "generated_at": "2026-08-28 00:42:47 +00:00",
+    "generated_at": "2026-09-03 19:02:38 +00:00",
     "input_dir": "Loon",
     "output_dir": "Surge",
-    "total": 272,
+    "total": 273,
     "converted": 255,
-    "excluded": 17,
-    "warnings": 24,
+    "excluded": 18,
+    "warnings": 25,
     "items": [
         {
             "file": "AppleWeatherEnhancer.lpx",
@@ -24,6 +24,12 @@
             "kind": "module-excluded",
             "message": "Module was excluded from Surge output because module rules may only use DIRECT, REJECT, or REJECT-TINYGIF; found: PROXY.",
             "line": "DOMAIN, bsbsb.top, PROXY"
+        },
+        {
+            "file": "Bixin_remove_ads.lpx",
+            "kind": "module-excluded",
+            "message": "Module was excluded from Surge output because Rewrite V2 regex flags have no verified Surge equivalent; URL condition uses Loon regex flags /i.",
+            "line": "request if ${url} ~= /^https:\\/\\/web\\.hibixin\\.com\\/user-recall\\/signModal$/i then reject(404)"
         },
         {
             "file": "BoxJs.lpx",

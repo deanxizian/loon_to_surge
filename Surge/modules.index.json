@@ -518,8 +518,8 @@
     },
     {
         "source": "DiDi_remove_ads.lpx",
-        "output": "滴滴出行去广告.sgmodule",
-        "name": "滴滴出行去广告",
+        "output": "滴滴去广告.sgmodule",
+        "name": "滴滴去广告",
         "sections": [
             "Rule",
             "Body Rewrite",
