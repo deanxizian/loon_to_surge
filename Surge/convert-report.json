@@ -1,11 +1,11 @@
 {
-    "generated_at": "2026-09-10 18:52:47 +00:00",
+    "generated_at": "2026-09-14 20:06:44 +00:00",
     "input_dir": "Loon",
     "output_dir": "Surge",
     "total": 273,
     "converted": 255,
     "excluded": 18,
-    "warnings": 25,
+    "warnings": 24,
     "items": [
         {
             "file": "AppleWeatherEnhancer.lpx",
@@ -138,12 +138,6 @@
             "kind": "module-excluded",
             "message": "Module was excluded from Surge output because Rewrite V2 regex flags have no verified Surge equivalent; URL condition uses Loon regex flags /i.",
             "line": "request if ${url} ~= /^https:\\/\\/thor\\.weidian\\.com\\/ares\\/home\\.splash\\//i then reject_dict(200)"
-        },
-        {
-            "file": "Zhibo8_remove_ads.lpx",
-            "kind": "rewrite-action-corrected",
-            "message": "JSON delete contains a complete JQ expression; converted as JQ instead of splitting it into key paths.",
-            "line": "^https:\\/\\/pre-match\\.qiumibao\\.com\\/pre_match_data\\/v\\d\\/\\d+-\\d+-\\d+\\/\\d+_fund\\.htm\\? response-body-json-del 'del(.data[] | select(.type == \"guide\"))'"
         },
         {
             "file": "iQiYi_Video_remove_ads.lpx",
