@@ -1,11 +1,11 @@
 {
-    "generated_at": "2026-09-14 20:06:44 +00:00",
+    "generated_at": "2026-09-15 19:25:47 +00:00",
     "input_dir": "Loon",
     "output_dir": "Surge",
-    "total": 273,
+    "total": 274,
     "converted": 255,
-    "excluded": 18,
-    "warnings": 24,
+    "excluded": 19,
+    "warnings": 25,
     "items": [
         {
             "file": "AppleWeatherEnhancer.lpx",
@@ -90,6 +90,12 @@
             "kind": "module-excluded",
             "message": "Module was excluded from Surge output because module rules may only use DIRECT, REJECT, or REJECT-TINYGIF; found: PROXY.",
             "line": "DOMAIN, scripthub.vercel.app, PROXY"
+        },
+        {
+            "file": "ShoujiDesk_remove_ads.lpx",
+            "kind": "module-excluded",
+            "message": "Module was excluded from Surge output because Rewrite V2 regex flags have no verified Surge equivalent; URL condition uses Loon regex flags /i.",
+            "line": "request if ${url} ~= /^https:\\/\\/api\\.tdz5\\.com\\/search\\/hotword\\?/i then reject_dict(200)"
         },
         {
             "file": "SinaStock_remove_ads.lpx",
