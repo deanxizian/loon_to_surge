@@ -16,6 +16,7 @@ from convert_kelee_to_surge import (  # noqa: E402
     convert_file,
     convert_kelee_to_surge,
     convert_mock_response_options,
+    convert_path_to_jq_array,
     format_surge_argument_default,
 )
 from fetch_kelee_modules import validate_plugin_list  # noqa: E402
@@ -66,6 +67,38 @@ class ConvertMockResponseOptionsTest(unittest.TestCase):
     def test_status_above_surge_map_local_range_is_rejected(self) -> None:
         with self.assertRaisesRegex(ValueError, "200 and 999"):
             convert_mock_response_options('data-type=text data="" status-code=1000')
+
+
+class ConvertJsonPathTest(unittest.TestCase):
+    def test_supported_paths_keep_exact_segments(self) -> None:
+        cases = {
+            "data.ads": ["data", "ads"],
+            ".data.ads": ["data", "ads"],
+            "Result.cards[4]": ["Result", "cards", 4],
+            "data[0][1].ad": ["data", 0, 1, "ad"],
+            "[0].ad": [0, "ad"],
+            "data[-1]": ["data", -1],
+            "0": ["0"],
+            "data.resp_map./teenager/api/info": ["data", "resp_map", "/teenager/api/info"],
+            'data["/service/settings/v3/"].body': ["data", "/service/settings/v3/", "body"],
+            "data['ad.config']": ["data", "ad.config"],
+            'data[""]': ["data", ""],
+            "result.quark-countdown-2025": ["result", "quark-countdown-2025"],
+        }
+        for path, segments in cases.items():
+            with self.subTest(path=path):
+                self.assertEqual(json.loads(convert_path_to_jq_array(path)), segments)
+
+    def test_malformed_paths_are_rejected_instead_of_shortened(self) -> None:
+        for path in (
+            "", ".", "..data", "data.", "data..ads", "data.[0]", "data[0].",
+            "data[]", "data[ ]", "data[0", "data[0]]", "data[0]ads", "data.ads]",
+            'data["ads"', 'data["ads"]tail', "data[ads]", "data[1.5]", "data[*]",
+            "data[0:2]", "data. ads", "data\tads", "data\x00ads", r"data\.ads",
+            'data["a]b"]', r'data["a\"b"]',
+        ):
+            with self.subTest(path=path), self.assertRaisesRegex(ValueError, "JSON key path"):
+                convert_path_to_jq_array(path)
 
 
 class ValidatePluginListTest(unittest.TestCase):
@@ -877,6 +910,82 @@ request if ${url} ~= /^https:\/\/old\.example\/(.+)$/ as item then url.replace("
             output,
         )
         self.assertEqual([item["kind"] for item in report], ["rewrite-action-corrected"])
+
+    def test_invalid_legacy_json_paths_report_the_source_line(self) -> None:
+        for prefix in ("", "http-response "):
+            for action, payload in (
+                ("response-body-json-del", "data.ads data. isitor_page_login_config"),
+                ("response-body-json-replace", "data.ads false data. false"),
+            ):
+                with self.subTest(prefix=prefix, action=action):
+                    line = f"{prefix}^https://example.com {action} {payload}"
+                    output, report = self.convert_lpx(f"#!name=Sample\n[Rewrite]\n{line}\n")
+                    self.assertNotIn("[Body Rewrite]", output)
+                    self.assertEqual([item["kind"] for item in report], ["unsupported-rewrite"])
+                    self.assertIn("JSON key path", report[0]["message"])
+                    self.assertEqual(report[0]["file"], "Sample.lpx")
+                    self.assertEqual(report[0]["line"], line)
+
+    def test_incomplete_legacy_json_arguments_are_fatal_reports(self) -> None:
+        for prefix in ("", "http-response "):
+            for suffix in (
+                "response-body-json-del",
+                "response-body-json-replace",
+                "response-body-json-replace data.ads",
+                "response-body-json-replace data.ads false data.banner",
+            ):
+                with self.subTest(prefix=prefix, suffix=suffix):
+                    line = f"{prefix}^https://example.com {suffix}"
+                    output, report = self.convert_lpx(f"#!name=Sample\n[Rewrite]\n{line}\n")
+                    self.assertNotIn("[Body Rewrite]", output)
+                    self.assertEqual([item["kind"] for item in report], ["unsupported-rewrite"])
+                    self.assertEqual(report[0]["line"], line)
+
+    def test_invalid_v2_json_paths_do_not_emit_partial_actions(self) -> None:
+        for phase in ("request", "response"):
+            for action in (
+                'json.delete("data.")',
+                'json.delete("")',
+                'json.delete(["data.ads", "data."])',
+                'json.add(["data.ads", "data..banner"], [false, false])',
+                'json.replace(["data.ads", "data[0"], [false, false])',
+            ):
+                with self.subTest(phase=phase, action=action):
+                    line = f'{phase} if ${{url}} == "https://example.com" then {phase}.{action}'
+                    output, report = self.convert_lpx(f"#!name=Sample\n[Rewrite]\n{line}\n")
+                    self.assertNotIn("[Body Rewrite]", output)
+                    self.assertEqual([item["kind"] for item in report], ["unsupported-rewrite"])
+                    self.assertIn("JSON key path", report[0]["message"])
+                    self.assertEqual(report[0]["line"], line)
+
+    def test_json_path_failure_preserves_all_published_files(self) -> None:
+        lines = (
+            "^https://example.com response-body-json-del data. isitor_page_login_config",
+            "http-response ^https://example.com response-body-json-replace data.ads false data.",
+            'response if ${url} == "https://example.com" then response.json.delete("data.")',
+        )
+        for line in lines:
+            with self.subTest(line=line), tempfile.TemporaryDirectory() as temp_dir:
+                root = Path(temp_dir)
+                loon, surge = root / "Loon", root / "Surge"
+                loon.mkdir()
+                surge.mkdir()
+                before = {
+                    "sentinel.sgmodule": b"existing\n",
+                    "modules.index.json": b"[]\n",
+                    "convert-report.json": b"{}\n",
+                }
+                for name, data in before.items():
+                    (surge / name).write_bytes(data)
+                (loon / "Sample.lpx").write_text(f"#!name=Sample\n[Rewrite]\n{line}\n", encoding="utf-8")
+                previous_cwd = Path.cwd()
+                try:
+                    os.chdir(root)
+                    with self.assertRaisesRegex(RuntimeError, "Conversion stopped"):
+                        convert_kelee_to_surge("Loon", "Surge", "Surge/convert-report.json")
+                finally:
+                    os.chdir(previous_cwd)
+                self.assertEqual({path.name: path.read_bytes() for path in surge.iterdir()}, before)
 
     def test_known_invalid_jq_binding_is_grouped(self) -> None:
         output, report = self.convert_lpx(

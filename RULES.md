@@ -299,6 +299,13 @@ pattern data-type=text data="" status-code=200
 - `response-body-json-del` 转为 jq `delpaths(...)`。
 - `response-body-json-replace` 转为带 `try (getpath(...) | has(...)) catch false` 检查的 `setpath`，避免父路径不存在时 jq 报错，也避免目标路径不存在时误建结构。
 
+JSON 路径会在生成 JQ 前完整校验，旧版 JSON 删除/替换和 Rewrite V2 的 JSON 增删改共用此检查：
+
+- 支持非空点分键名、整数下标（如 `data[0].ad`）和简单引号键名（如 `data["ad.config"]`）；保留已有单个前导点的兼容行为（`.data.ads`）。
+- 空路径、尾部点、连续点、未闭合下标、缺少分隔符，以及未支持的通配符/切片下标或转义路径均拒绝转换，不自动补全或缩短路径。例如 `data.` 不会转换成删除整个 `data`。
+- 旧版 JSON 删除至少需要一个路径；JSON 替换必须提供完整的路径/值参数对，不静默丢弃末尾参数。
+- 这类错误记录为 `unsupported-rewrite`，附带源文件名和原始行，并终止本次全量转换；原有 Surge 模块、索引和报告均保持不变。
+
 ### Header Rewrite
 
 ```ini
@@ -504,7 +511,7 @@ hostname = %APPEND% example.com, *.example.org
 - `jq-expression-corrected`：上游 JQ 缺少变量绑定所需的分组，补齐括号后再输出。
 - `general-pass-through`：`[General]` 行原样透传。
 - `jq-path-inline-failed`：远端 jq 抓取失败，保留原表达式。
-- `unsupported-rewrite`：Rewrite 动作不支持或无法解析。
+- `unsupported-rewrite`：Rewrite 动作不支持、无法解析，或 JSON 路径/参数不完整、无法安全转换。
 - `unsupported-header-rewrite`：Header rewrite 无法解析。
 - `unsupported-script`：Script 行不支持或无法解析。
 - `unsupported-rule`：Loon Rule 类型/option 未知、字段不完整或逻辑 matcher 无法安全转换。
@@ -530,6 +537,7 @@ hostname = %APPEND% example.com, *.example.org
 - 不把未经核实的 Loon generic 当作 Surge generic 发布。
 - 不把尚未核实条件、正则和属性映射的 Loon Script V2 强行改写为 Surge Script。
 - 不原样透传未知 Rule 类型，也不静默忽略未知的非空 Loon section。
+- 不把畸形 JSON 路径缩短为父路径，也不静默忽略不成对的 JSON 替换参数。
 - 不静默吞掉未知语法，无法安全转换时终止整次生成并保留上一版产物。
 
 ## 当前验证口径

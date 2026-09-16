@@ -66,6 +66,12 @@ SECTION_ORDER = (
     "MITM",
 )
 JQ_PATH_CACHE: dict[str, str] = {}
+JSON_PATH_KEY_PATTERN = r"""[^.\[\]'"\\\s\x00-\x1f\x7f]+"""
+JSON_PATH_BRACKET_PATTERN = r"""\[(?:-?[0-9]+|'[^'"\\\[\]\x00-\x1f\x7f]*'|"[^'"\\\[\]\x00-\x1f\x7f]*")\]"""
+JSON_PATH_PATTERN = re.compile(
+    rf"(?:\.?{JSON_PATH_KEY_PATTERN}|{JSON_PATH_BRACKET_PATTERN})"
+    rf"(?:\.{JSON_PATH_KEY_PATTERN}|{JSON_PATH_BRACKET_PATTERN})*"
+)
 LOON_USER_AGENT = "Loon/860 CFNetwork/3826.500.111.2.2 Darwin/24.4.0"
 BASE_MODULE_FEATURE_REQUIREMENT = "CORE_VERSION>=20"
 SURGE_5_14_FEATURE_REQUIREMENT = "CORE_VERSION>=6008000"
@@ -165,6 +171,10 @@ JQ_COMPATIBILITY_REWRITES = (
 
 
 class RuleConversionError(ValueError):
+    pass
+
+
+class JsonRewriteError(ValueError):
     pass
 
 
@@ -321,6 +331,10 @@ def convert_json_value(value: str) -> str:
 
 
 def convert_path_to_jq_array(path: str) -> str:
+    # Validate before splitting so empty segments cannot broaden a deletion to its parent.
+    if not JSON_PATH_PATTERN.fullmatch(path):
+        raise JsonRewriteError(f"Invalid or unsupported JSON key path: {path!r}")
+
     segments: list[str | int] = []
     builder: list[str] = []
     i = 0
@@ -338,17 +352,12 @@ def convert_path_to_jq_array(path: str) -> str:
         elif char == "[":
             flush_token()
             end = path.find("]", i + 1)
-            if end < 0:
-                builder.append(char)
+            inside = path[i + 1 : end]
+            if inside[0] in ("'", '"'):
+                segments.append(inside[1:-1])
             else:
-                inside = path[i + 1 : end].strip()
-                if len(inside) >= 2 and inside[0] == inside[-1] and inside[0] in ("'", '"'):
-                    segments.append(inside[1:-1])
-                elif re.fullmatch(r"-?\d+", inside):
-                    segments.append(int(inside))
-                else:
-                    segments.append(inside)
-                i = end
+                segments.append(int(inside))
+            i = end
         else:
             builder.append(char)
         i += 1
@@ -366,6 +375,8 @@ def jq_array(segments: list[str | int]) -> str:
 
 
 def convert_delete_paths_to_jq(paths: list[str]) -> list[str]:
+    if not paths:
+        raise JsonRewriteError("JSON delete requires at least one key path")
     return ["'delpaths([" + convert_path_to_jq_array(path) + "])'" for path in paths]
 
 
@@ -394,9 +405,6 @@ def convert_delete_source_to_jq(
 
 def convert_replace_pair_to_jq(path_text: str, value_text: str) -> str:
     segments = path_segments(path_text)
-    if not segments:
-        return "'" + convert_json_value(value_text) + "'"
-
     parent = jq_array(segments[:-1])
     key = json.dumps(segments[-1], ensure_ascii=False, separators=(",", ":"))
     path = jq_array(segments)
@@ -406,8 +414,10 @@ def convert_replace_pair_to_jq(path_text: str, value_text: str) -> str:
 
 def convert_replace_pairs_to_jq(text: str) -> list[str]:
     tokens = [token for token in re.split(r"\s+", text.strip()) if token]
+    if not tokens or len(tokens) % 2:
+        raise JsonRewriteError("JSON replace requires complete key-path/value pairs")
     parts: list[str] = []
-    for index in range(0, len(tokens) - 1, 2):
+    for index in range(0, len(tokens), 2):
         parts.append(convert_replace_pair_to_jq(tokens[index], tokens[index + 1]))
     return parts
 
@@ -1321,8 +1331,6 @@ def convert_v2_json_action(action: V2Action, phase: str, pattern: str) -> list[t
         for arguments in expand_v2_arguments(action, 2):
             path_text = v2_constant_string(arguments[0], f"{action.name} path")
             segments = path_segments(path_text)
-            if not segments:
-                raise RewriteV2Error(f"{action.name} path cannot be empty")
             path = jq_array(segments)
             value = v2_json_value(arguments[1], f"{action.name} value")
             if operation == "add":
@@ -2088,7 +2096,11 @@ def convert_file(
             add_report(report, path.name, "unsupported-rule", str(exc), line)
 
     for line in section_lines(source_sections, "Rewrite"):
-        regex_flag_reason = convert_rewrite_line(line, sections, report, path.name, set(argument_defaults))
+        try:
+            regex_flag_reason = convert_rewrite_line(line, sections, report, path.name, set(argument_defaults))
+        except JsonRewriteError as exc:
+            add_report(report, path.name, "unsupported-rewrite", str(exc), line)
+            continue
         if regex_flag_reason:
             add_report(
                 report,
