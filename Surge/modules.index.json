@@ -1658,6 +1658,16 @@
         ]
     },
     {
+        "source": "ShandongSchool_remove_ads.lpx",
+        "output": "闪动校园去广告.sgmodule",
+        "name": "闪动校园去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
         "source": "ShopKeeperAdmin_remove_ads.lpx",
         "output": "小店掌柜去广告.sgmodule",
         "name": "小店掌柜去广告",
