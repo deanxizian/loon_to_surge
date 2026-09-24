@@ -17,6 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 2
       - uses: actions/setup-python@v6
         with:
           python-version: "3.x"
@@ -25,7 +27,7 @@ jobs:
       - name: Validate generated modules and compile JQ
         run: python scripts/validate_surge_modules.py --require-jq
       - name: Check whitespace
-        run: git show --format= --check HEAD
+        run: git diff --check HEAD^1 HEAD
 
   regex:
     name: Foundation regex equivalence
