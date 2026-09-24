@@ -191,7 +191,8 @@ response if ${url} ~= /^https:\/\/example\.com/ then response.json.delete("data.
 
 - 单个 `${url} ~= /regex/`，可使用 `as name` 捕获并在 URL 替换或重定向中引用 `${name.n}`。
 - 单个 `${url} == "constant"`，转换为完整 URL 正则。
-- URL、Header 和 Body 正则暂不接受 `i`、`m`、`s` flags，避免在没有确认 Surge 等价语义时改变匹配范围；包含这类 Rewrite V2 正则的模块会整项排除并记录 `module-excluded`，不会生成删掉相关行的残缺模块。
+- URL 正则的 `i` 转为作用域内联修饰符 `(?i:regex)`，保持忽略大小写和原捕获组编号。基础匹配、否定样例、锚点、嵌套 flags、Unicode 与捕获范围通过 Foundation/ICU 对照测试。
+- URL 的 `m/s` 以及 Header/Body 正则的所有 flags 暂不接受；包含这类 Rewrite V2 正则的模块会整项排除并记录 `module-excluded`，不会生成删掉相关行的残缺模块。
 
 当前可安全转换的 Action：
 
@@ -207,7 +208,7 @@ response if ${url} ~= /^https:\/\/example\.com/ then response.json.delete("data.
 
 多个 Action 只有在都能落入同一个 Surge section、且仍能保持从左到右执行语义时才会展开。方法、请求或响应 Header、响应状态码、逻辑组合条件，以及请求 Body Mock、响应 Mock 与 Header 的混合 Action 等，当前都不会被弱化为仅 URL 匹配。
 
-带正则 flags 的 V2 模块会按上述规则整项排除，因此不会阻塞其他模块更新。其他无法安全转换的 V2 行仍会产生 `unsupported-rewrite`；该类型属于致命转换错误，全量任务会在替换 `Surge/` 前失败，上一版已验证产物保持不变。
+带尚未支持的正则 flags 的 V2 模块会按上述规则整项排除，因此不会阻塞其他模块更新。其他无法安全转换的 V2 行仍会产生 `unsupported-rewrite`；该类型属于致命转换错误，全量任务会在替换 `Surge/` 前失败，上一版已验证产物保持不变。
 
 ### URL Rewrite
 
@@ -425,7 +426,22 @@ Loon 的 `img-url` 只用于其 generic 脚本界面，Surge `[Script]` 没有�
 
 含有其他 generic `script-path` 的 Loon 模块会整项排除，不生成 `.sgmodule`，也不写入 Surge 索引，并记录 `module-excluded`。这样避免发布可导入但运行时因缺少 Loon 上下文而报错或检测错误节点的模块。新脚本必须先核对其 Surge 分支和实际调用语义，再加入精确白名单。
 
-当前只转换 Loon 旧版 `[Script]` 行。新版 `request/response if ... then script(...)` 同时引入条件表达式、正则 flags 和新的属性结构；在没有逐项确认 Surge 等价语义前，包含 Script V2 的模块会整项排除并记录 `module-excluded`，不会阻断其他模块更新，也不会生成只保留部分功能的 Surge 模块。
+### Script V2
+
+按 [Loon Script V2 文档](https://nsloon.app/docs/Script/script_v2/) 识别 `request`、`response`、`cron`、`generic` 和 `network-changed` 五类触发器。模块开始转换前会解析所有 Script V2 行，未知运行上下文不会再误入旧版解析器而阻断整批更新。
+
+目前支持：
+
+- HTTP 单个 URL 正则或固定 URL 等值条件；URL 正则可无 flags 或仅有 `/i`。转换为原生 Surge `http-request` / `http-response`，保持原脚本顺序。
+- 固定的 HTTP(S) 脚本地址；不下载或改写 JavaScript 内容。
+- 静态五段/六段数字 Cron 表达式，输出带引号的 `cronexp`。
+- 省略参数，或静态 String/Raw String 参数；显式空字符串仍输出 `argument=""`。JSON 文本保持 String，不转换为对象。
+- 静态 `tag`、`timeout`、`debug`、`enable`，以及 HTTP 的 `requires_body`、`binary_body_mode`。`enable=false` 生成注释行；`binary_body_mode` 不隐式开启 `requires_body`。`img_url` 仅为显示元数据，删除并记录 `script-property-corrected`。
+- 默认超时显式输出为 HTTP `20` 秒、Cron `300` 秒，避免使用 [Surge 的 5 秒默认值](https://manual.nssurge.com/scripting/overview.html)。
+
+以下有效但尚未验证等价语义的用法会整模块排除并记录原因：复合条件或非 URL 条件、对象 `$argument`、动态参数/属性/Cron、新版 generic/network-changed、本地脚本路径、URL `/m` 或 `/s`。Surge 原生 `$argument` 是 String，不能把 Loon 对象参数直接序列化后宣称等价。也不能通过脚本内部判断复杂条件后提前返回来模拟 Loon 的第一条完整命中规则，这会截断后续脚本匹配。
+
+含控制字符或类似模块占位符的静态文本目前也会排除。重复/未知属性、错误类型、非正或非有限超时、缺失脚本地址等无效语法仍记录 `unsupported-script` 并阻止替换产物。这里的转换只覆盖配置语义：脚本自身若依赖 Loon API、缺省 `$argument=null` 或专属上下文，仍需检查脚本的 Surge 分支并运行验证。
 
 所有旧版 Script 类型都要求非空 `script-path`。未知属性、冲突的重复属性或无效布尔值会记录为 `unsupported-script` 并阻止发布；相同值的重复属性会安全去重并记录 `script-property-corrected`。
 
@@ -536,6 +552,7 @@ hostname = %APPEND% example.com, *.example.org
 - 不把共享脚本参数强行改成 `#` 开关。
 - 不把未经核实的 Loon generic 当作 Surge generic 发布。
 - 不把尚未核实条件、正则和属性映射的 Loon Script V2 强行改写为 Surge Script。
+- 不把远程脚本中的平台检测标记当作已证明有效的分支保护，也不把未命中新 API 文本当作运行兼容性保证。
 - 不原样透传未知 Rule 类型，也不静默忽略未知的非空 Loon section。
 - 不把畸形 JSON 路径缩短为父路径，也不静默忽略不成对的 JSON 替换参数。
 - 不静默吞掉未知语法，无法安全转换时终止整次生成并保留上一版产物。
@@ -548,8 +565,13 @@ hostname = %APPEND% example.com, *.example.org
 python scripts\convert_kelee_to_surge.py --input-dir Loon --output-dir Surge --report-path Surge\convert-report.json
 python scripts\validate_surge_modules.py --loon-dir Loon --surge-dir Surge --report-path Surge\convert-report.json
 python -m unittest discover -s tests
+python scripts\check_remote_scripts.py
 git diff --check
 ```
+
+macOS 上额外运行 `swift tests/verify_url_ignore_case.swift`，检查原始忽略大小写选项与输出 `(?i:...)` 的匹配及捕获范围。可使用 Surge CLI 的 `--check` 检查临时完整配置（展开模块参数、去掉模块追加标记，并补齐 `FINAL,DIRECT`）；这不等同于真实流量验证。
+
+远程脚本报告独立写入 `.tmp/remote-script-audit.json`，CI 则保存为 Actions 附件。报告按 URL 去重，包含禁用脚本的引用，记录 SHA-256、最终下载地址、引用模块与行号，并扫描新 API 的点号/方括号写法。API 命中与 `$loon` / Surge 环境标记只提供人工复核线索，可能命中注释或字符串，也不能追踪别名、动态属性或外部加载代码。普通网络错误形成报告项；程序异常仍使检查失败。默认不因单个远程脚本问题阻断转换，可用 `--strict` 收紧。
 
 还应扫描生成的 `Surge/*.sgmodule`，确认：
 

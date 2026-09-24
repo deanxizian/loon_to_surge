@@ -577,13 +577,13 @@ generic script-path=https://example.com/unknown.js, tag=Unknown
             r'''#!name=Sample
 
 [Script]
-response if ${url} ~= /^https:\/\/api\.example\.com\/v1/ then script("https://example.com/a.js") with tag="Sample", requires_body=true
+response if ${url} ~= /^https:\/\/api\.example\.com\/v1/ && ${response.status} == 200 then script("https://example.com/a.js") with tag="Sample", requires_body=true
 '''
         )
 
         self.assertIsNone(output)
         self.assertEqual([item["kind"] for item in report], ["module-excluded"])
-        self.assertIn("Script V2 compatibility is not verified", report[0]["message"])
+        self.assertIn("single URL condition", report[0]["message"])
         self.assertIn("then script", report[0]["line"])
 
     def test_unknown_or_incomplete_script_properties_are_fatal_reports(self) -> None:
@@ -749,14 +749,14 @@ response if ${url} ~= /^https:\/\/api\.example\.com\/mock$/ then response.body.m
             r'''#!name=Sample
 
 [Rewrite]
-request if ${url} ~= /^https:\/\/api\.example\.com\/ads/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.example\.com\/ads/m then reject_dict(200)
 '''
         )
 
         self.assertIsNone(output)
         self.assertEqual([item["kind"] for item in report], ["module-excluded"])
         self.assertIn("no verified Surge equivalent", report[0]["message"])
-        self.assertIn("/i", report[0]["message"])
+        self.assertIn("/m", report[0]["message"])
 
     def test_rewrite_v2_response_mock_rejects_status_above_surge_range(self) -> None:
         output, report = self.convert_lpx(
@@ -1097,7 +1097,7 @@ DOMAIN,ads.example.com,REJECT
                 r'''#!name=Flagged
 
 [Rewrite]
-request if ${url} ~= /^https:\/\/api\.example\.com\/ads/i then reject_dict(200)
+request if ${url} ~= /^https:\/\/api\.example\.com\/ads/m then reject_dict(200)
 ''',
                 encoding="utf-8",
             )
@@ -1136,7 +1136,7 @@ DOMAIN,ads.example.com,REJECT
                 r'''#!name=Script V2
 
 [Script]
-response if ${url} ~= /^https:\/\/api\.example\.com\/v1/ then script("https://example.com/a.js") with tag="Sample", requires_body=true
+network-changed then script("https://example.com/a.js") with tag="Sample"
 ''',
                 encoding="utf-8",
             )

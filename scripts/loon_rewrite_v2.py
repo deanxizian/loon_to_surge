@@ -9,6 +9,10 @@ class RewriteV2Error(ValueError):
     pass
 
 
+class UnsupportedV2Condition(RewriteV2Error):
+    """A condition outside the native URL-only conversion subset."""
+
+
 @dataclass(frozen=True)
 class V2Variable:
     name: str
@@ -77,7 +81,7 @@ def _looks_like_regex_start(text: str, index: int) -> bool:
     return prefix.endswith("~=") or prefix[-1] in "(,[=:"
 
 
-def _split_top_level(text: str, delimiter: str, *, word: bool = False) -> list[str]:
+def split_v2_top_level(text: str, delimiter: str, *, word: bool = False) -> list[str]:
     parts: list[str] = []
     start = 0
     quote = ""
@@ -271,7 +275,7 @@ def parse_v2_value(text: str) -> V2Value:
         inner = text[1:-1].strip()
         if not inner:
             return V2Array(())
-        return V2Array(tuple(parse_v2_value(item) for item in _split_top_level(inner, ",")))
+        return V2Array(tuple(parse_v2_value(item) for item in split_v2_top_level(inner, ",")))
 
     variable = re.fullmatch(r"\$\{(.+)\}", text)
     if variable:
@@ -302,7 +306,7 @@ def _parse_action(text: str) -> V2Action:
     if not arguments_text:
         arguments: tuple[V2Value, ...] = ()
     else:
-        arguments = tuple(parse_v2_value(item) for item in _split_top_level(arguments_text, ","))
+        arguments = tuple(parse_v2_value(item) for item in split_v2_top_level(arguments_text, ","))
     return V2Action(name, arguments)
 
 
@@ -313,12 +317,12 @@ def parse_rewrite_v2_line(line: str) -> V2Rewrite:
 
     phase = matched.group(1)
     remainder = line.strip()[matched.end() :]
-    pieces = _split_top_level(remainder, "then", word=True)
+    pieces = split_v2_top_level(remainder, "then", word=True)
     if len(pieces) != 2 or not all(pieces):
         raise RewriteV2Error("Rewrite V2 line must contain one top-level then")
 
     condition, action_text = pieces
-    action_parts = _split_top_level(action_text, "|")
+    action_parts = split_v2_top_level(action_text, "|")
     if not action_parts or any(not item for item in action_parts):
         raise RewriteV2Error("Rewrite V2 line contains an empty Action")
     return V2Rewrite(phase, condition, tuple(_parse_action(item) for item in action_parts))
@@ -362,19 +366,19 @@ def parse_url_only_condition(text: str) -> V2UrlCondition:
     while _is_outer_parenthesized(condition):
         condition = condition[1:-1].strip()
 
-    if len(_split_top_level(condition, "&&")) != 1 or len(_split_top_level(condition, "||")) != 1:
-        raise RewriteV2Error("Only a single URL condition can be mapped to native Surge rewrite sections")
+    if len(split_v2_top_level(condition, "&&")) != 1 or len(split_v2_top_level(condition, "||")) != 1:
+        raise UnsupportedV2Condition("Only a single URL condition can be mapped to native Surge sections")
 
     matched = re.match(r"^\$\{url\}\s*(~=|==)\s*", condition)
     if not matched:
-        raise RewriteV2Error("Only a single ${url} condition can be mapped to native Surge rewrite sections")
+        raise UnsupportedV2Condition("Only a single ${url} condition can be mapped to native Surge sections")
 
     operator = matched.group(1)
     value_text = condition[matched.end() :].strip()
     capture_name: str | None = None
 
     if operator == "~=":
-        pieces = _split_top_level(value_text, "as", word=True)
+        pieces = split_v2_top_level(value_text, "as", word=True)
         if len(pieces) == 2:
             value_text, capture_name = pieces
             if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", capture_name):
@@ -383,6 +387,8 @@ def parse_url_only_condition(text: str) -> V2UrlCondition:
             raise RewriteV2Error("URL condition contains more than one capture declaration")
 
     value = parse_v2_value(value_text)
+    if isinstance(value, V2Variable) or isinstance(value, V2String) and any(isinstance(part, V2Variable) for part in value.parts):
+        raise UnsupportedV2Condition("Dynamic URL conditions require typed plugin argument handling")
     if operator == "~=":
         if not isinstance(value, V2Regex):
             raise RewriteV2Error("The ~= URL condition requires a regular expression literal")

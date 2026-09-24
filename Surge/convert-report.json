@@ -1,11 +1,11 @@
 {
-    "generated_at": "2026-09-23 19:23:45 +00:00",
+    "generated_at": "2026-09-24 13:31:01 +08:00",
     "input_dir": "Loon",
     "output_dir": "Surge",
     "total": 275,
-    "converted": 256,
-    "excluded": 19,
-    "warnings": 25,
+    "converted": 263,
+    "excluded": 12,
+    "warnings": 18,
     "items": [
         {
             "file": "AppleWeatherEnhancer.lpx",
@@ -24,12 +24,6 @@
             "kind": "module-excluded",
             "message": "Module was excluded from Surge output because module rules may only use DIRECT, REJECT, or REJECT-TINYGIF; found: PROXY.",
             "line": "DOMAIN, bsbsb.top, PROXY"
-        },
-        {
-            "file": "Bixin_remove_ads.lpx",
-            "kind": "module-excluded",
-            "message": "Module was excluded from Surge output because Rewrite V2 regex flags have no verified Surge equivalent; URL condition uses Loon regex flags /i.",
-            "line": "request if ${url} ~= /^https:\\/\\/web\\.hibixin\\.com\\/user-recall\\/signModal$/i then reject(404)"
         },
         {
             "file": "BoxJs.lpx",
@@ -68,40 +62,16 @@
             "line": "generic script-path=https://kelee.one/Resource/JavaScript/Node_detection_tool/NetworkEntryAndExitQueries.js, timeout=10, tag=入口落地查询,img-url=globe.asia.australia.system"
         },
         {
-            "file": "PICOOC_remove_ads.lpx",
-            "kind": "module-excluded",
-            "message": "Module was excluded from Surge output because Rewrite V2 regex flags have no verified Surge equivalent; URL condition uses Loon regex flags /i.",
-            "line": "request if ${url} ~= /^https:\\/\\/api2\\.picooc\\.com\\/v\\d\\/api\\/focus\\/strategy\\/execute\\?/i then reject_dict(200)"
-        },
-        {
             "file": "Prevent_DNS_Leaks.lpx",
             "kind": "module-excluded",
             "message": "Module was excluded from Surge output because module rules may only use DIRECT, REJECT, or REJECT-TINYGIF; found: PROXY.",
             "line": "DOMAIN-SUFFIX, dnsleaktest.com, PROXY"
         },
         {
-            "file": "Qbb_remove_ads.lpx",
-            "kind": "module-excluded",
-            "message": "Module was excluded from Surge output because Rewrite V2 regex flags have no verified Surge equivalent; URL condition uses Loon regex flags /i.",
-            "line": "request if ${url} ~= /^https:\\/\\/api\\.qbb6\\.com\\/ad\\//i then reject_dict(200)"
-        },
-        {
             "file": "Script-Hub.lpx",
             "kind": "module-excluded",
             "message": "Module was excluded from Surge output because module rules may only use DIRECT, REJECT, or REJECT-TINYGIF; found: PROXY.",
             "line": "DOMAIN, scripthub.vercel.app, PROXY"
-        },
-        {
-            "file": "ShoujiDesk_remove_ads.lpx",
-            "kind": "module-excluded",
-            "message": "Module was excluded from Surge output because Rewrite V2 regex flags have no verified Surge equivalent; URL condition uses Loon regex flags /i.",
-            "line": "request if ${url} ~= /^https:\\/\\/api\\.tdz5\\.com\\/search\\/hotword\\?/i then reject_dict(200)"
-        },
-        {
-            "file": "SinaStock_remove_ads.lpx",
-            "kind": "module-excluded",
-            "message": "Module was excluded from Surge output because Rewrite V2 regex flags have no verified Surge equivalent; URL condition uses Loon regex flags /i.",
-            "line": "response if ${url} ~= /^https:\\/\\/news\\.cj\\.sina\\.cn\\/app\\/v1\\/news724\\/list\\?/i then response.json.delete(\"result.data.ad\")"
         },
         {
             "file": "Sub-Store.lpx",
@@ -140,22 +110,10 @@
             "line": "DAY=input, \"1\", tag=兑换天数, desc=每日签到时自动兑换的天数，可不做更改。"
         },
         {
-            "file": "Weidian_remove_ads.lpx",
-            "kind": "module-excluded",
-            "message": "Module was excluded from Surge output because Rewrite V2 regex flags have no verified Surge equivalent; URL condition uses Loon regex flags /i.",
-            "line": "request if ${url} ~= /^https:\\/\\/thor\\.weidian\\.com\\/ares\\/home\\.splash\\//i then reject_dict(200)"
-        },
-        {
             "file": "iQiYi_Video_remove_ads.lpx",
             "kind": "rewrite-empty-skipped",
             "message": "Empty JQ expression was skipped because Surge requires a non-empty JQ program.",
             "line": "^https:\\/\\/comment-card\\.iqiyi\\.com\\/views_comment\\/3\\.0\\/long_video_comments\\? response-body-json-jq ''"
-        },
-        {
-            "file": "iWallBiZhi_remove_ads.lpx",
-            "kind": "module-excluded",
-            "message": "Module was excluded from Surge output because Rewrite V2 regex flags have no verified Surge equivalent; URL condition uses Loon regex flags /i.",
-            "line": "request if ${url} ~= /^https:\\/\\/api\\.fzxhmy\\.com\\/seek\\/trendingword\\?/i then reject_dict(200)"
         }
     ]
 }

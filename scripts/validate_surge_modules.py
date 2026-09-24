@@ -593,8 +593,13 @@ def validate_surge_modules(
             "bare Loon argument placeholder": r"(?<!\{)\{[A-Za-z_][A-Za-z0-9_.-]*\}(?!\})",
             "Loon mock option": r"\b(?:data-path|mock-data-is-base64)=",
         }
+        script_line_numbers = {number for number, _ in sections.get("Script", [])}
         for label, pattern in forbidden.items():
             for number, line in enumerate(text.splitlines(), 1):
+                # Script option keys are already checked structurally above. An argument
+                # such as "enable=true" or "data-path=x" is arbitrary String content.
+                if number in script_line_numbers and label in {"Loon enable", "Loon enabled?", "Loon mock option"}:
+                    continue
                 if re.search(pattern, line):
                     errors.append(f"{path.name}:{number}: residual {label}: {line}")
 

@@ -37,6 +37,17 @@ jobs:
       - name: Run converter tests
         run: python -m unittest discover -s tests
 
+      - name: Audit remote scripts
+        run: python scripts/check_remote_scripts.py --report-path "${RUNNER_TEMP}/remote-script-audit.json"
+
+      - name: Upload remote script audit
+        uses: actions/upload-artifact@v7
+        with:
+          name: remote-script-audit
+          path: ${{ runner.temp }}/remote-script-audit.json
+          if-no-files-found: error
+          retention-days: 30
+
       - name: Commit changes
         run: |
           git add -A -- Loon Surge
