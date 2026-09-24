@@ -1,0 +1,38 @@
+name: Validate pull request
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  converter:
+    name: Converter tests and generated modules
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.x"
+      - name: Run converter and audit tests
+        run: python -m unittest discover -s tests
+      - name: Validate generated modules and compile JQ
+        run: python scripts/validate_surge_modules.py --require-jq
+      - name: Check whitespace
+        run: git diff --check HEAD^1 HEAD
+
+  regex:
+    name: Foundation regex equivalence
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Verify URL ignore-case matching and captures
+        run: swift tests/verify_url_ignore_case.swift

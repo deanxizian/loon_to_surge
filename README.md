@@ -25,7 +25,7 @@ Surge/*.sgmodule
 Surge/convert-report.json
 ```
 
-成功生成后的 warning 是需要知情的转换事项。Surge 官方规定模块规则只能使用 `DIRECT`、`REJECT`、`REJECT-TINYGIF`，因此含 `PROXY`、`REJECT-DROP` 等策略的模块会整项排除；依赖 Loon 专属运行上下文的未知 `generic` 模块、使用无已验证 Surge 等价语义的 Rewrite V2 正则 flags，或使用尚未核实转换语义的 Script V2 的模块也不会强行转换，均记录为 `module-excluded`。已核实具有 Surge 分支的脚本会使用原生参数或 Panel 配置并记录 `generic-script-adapted`。其他无法安全转换的语法会直接使任务失败，并在覆盖前保留上一版 Surge 产物。
+成功生成后的 warning 是需要知情的转换事项。Surge 官方规定模块规则只能使用 `DIRECT`、`REJECT`、`REJECT-TINYGIF`，因此含 `PROXY`、`REJECT-DROP` 等策略的模块会整项排除。当前支持 Rewrite V2 的 URL `/i`、仅 URL 条件的 HTTP Script V2 和静态 Cron；复杂脚本条件、对象参数、动态属性和新版 generic/network-changed 上下文仍会整模块排除，并记录 `module-excluded`。URL 的 `m/s` 以及 Header/Body 正则 flags 也暂不转换。已核实具有 Surge 分支的旧版 generic 脚本会使用原生参数或 Panel 配置并记录 `generic-script-adapted`。未知属性、无效语法等错误仍会使任务失败，并在覆盖前保留上一版 Surge 产物。
 
 ## 自动更新
 
@@ -36,6 +36,10 @@ GitHub Actions 每天 00:00（Asia/Shanghai）运行：
 ```
 
 流程会抓取最新 Kelee 模块，重新生成 `Loon/` 和 `Surge/`，如有变化则自动提交。抓取结果为空、条目缺少有效 HTTP(S) URL、URL 重复、下载不完整，或模块总数一次下降超过 20% 时，任务会在替换现有文件前失败；确认上游确实进行了大规模删除后，才可手工使用 `--allow-large-drop` 放行。
+
+转换和测试后会检查输出中引用的远程 JavaScript，记录下载状态、SHA-256、模块引用位置，以及 `$utils.gzip`、`$crypto.aes`、`$dns.query` 的文本线索。每次运行将报告保存为 `remote-script-audit` Actions 附件，保留 30 天。远程脚本检查默认只报告问题；下载失败或出现 API 文本不直接判定整个模块不兼容，也不阻断其他模块更新。
+
+提交到 `main` 的 PR 会运行 Python 测试、已生成模块校验、JQ 编译及 macOS Foundation 正则对照检查。PR 检查不抓取上游模块，也不提交生成结果。
 
 ## 本地转换
 
@@ -50,10 +54,20 @@ python scripts\validate_surge_modules.py --loon-dir Loon --surge-dir Surge --rep
 python -m unittest discover -s tests
 ```
 
+单独检查远程脚本（仅下载和检查文本，不执行 JavaScript）：
+
+```powershell
+python scripts\check_remote_scripts.py
+```
+
+结果保存到 `.tmp/remote-script-audit.json`。可用 `--strict` 在下载失败或发现待复核 API 时返回非零状态；`--user-agent` 可用于复查按客户端限制访问的资源。没有命中 API 文本不代表已经通过 Surge 运行验证。
+
 ## 转换参考
 
 - [luestr/ProxyResource](https://github.com/luestr/ProxyResource)：Kelee Loon 模块来源。
 - [Loon Rewrite V2](https://nsloon.app/docs/Rewrite/rewrite_v2/)：新版 Rewrite 的语法、类型、Action 和执行顺序依据。
+- [Loon Script V2](https://nsloon.app/docs/Script/script_v2/)：五种触发类型、参数类型、属性及默认值依据。
+- [Loon Script API](https://nsloon.app/docs/Script/script_api/)：远程脚本运行时能力的复核依据。
 - [QingRex/LoonKissSurge](https://github.com/QingRex/LoonKissSurge)：参考 Kelee 成品模块的 Surge 输出形态，包括 section 组织、`Map Local`、`http-response-jq`、`extended-matching`、`pre-matching` 等。
 - [Script-Hub-Org/Script-Hub](https://github.com/Script-Hub-Org/Script-Hub)：参考 `enable={...}` 转 Surge 行前缀开关，以及规则标记处理边界。
 - [Surge Manual](https://manual.nssurge.com/)：作为 Surge 模块、配置语法和规则参数的最终依据。

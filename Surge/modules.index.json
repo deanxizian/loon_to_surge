@@ -272,6 +272,17 @@
         ]
     },
     {
+        "source": "Bixin_remove_ads.lpx",
+        "output": "比心去广告.sgmodule",
+        "name": "比心去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
         "source": "BlockAdvertisers.lpx",
         "output": "广告平台拦截器.sgmodule",
         "name": "广告平台拦截器",
@@ -1384,6 +1395,15 @@
         ]
     },
     {
+        "source": "PICOOC_remove_ads.lpx",
+        "output": "PICOOC去广告.sgmodule",
+        "name": "PICOOC去广告",
+        "sections": [
+            "Map Local",
+            "MITM"
+        ]
+    },
+    {
         "source": "PangguaiLife_remove_ads.lpx",
         "output": "胖乖生活去广告.sgmodule",
         "name": "胖乖生活去广告",
@@ -1469,6 +1489,17 @@
         "name": "QQ链接解锁",
         "sections": [
             "URL Rewrite",
+            "MITM"
+        ]
+    },
+    {
+        "source": "Qbb_remove_ads.lpx",
+        "output": "亲宝宝去广告.sgmodule",
+        "name": "亲宝宝去广告",
+        "sections": [
+            "Rule",
+            "Map Local",
+            "Script",
             "MITM"
         ]
     },
@@ -1686,6 +1717,16 @@
         ]
     },
     {
+        "source": "ShoujiDesk_remove_ads.lpx",
+        "output": "口袋壁纸去广告.sgmodule",
+        "name": "口袋壁纸去广告",
+        "sections": [
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
         "source": "ShuQiCenterReader_remove_ads.lpx",
         "output": "书旗小说去广告.sgmodule",
         "name": "书旗小说去广告",
@@ -1694,6 +1735,16 @@
             "URL Rewrite",
             "Map Local",
             "Script",
+            "MITM"
+        ]
+    },
+    {
+        "source": "SinaStock_remove_ads.lpx",
+        "output": "新浪财经去广告.sgmodule",
+        "name": "新浪财经去广告",
+        "sections": [
+            "Body Rewrite",
+            "Map Local",
             "MITM"
         ]
     },
@@ -2118,6 +2169,16 @@
         ]
     },
     {
+        "source": "Weidian_remove_ads.lpx",
+        "output": "微店去广告.sgmodule",
+        "name": "微店去广告",
+        "sections": [
+            "Map Local",
+            "Script",
+            "MITM"
+        ]
+    },
+    {
         "source": "Weimai_remove_ads.lpx",
         "output": "微脉圈去广告.sgmodule",
         "name": "微脉圈去广告",
@@ -2505,6 +2566,16 @@
             "Rule",
             "Body Rewrite",
             "Map Local",
+            "MITM"
+        ]
+    },
+    {
+        "source": "iWallBiZhi_remove_ads.lpx",
+        "output": "最美壁纸去广告.sgmodule",
+        "name": "最美壁纸去广告",
+        "sections": [
+            "Map Local",
+            "Script",
             "MITM"
         ]
     },

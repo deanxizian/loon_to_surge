@@ -11,6 +11,7 @@ from collections import OrderedDict
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
 try:
     from stable_output import file_contents_match, json_payload_matches, previous_timestamp, tree_contents_match
@@ -18,8 +19,14 @@ except ModuleNotFoundError:
     from scripts.stable_output import file_contents_match, json_payload_matches, previous_timestamp, tree_contents_match
 
 try:
+    from loon_script_v2 import V2ArgumentObject, V2Script, is_script_v2_line, parse_script_v2_line
+except ModuleNotFoundError:
+    from scripts.loon_script_v2 import V2ArgumentObject, V2Script, is_script_v2_line, parse_script_v2_line
+
+try:
     from loon_rewrite_v2 import (
         RewriteV2Error,
+        UnsupportedV2Condition,
         V2Action,
         V2Array,
         V2Number,
@@ -35,6 +42,7 @@ try:
 except ModuleNotFoundError:
     from scripts.loon_rewrite_v2 import (
         RewriteV2Error,
+        UnsupportedV2Condition,
         V2Action,
         V2Array,
         V2Number,
@@ -51,6 +59,10 @@ except ModuleNotFoundError:
 
 class UnverifiedRewriteV2RegexFlags(RewriteV2Error):
     """Raised when Loon regex flags have no verified Surge equivalent."""
+
+
+class UnverifiedScriptV2(ValueError):
+    """Valid Script V2 functionality that cannot yet be preserved in Surge."""
 
 
 WINDOWS_INVALID_FILENAME_CHARS = set('<>:"/\\|?*')
@@ -1074,16 +1086,19 @@ def v2_render_template(
     return "".join(rendered)
 
 
-def v2_regex_pattern(value: V2Value, description: str) -> str:
+def v2_regex_pattern(value: V2Value, description: str, *, allow_ignore_case: bool = False) -> str:
     if not isinstance(value, V2Regex):
         raise RewriteV2Error(f"{description} must be a regular expression")
+    if value.flags == "i" and allow_ignore_case:
+        # Scoped ICU flags preserve capture numbering and the original pattern's anchors.
+        return f"(?i:{value.pattern})"
     if value.flags:
         raise UnverifiedRewriteV2RegexFlags(f"{description} uses Loon regex flags /{value.flags}")
     return value.pattern
 
 
 def v2_url_pattern(condition: V2UrlCondition) -> str:
-    pattern = v2_regex_pattern(condition.regex, "URL condition")
+    pattern = v2_regex_pattern(condition.regex, "URL condition", allow_ignore_case=True)
     if re.search(r"\s", pattern):
         raise RewriteV2Error("URL condition contains literal whitespace that cannot be emitted as a Surge pattern token")
     return pattern
@@ -1613,8 +1628,85 @@ def script_enable_prefix(
     return ""
 
 
-def is_script_v2_line(line: str) -> bool:
-    return re.match(r"^(?:request|response)\s+if\b", line, flags=re.IGNORECASE) is not None
+def script_v2_constant(value: V2Value, description: str) -> str:
+    if not isinstance(value, V2String) or any(isinstance(part, V2Variable) for part in value.parts):
+        raise UnverifiedScriptV2(f"{description} requires a static String; dynamic plugin values are not mapped")
+    text = v2_constant_string(value, description)
+    if re.search(r"[\x00-\x1f\x7f]", text):
+        raise UnverifiedScriptV2(f"{description} contains control characters")
+    if re.search(r"\{[A-Za-z_][A-Za-z0-9_.-]*\}|%[A-Za-z_][A-Za-z0-9_]*%", text):
+        raise UnverifiedScriptV2(f"{description} contains literal placeholder-like text")
+    return text
+
+
+def validate_static_cron(cron: str) -> None:
+    fields = cron.split()
+    if len(fields) not in {5, 6}:
+        raise RewriteV2Error("Cron requires five or six fields")
+    if any(not re.fullmatch(r"[0-9*,/\-]+", field) for field in fields):
+        raise UnverifiedScriptV2("Only static numeric Cron expressions are supported")
+    bounds = [(0, 59), (0, 23), (1, 31), (1, 12), (0, 7)]
+    if len(fields) == 6:
+        bounds.insert(0, (0, 59))
+    for field, (minimum, maximum) in zip(fields, bounds):
+        for item in field.split(","):
+            match = re.fullmatch(r"(\*|\d+(?:-\d+)?)(?:/(\d+))?", item)
+            if not match or match.group(2) is not None and int(match.group(2)) == 0:
+                raise RewriteV2Error(f"Invalid Cron field: {field}")
+            if match.group(1) != "*":
+                values = [int(value) for value in match.group(1).split("-")]
+                if any(not minimum <= value <= maximum for value in values) or values[0] > values[-1]:
+                    raise RewriteV2Error(f"Cron field outside {minimum}..{maximum}: {field}")
+
+
+def prepare_script_v2(script: V2Script) -> tuple[str | None, list[str]]:
+    if script.trigger in {"generic", "network-changed"}:
+        raise UnverifiedScriptV2(f"{script.trigger} runtime context and triggers are not verified")
+    path = script_v2_constant(script.path, "Script path")
+    if urlsplit(path).scheme not in {"http", "https"} or not urlsplit(path).netloc:
+        raise UnverifiedScriptV2("Only fixed HTTP(S) script paths can be published as standalone modules")
+    if any(char.isspace() or char in '\\"\'' for char in path):
+        raise UnverifiedScriptV2("Script path contains unsupported whitespace or quotes")
+    if isinstance(script.argument, V2ArgumentObject):
+        raise UnverifiedScriptV2("Loon Object $argument cannot be passed as a Surge String argument")
+    for name, value in script.properties.items():
+        if isinstance(value, V2Variable):
+            raise UnverifiedScriptV2(f"Dynamic {name} needs typed plugin argument handling")
+
+    if script.trigger in {"request", "response"}:
+        try:
+            condition = parse_url_only_condition(script.condition or "")
+        except UnsupportedV2Condition as exc:
+            raise UnverifiedScriptV2(str(exc)) from exc
+        if condition.capture_name:
+            raise RewriteV2Error("Script V2 does not allow URL capture bindings")
+        try:
+            pattern = v2_url_pattern(condition)
+        except UnverifiedRewriteV2RegexFlags as exc:
+            raise UnverifiedScriptV2(str(exc)) from exc
+        parts = [f"type=http-{script.trigger}", f"pattern={format_script_pattern(pattern)}"]
+        default_timeout = "20"
+    else:
+        cron = script_v2_constant(script.schedule, "Cron schedule")
+        validate_static_cron(cron)
+        parts = ["type=cron", f'cronexp="{cron}"']
+        default_timeout = "300"
+    parts.append(f"script-path={format_script_pattern(path)}")
+    # Loon V2 defaults differ from Surge's five-second timeout.
+    timeout = script.properties.get("timeout")
+    parts.append(f"timeout={timeout.text if isinstance(timeout, V2Number) else default_timeout}")
+    for name in ("requires_body", "binary_body_mode", "debug"):
+        if name in script.properties:
+            parts.append(f"{name.replace('_', '-')}={str(script.properties[name]).lower()}")
+    if script.argument is not None:
+        argument = script_v2_constant(script.argument, "Script argument")
+        # Keep literal braces intact; legacy convert_argument_value treats them as variables.
+        parts.append("argument=" + json.dumps(argument, ensure_ascii=False))
+    tag = script.properties.get("tag")
+    name = script_v2_constant(tag, "Script tag") if tag is not None else None
+    if name is not None and (not name.strip() or name != name.strip() or "=" in name or name.startswith(("#", ";", "//", "["))):
+        raise UnverifiedScriptV2("Script tag cannot be represented safely as a Surge script name")
+    return name, parts
 
 
 def convert_script_line(
@@ -1993,13 +2085,35 @@ def convert_file(
     argument_lines = section_lines(source_sections, "Argument")
     argument_defaults = collect_argument_defaults(argument_lines)
     script_lines = section_lines(source_sections, "Script")
-    generic_scripts = generic_script_properties(script_lines)
+    prepared_scripts: dict[str, tuple[V2Script, str | None, list[str]]] = {}
+    unverified_scripts: list[tuple[str, str]] = []
+    invalid_scripts = False
+    for line in script_lines:
+        if not is_script_v2_line(line):
+            continue
+        try:
+            script = parse_script_v2_line(line)
+            name, parts = prepare_script_v2(script)
+            prepared_scripts[line] = (script, name, parts)
+        except UnverifiedScriptV2 as exc:
+            unverified_scripts.append((line, str(exc)))
+        except RewriteV2Error as exc:
+            add_report(report, path.name, "unsupported-script", f"Invalid Script V2: {exc}", line)
+            invalid_scripts = True
+    if invalid_scripts:
+        return None
+    if unverified_scripts:
+        line, reason = unverified_scripts[0]
+        add_report(report, path.name, "module-excluded", f"Module was excluded from Surge output: Script V2 {reason}.", line)
+        return None
+    legacy_script_lines = [line for line in script_lines if not is_script_v2_line(line)]
+    generic_scripts = generic_script_properties(legacy_script_lines)
     generic_paths = {
         unquote_property_value(props.get("script-path", ""))
         for _, props in generic_scripts
         if props.get("script-path")
     }
-    unverified_generic = unverified_generic_scripts(script_lines)
+    unverified_generic = unverified_generic_scripts(legacy_script_lines)
     if unverified_generic:
         paths = ", ".join(dict.fromkeys(item[1] for item in unverified_generic))
         add_report(
@@ -2112,20 +2226,16 @@ def convert_file(
             )
             return None
 
-    script_v2_line = next((line for line in script_lines if is_script_v2_line(line)), None)
-    if script_v2_line:
-        add_report(
-            report,
-            path.name,
-            "module-excluded",
-            "Module was excluded from Surge output because Loon Script V2 compatibility is not verified; "
-            "conditional script execution and regex flags are not emitted without verified Surge semantics.",
-            script_v2_line,
-        )
-        return None
-
     for line in script_lines:
-        convert_script_line(line, sections["Script"], report, path.name, argument_defaults, shared_enable_argument_names)
+        if line in prepared_scripts:
+            script, name, parts = prepared_scripts[line]
+            prefix = "#" if script.properties.get("enable") is False else ""
+            name = name or f"{script.trigger} {len(sections['Script']) + 1}"
+            sections["Script"].append(f"{prefix}{name} = " + ", ".join(parts))
+            if "img_url" in script.properties:
+                add_report(report, path.name, "script-property-corrected", "Dropped Script V2 img_url display metadata.", line)
+        else:
+            convert_script_line(line, sections["Script"], report, path.name, argument_defaults, shared_enable_argument_names)
 
     for line in section_lines(source_sections, "MitM"):
         match = re.match(r"^hostname\s*=\s*(.+)$", line, flags=re.IGNORECASE)
