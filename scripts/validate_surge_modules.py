@@ -167,23 +167,6 @@ def effective_section_line(section: str, line: str) -> str | None:
     return line
 
 
-def script_line_without_argument_value(line: str) -> str:
-    name, separator, properties = line.partition(" = ")
-    if not separator:
-        return line
-    masked_properties: list[str] = []
-    for item in split_top_level(properties, ","):
-        key, equals, value = item.partition("=")
-        value = value.strip()
-        if equals and key.strip() == "argument" and value:
-            # Mask exactly one value, never a malformed suffix after its closing quote.
-            quoted = re.fullmatch(r"""(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')""", value)
-            if value[0] not in ("'", '"') or quoted:
-                item = key + '=""'
-        masked_properties.append(item)
-    return name + separator + ", ".join(masked_properties)
-
-
 def validate_nested_rule_matcher(prefix: str, matcher: str, errors: list[str]) -> None:
     text = strip_wrapping_parentheses(matcher)
     parts = split_top_level(text, ",")
@@ -385,6 +368,13 @@ def validate_section_line(file: str, number: int, section: str, line: str, error
                 continue
             if key in properties:
                 errors.append(f"{prefix}: duplicate Script property: {key}")
+            if value[0] in ("'", '"'):
+                if not re.fullmatch(r"""(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')""", value):
+                    errors.append(f"{prefix}: invalid quoted Script property: {item}")
+            elif key not in {"argument", "pattern"} and re.search(r"\s+[A-Za-z][A-Za-z0-9_?\-]*\s*=", value):
+                # Free-form argument/regex text may contain option-like strings. In
+                # scalar fields, a separate key=value token indicates a missing comma.
+                errors.append(f"{prefix}: possible missing comma before Script option: {item}")
             properties[key] = value
 
         script_type = properties.get("type")
@@ -613,12 +603,11 @@ def validate_surge_modules(
         script_line_numbers = {number for number, _ in sections.get("Script", [])}
         for label, pattern in forbidden.items():
             for number, line in enumerate(text.splitlines(), 1):
-                candidate = line
-                # Only argument values are arbitrary String content. Other properties
-                # still need this scan, including residual options after a missing comma.
+                # Script keys and malformed property suffixes are checked structurally
+                # above; URL query parameters and regex/argument text are literal values.
                 if number in script_line_numbers and label in {"Loon enable", "Loon enabled?", "Loon mock option"}:
-                    candidate = script_line_without_argument_value(line)
-                if re.search(pattern, candidate):
+                    continue
+                if re.search(pattern, line):
                     errors.append(f"{path.name}:{number}: residual {label}: {line}")
 
         declared = module_arguments(text, path.name, errors)
