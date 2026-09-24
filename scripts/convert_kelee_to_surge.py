@@ -1663,7 +1663,11 @@ def prepare_script_v2(script: V2Script) -> tuple[str | None, list[str]]:
     if script.trigger in {"generic", "network-changed"}:
         raise UnverifiedScriptV2(f"{script.trigger} runtime context and triggers are not verified")
     path = script_v2_constant(script.path, "Script path")
-    if urlsplit(path).scheme not in {"http", "https"} or not urlsplit(path).netloc:
+    try:
+        parsed_path = urlsplit(path)
+    except ValueError as exc:
+        raise RewriteV2Error(f"Invalid script URL {path!r}: {exc}") from exc
+    if parsed_path.scheme not in {"http", "https"} or not parsed_path.netloc:
         raise UnverifiedScriptV2("Only fixed HTTP(S) script paths can be published as standalone modules")
     if any(char.isspace() or char in '\\"\'' for char in path):
         raise UnverifiedScriptV2("Script path contains unsupported whitespace or quotes")

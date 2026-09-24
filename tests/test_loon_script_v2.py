@@ -171,6 +171,32 @@ cron "0 8 * * *" then script("https://example.com/b.js") with timeout=-1
                               'Test = type=cron, cronexp="0 8 * * *", script-path=https://example.com/a.js, enable=true', errors)
         self.assertTrue(any('enable' in error for error in errors))
 
+    def test_malformed_script_url_is_reported_as_a_fatal_module_error(self) -> None:
+        for url in ('http://[x/a.js', 'https://[not-an-ip]/a.js', 'https://exam／ple.com/a.js'):
+            with self.subTest(url=url):
+                source = f'cron "0 8 * * *" then script("{url}")'
+                output, report = self.convert('[Script]\n' + source)
+                self.assertIsNone(output)
+                self.assertEqual([item['kind'] for item in report], ['unsupported-script'])
+                self.assertIn('Invalid script URL', report[0]['message'])
+                self.assertEqual(report[0]['file'], 'Sample.lpx')
+                self.assertEqual(report[0]['line'], source)
+
+    def test_malformed_script_url_preserves_previous_output(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp, contextlib.redirect_stdout(io.StringIO()):
+            root = Path(tmp)
+            (root / 'Loon').mkdir()
+            (root / 'Surge').mkdir()
+            sentinel = root / 'Surge' / 'previous.sgmodule'
+            sentinel.write_text('previous', encoding='utf-8')
+            (root / 'Loon' / 'InvalidURL.lpx').write_text('''#!name=Invalid
+[Script]
+cron "0 8 * * *" then script("http://[x/a.js")
+''', encoding='utf-8')
+            with working_directory(root), self.assertRaisesRegex(RuntimeError, 'InvalidURL.lpx.*Invalid script URL'):
+                convert_kelee_to_surge('Loon', 'Surge', 'Surge/convert-report.json')
+            self.assertEqual(sentinel.read_text(encoding='utf-8'), 'previous')
+
 
 class URLIgnoreCaseTest(unittest.TestCase):
     def test_scoped_flag_keeps_matches_and_capture_numbers(self) -> None:

@@ -167,6 +167,23 @@ def effective_section_line(section: str, line: str) -> str | None:
     return line
 
 
+def script_line_without_argument_value(line: str) -> str:
+    name, separator, properties = line.partition(" = ")
+    if not separator:
+        return line
+    masked_properties: list[str] = []
+    for item in split_top_level(properties, ","):
+        key, equals, value = item.partition("=")
+        value = value.strip()
+        if equals and key.strip() == "argument" and value:
+            # Mask exactly one value, never a malformed suffix after its closing quote.
+            quoted = re.fullmatch(r"""(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')""", value)
+            if value[0] not in ("'", '"') or quoted:
+                item = key + '=""'
+        masked_properties.append(item)
+    return name + separator + ", ".join(masked_properties)
+
+
 def validate_nested_rule_matcher(prefix: str, matcher: str, errors: list[str]) -> None:
     text = strip_wrapping_parentheses(matcher)
     parts = split_top_level(text, ",")
@@ -596,11 +613,12 @@ def validate_surge_modules(
         script_line_numbers = {number for number, _ in sections.get("Script", [])}
         for label, pattern in forbidden.items():
             for number, line in enumerate(text.splitlines(), 1):
-                # Script option keys are already checked structurally above. An argument
-                # such as "enable=true" or "data-path=x" is arbitrary String content.
+                candidate = line
+                # Only argument values are arbitrary String content. Other properties
+                # still need this scan, including residual options after a missing comma.
                 if number in script_line_numbers and label in {"Loon enable", "Loon enabled?", "Loon mock option"}:
-                    continue
-                if re.search(pattern, line):
+                    candidate = script_line_without_argument_value(line)
+                if re.search(pattern, candidate):
                     errors.append(f"{path.name}:{number}: residual {label}: {line}")
 
         declared = module_arguments(text, path.name, errors)
