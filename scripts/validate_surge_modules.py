@@ -368,6 +368,13 @@ def validate_section_line(file: str, number: int, section: str, line: str, error
                 continue
             if key in properties:
                 errors.append(f"{prefix}: duplicate Script property: {key}")
+            if value[0] in ("'", '"'):
+                if not re.fullmatch(r"""(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')""", value):
+                    errors.append(f"{prefix}: invalid quoted Script property: {item}")
+            elif key not in {"argument", "pattern"} and re.search(r"\s+[A-Za-z][A-Za-z0-9_?\-]*\s*=", value):
+                # Free-form argument/regex text may contain option-like strings. In
+                # scalar fields, a separate key=value token indicates a missing comma.
+                errors.append(f"{prefix}: possible missing comma before Script option: {item}")
             properties[key] = value
 
         script_type = properties.get("type")
@@ -596,8 +603,8 @@ def validate_surge_modules(
         script_line_numbers = {number for number, _ in sections.get("Script", [])}
         for label, pattern in forbidden.items():
             for number, line in enumerate(text.splitlines(), 1):
-                # Script option keys are already checked structurally above. An argument
-                # such as "enable=true" or "data-path=x" is arbitrary String content.
+                # Script keys and malformed property suffixes are checked structurally
+                # above; URL query parameters and regex/argument text are literal values.
                 if number in script_line_numbers and label in {"Loon enable", "Loon enabled?", "Loon mock option"}:
                     continue
                 if re.search(pattern, line):
