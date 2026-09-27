@@ -14,6 +14,13 @@ from typing import Any
 from urllib.parse import urlsplit
 
 try:
+    from regex_overlap import patterns_may_overlap
+    from surge_syntax import tokenize_surge_line
+except ModuleNotFoundError:
+    from scripts.regex_overlap import patterns_may_overlap
+    from scripts.surge_syntax import tokenize_surge_line
+
+try:
     from stable_output import file_contents_match, json_payload_matches, previous_timestamp, tree_contents_match
 except ModuleNotFoundError:
     from scripts.stable_output import file_contents_match, json_payload_matches, previous_timestamp, tree_contents_match
@@ -85,6 +92,8 @@ JSON_PATH_PATTERN = re.compile(
     rf"(?:\.{JSON_PATH_KEY_PATTERN}|{JSON_PATH_BRACKET_PATTERN})*"
 )
 LOON_USER_AGENT = "Loon/860 CFNetwork/3826.500.111.2.2 Darwin/24.4.0"
+LEGACY_HTTP_SCRIPT_TIMEOUT = "10"
+FRAMING_HEADERS = frozenset({"content-length", "transfer-encoding"})
 BASE_MODULE_FEATURE_REQUIREMENT = "CORE_VERSION>=20"
 SURGE_5_14_FEATURE_REQUIREMENT = "CORE_VERSION>=6008000"
 SUPPORTED_LOON_SECTIONS = frozenset({"argument", "general", "rule", "rewrite", "script", "mitm"})
@@ -1104,6 +1113,18 @@ def v2_url_pattern(condition: V2UrlCondition) -> str:
     return pattern
 
 
+def v2_body_regex_pattern(value: V2Value, description: str) -> str:
+    if not isinstance(value, V2Regex):
+        raise RewriteV2Error(f"{description} must be a regular expression")
+    enabled = "".join(flag for flag in "ims" if flag in value.flags)
+    disabled = "".join(flag for flag in "ims" if flag not in value.flags)
+    # Surge enables multiline anchors for Body Rewrite. Set every flag
+    # explicitly to match Loon V2, including the unflagged case. A leading
+    # modifier also preserves captures and trailing extended-mode comments.
+    modifier = enabled + ("-" + disabled if disabled else "")
+    return f"(?{modifier}){value.pattern}"
+
+
 def v2_integer(value: V2Value, description: str, minimum: int | None = None, maximum: int | None = None) -> int:
     if not isinstance(value, V2Number) or not re.fullmatch(r"-?\d+", value.text):
         raise RewriteV2Error(f"{description} must be an integer")
@@ -1313,7 +1334,7 @@ def convert_v2_body_action(
 
     converted: list[tuple[str, str]] = []
     for arguments in expand_v2_arguments(action, 2):
-        body_regex = v2_regex_pattern(arguments[0], f"{action.name} regular expression")
+        body_regex = v2_body_regex_pattern(arguments[0], f"{action.name} regular expression")
         replacement = v2_render_template(arguments[1], condition, argument_names, f"{action.name} replacement")
         converted.append(
             (
@@ -1732,6 +1753,7 @@ def convert_script_line(
         prefix = script_enable_prefix(props, argument_defaults, shared_argument_names, report, file, line)
         name = props.get("tag") or f"{script_type} {len(output) + 1}"
         parts = [f"type={script_type}", f"pattern={format_script_pattern(pattern)}"]
+        props.setdefault("timeout", LEGACY_HTTP_SCRIPT_TIMEOUT)
 
         for key in (
             "script-path",
@@ -2064,6 +2086,69 @@ def convert_system_metadata(
     return next(iter(targets))
 
 
+def module_semantics_problem(sections: dict[str, list[str]]) -> tuple[str, str] | None:
+    """Reject combinations whose runtime behavior cannot be preserved natively.
+
+    This checks one generated module, before parameter substitution. It does
+    not make claims about other modules or the user's main profile.
+    """
+    def parsed_lines(section: str) -> list[tuple[str, list[str]]]:
+        parsed = []
+        for line in sections.get(section, []):
+            try:
+                parsed.append((line, tokenize_surge_line(line)))
+            except ValueError as exc:
+                raise ValueError(f"[{section}] {line}: {exc}") from exc
+        return parsed
+
+    headers = parsed_lines("Header Rewrite")
+    bodies = parsed_lines("Body Rewrite")
+    urls = parsed_lines("URL Rewrite")
+    for line, tokens in headers:
+        if len(tokens) >= 4 and (tokens[3].lower() in FRAMING_HEADERS or "{{{" in tokens[3]):
+            return (
+                "Header Rewrite must not change Content-Length or Transfer-Encoding; "
+                "dynamic header names cannot be verified either.", line,
+            )
+
+    url_changes = [(line, tokens) for line, tokens in urls if tokens and tokens[-1] == "header"]
+    if len(url_changes) > 1:
+        return (
+            "Multiple URL header rewrites may chain in Loon, but Surge applies only the first match.",
+            url_changes[1][0],
+        )
+    if url_changes:
+        for line, tokens in headers + bodies:
+            if tokens and tokens[0] in {"http-request", "http-request-jq"}:
+                return (
+                    "URL changes combined with request Header/Body Rewrite cannot preserve "
+                    "arbitrary cross-line ordering in Surge.", line,
+                )
+
+    for script_line in sections.get("Script", []):
+        if script_line.startswith("#"):
+            continue
+        props = parse_properties(script_line.partition("=")[2])
+        kind = props.get("type")
+        pattern_value = props.get("pattern", "")
+        pattern = unquote_property_value(pattern_value)
+        # Escaped quotes/backslashes in quoted profile values depend on the
+        # profile parser version. Do not use an ambiguous spelling as proof.
+        ambiguous_quoted_pattern = pattern_value.startswith(('"', "'")) and (
+            '\\"' in pattern or "\\\\" in pattern or "\\'" in pattern
+        )
+        for body_line, tokens in bodies:
+            if len(tokens) < 2 or tokens[0].removesuffix("-jq") != kind:
+                continue
+            if ambiguous_quoted_pattern or patterns_may_overlap(tokens[1], pattern):
+                return (
+                    "Body Rewrite and an HTTP script may match the same URL in the same phase. "
+                    "Loon suppresses the script; Surge runs it on the rewritten body. "
+                    f"URL disjointness could not be proven for Script: {script_line}", body_line,
+                )
+    return None
+
+
 def convert_file(
     path: Path,
     output_root: Path,
@@ -2240,6 +2325,19 @@ def convert_file(
                 add_report(report, path.name, "script-property-corrected", "Dropped Script V2 img_url display metadata.", line)
         else:
             convert_script_line(line, sections["Script"], report, path.name, argument_defaults, shared_enable_argument_names)
+
+    try:
+        problem = module_semantics_problem(sections)
+    except ValueError as exc:
+        add_report(report, path.name, "unsupported-rewrite", "Cannot check generated rewrite syntax", str(exc))
+        return None
+    if problem:
+        message, converted_line = problem
+        add_report(
+            report, path.name, "module-excluded",
+            "Module was excluded from Surge output: " + message, converted_line,
+        )
+        return None
 
     for line in section_lines(source_sections, "MitM"):
         match = re.match(r"^hostname\s*=\s*(.+)$", line, flags=re.IGNORECASE)

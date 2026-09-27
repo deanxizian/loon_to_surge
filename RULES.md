@@ -192,7 +192,7 @@ response if ${url} ~= /^https:\/\/example\.com/ then response.json.delete("data.
 - 单个 `${url} ~= /regex/`，可使用 `as name` 捕获并在 URL 替换或重定向中引用 `${name.n}`。
 - 单个 `${url} == "constant"`，转换为完整 URL 正则。
 - URL 正则的 `i` 转为作用域内联修饰符 `(?i:regex)`，保持忽略大小写和原捕获组编号。基础匹配、否定样例、锚点、嵌套 flags、Unicode 与捕获范围通过 Foundation/ICU 对照测试。
-- URL 的 `m/s` 以及 Header/Body 正则的所有 flags 暂不接受；包含这类 Rewrite V2 正则的模块会整项排除并记录 `module-excluded`，不会生成删掉相关行的残缺模块。
+- URL 的 `m/s` 以及 Header 正则的所有 flags 暂不接受；包含这类 Rewrite V2 正则的模块会整项排除并记录 `module-excluded`，不会生成删掉相关行的残缺模块。
 
 当前可安全转换的 Action：
 
@@ -200,7 +200,7 @@ response if ${url} ~= /^https:\/\/example\.com/ then response.json.delete("data.
 - `reject`、`reject_img`、`reject_dict`、`reject_array` 转为 `[Map Local]`，保留状态码、Body 和 Content-Type；`reject_video` 暂不转换。
 - Loon V2 的 `reject*` 状态码范围是 `100–599`，Surge Map Local 是 `200–999`，因此只有两端交集 `200–599` 能转换；Loon 合法但 Surge 不接受的 `100–199` 会终止发布。
 - `request.header.*`、`response.header.*` 的 `add`、`set`、`del`、`replace` 转为 `[Header Rewrite]`。`set` 使用 `header-del` 后接 `header-add`，避免重复 Header。
-- `request.body.replace`、`response.body.replace` 转为 `[Body Rewrite]` 正则替换。
+- `request.body.replace`、`response.body.replace` 转为 `[Body Rewrite]` 正则替换，保留 `i/m/s` 的全部组合。Surge Body Rewrite 默认按行处理 `^/$`，因此显式输出模式：无 flags 使用 `(?-ims)`，仅 `/m` 使用 `(?m-is)`，依此类推。捕获编号、替换引用及原有内联模式保持不变；旧版 Body 正则语法不套用 V2 默认值。
 - `request.json.*`、`response.json.*` 的 `add`、`delete`、`replace`、`jq` 转为 Surge JQ Body Rewrite。
 - HTTP(S) `json.jq_file` 会抓取并内联；相对资源文件因不包含在独立 `.lpx` 下载结果中而拒绝转换。
 - `response.body.mock` 转为 base64 `[Map Local]`；HTTP(S) `response.body.mock_file` 转为 `data-type=file`。
@@ -209,6 +209,17 @@ response if ${url} ~= /^https:\/\/example\.com/ then response.json.delete("data.
 多个 Action 只有在都能落入同一个 Surge section、且仍能保持从左到右执行语义时才会展开。方法、请求或响应 Header、响应状态码、逻辑组合条件，以及请求 Body Mock、响应 Mock 与 Header 的混合 Action 等，当前都不会被弱化为仅 URL 匹配。
 
 带尚未支持的正则 flags 的 V2 模块会按上述规则整项排除，因此不会阻塞其他模块更新。其他无法安全转换的 V2 行仍会产生 `unsupported-rewrite`；该类型属于致命转换错误，全量任务会在替换 `Surge/` 前失败，上一版已验证产物保持不变。
+
+### 模块执行语义检查
+
+写入模块前会检查整个模块的组合行为，而不仅是同一条 Rewrite 中的 Action。以下情况整模块排除，记录 `module-excluded` 和触发检查的转换行：
+
+- 同一阶段的 Body Rewrite 与 HTTP Script 可能命中同一 URL。[Loon](https://nsloon.app/docs/Script/script_v2/) 会跳过对应脚本，而 [Surge](https://manual.nssurge.com/http/body-rewrite.html) 会将改写后的 Body 交给脚本。只有可以证明 URL 匹配范围互斥时才放行；不以有限 URL 抽样作为安全依据。无法分析的 ICU 语法、动态参数及分析资源上限均按无法证明互斥处理。固定注释掉的脚本不参与检查，模块参数控制的可启用脚本会参与。
+- 多条 URL `header` 改写。[Surge](https://manual.nssurge.com/http/url-rewrite.html) 只应用第一条匹配的透明 URL 改写，不能保证 Loon 的连续修改语义。
+- URL `header` 改写与 Request Header/Body Rewrite 混用。[Surge 的处理顺序](https://manual.nssurge.com/http/overview.html) 固定为 Header、URL、Body、Script，当前对可能依赖跨行顺序的组合保守排除。
+- Header Rewrite 修改 `Content-Length` 或 `Transfer-Encoding`，或字段名来自可变模块参数。[Surge 文档](https://manual.nssurge.com/http/header-rewrite.html) 明确这种消息边界修改会使请求失败。检查字段名，不扫描 Header 值中的普通文本。
+
+输出校验也执行同样的语义检查。检查范围是单个模块；用户主配置及其他同时启用的模块仍可能产生交互，需要实际流量验证。
 
 ### URL Rewrite
 
@@ -364,6 +375,8 @@ Name = type=http-request, pattern=pattern, script-path=https://example.com/a.js
 - `argument`
 
 其中 `requires-body=false` 和 `binary-body-mode=false` 会省略。
+
+旧版 `http-request/http-response` 未指定 `timeout` 时，按 [Loon 旧版文档](https://nsloon.app/docs/Script/) 显式补 `timeout=10`，避免退回 Surge 的 5 秒默认值。用户明确设置的超时原样保留。这里按输入语法区分默认值；`#!loon_version` 是插件最低版本元数据，不用于猜测用户运行版本。新版 Script V2 仍使用 HTTP 20 秒、Cron 300 秒。
 
 `argument` 会统一加双引号，内部 `{Name}` 会转换为 `{{{Name}}}`。
 
@@ -569,7 +582,7 @@ python scripts\check_remote_scripts.py
 git diff --check
 ```
 
-macOS 上额外运行 `swift tests/verify_url_ignore_case.swift`，检查原始忽略大小写选项与输出 `(?i:...)` 的匹配及捕获范围。可使用 Surge CLI 的 `--check` 检查临时完整配置（展开模块参数、去掉模块追加标记，并补齐 `FINAL,DIRECT`）；这不等同于真实流量验证。
+macOS 上额外运行 `swift tests/verify_url_ignore_case.swift` 和 `swift tests/verify_body_regex_flags.swift`，检查 URL 忽略大小写及 Body 全部 `i/m/s` 组合的匹配、捕获范围和替换结果。可使用 Surge CLI 的 `--check` 检查临时完整配置（展开模块参数、去掉模块追加标记，并补齐 `FINAL,DIRECT`）；这不等同于真实流量验证。
 
 远程脚本报告独立写入 `.tmp/remote-script-audit.json`，CI 则保存为 Actions 附件。报告按 URL 去重，包含禁用脚本的引用，记录 SHA-256、最终下载地址、引用模块与行号，并扫描新 API 的点号/方括号写法。API 命中与 `$loon` / Surge 环境标记只提供人工复核线索，可能命中注释或字符串，也不能追踪别名、动态属性或外部加载代码。普通网络错误形成报告项；程序异常仍使检查失败。默认不因单个远程脚本问题阻断转换，可用 `--strict` 收紧。
 

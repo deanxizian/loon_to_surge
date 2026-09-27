@@ -25,7 +25,9 @@ Surge/*.sgmodule
 Surge/convert-report.json
 ```
 
-成功生成后的 warning 是需要知情的转换事项。Surge 官方规定模块规则只能使用 `DIRECT`、`REJECT`、`REJECT-TINYGIF`，因此含 `PROXY`、`REJECT-DROP` 等策略的模块会整项排除。当前支持 Rewrite V2 的 URL `/i`、仅 URL 条件的 HTTP Script V2 和静态 Cron；复杂脚本条件、对象参数、动态属性和新版 generic/network-changed 上下文仍会整模块排除，并记录 `module-excluded`。URL 的 `m/s` 以及 Header/Body 正则 flags 也暂不转换。已核实具有 Surge 分支的旧版 generic 脚本会使用原生参数或 Panel 配置并记录 `generic-script-adapted`。未知属性、无效语法等错误仍会使任务失败，并在覆盖前保留上一版 Surge 产物。
+成功生成后的 warning 是需要知情的转换事项。Surge 官方规定模块规则只能使用 `DIRECT`、`REJECT`、`REJECT-TINYGIF`，因此含 `PROXY`、`REJECT-DROP` 等策略的模块会整项排除。当前支持 Rewrite V2 的 URL `/i`、Body 正则 `i/m/s`、仅 URL 条件的 HTTP Script V2 和静态 Cron；复杂脚本条件、对象参数、动态属性和新版 generic/network-changed 上下文仍会整模块排除，并记录 `module-excluded`。URL 的 `m/s` 以及 Header 正则 flags 也暂不转换。已核实具有 Surge 分支的旧版 generic 脚本会使用原生参数或 Panel 配置并记录 `generic-script-adapted`。未知属性、无效语法等错误仍会使任务失败，并在覆盖前保留上一版 Surge 产物。
+
+旧版 HTTP Script 缺省超时显式输出为 10 秒，新版为 20 秒；源文件明确设置的超时保持不变。转换前还会检查 Body Rewrite／脚本匹配冲突、跨行 URL 改写顺序和禁止修改的 Header 字段；无法保证语义的组合整模块排除。现有模块和用户主配置之间的交互仍需实际流量验证。
 
 ## 自动更新
 

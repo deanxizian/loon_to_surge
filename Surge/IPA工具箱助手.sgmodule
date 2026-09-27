@@ -11,8 +11,8 @@
 #!date=2026-06-14 20:11:24
 
 [Script]
-App Store API = type=http-request, pattern=^https:\/\/apple-api\.com, script-path=https://kelee.one/Resource/JavaScript/IPATool/AppStoreAPI.js, requires-body=true
-安装器 = type=http-request, pattern=^https:\/\/xiaobai\.app, script-path=https://kelee.one/Resource/JavaScript/IPATool/Installer.js
+App Store API = type=http-request, pattern=^https:\/\/apple-api\.com, script-path=https://kelee.one/Resource/JavaScript/IPATool/AppStoreAPI.js, requires-body=true, timeout=10
+安装器 = type=http-request, pattern=^https:\/\/xiaobai\.app, script-path=https://kelee.one/Resource/JavaScript/IPATool/Installer.js, timeout=10
 
 [MITM]
 hostname = %APPEND% apple-api.com, xiaobai.app

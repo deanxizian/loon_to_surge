@@ -36,3 +36,5 @@ jobs:
       - uses: actions/checkout@v6
       - name: Verify URL ignore-case matching and captures
         run: swift tests/verify_url_ignore_case.swift
+      - name: Verify Body Rewrite flags and captures
+        run: swift tests/verify_body_regex_flags.swift
