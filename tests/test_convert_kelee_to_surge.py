@@ -697,7 +697,7 @@ response if ${url} ~= /^https:\/\/api\.example\.com/ then response.body.replace(
 '''
         )
         self.assertIn(
-            'http-response ^https:\\/\\/api\\.example\\.com \'"state":(false|0)\' \'"state":true\'',
+            'http-response ^https:\\/\\/api\\.example\\.com \'(?-ims)"state":(false|0)\' \'"state":true\'',
             body_output,
         )
         self.assertEqual(body_report, [])

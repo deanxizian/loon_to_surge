@@ -15,10 +15,13 @@ from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from surge_syntax import tokenize_surge_line  # noqa: E402
+
 from convert_kelee_to_surge import (  # noqa: E402
     BASE_MODULE_FEATURE_REQUIREMENT,
     DOMAIN_RULE_TYPES,
     FATAL_REPORT_KINDS,
+    FRAMING_HEADERS,
     IP_RULE_TYPES,
     LOGICAL_RULE_TYPES,
     MODULE_RULE_POLICIES,
@@ -28,6 +31,7 @@ from convert_kelee_to_surge import (  # noqa: E402
     SUPPORTED_RULE_TYPES,
     SURGE_5_14_FEATURE_REQUIREMENT,
     VERIFIED_SURGE_GENERIC_SCRIPT_PATHS,
+    module_semantics_problem,
     split_top_level,
     strip_wrapping_parentheses,
     unquote_property_value,
@@ -64,51 +68,6 @@ class SurgeValidationError(RuntimeError):
         self.errors = errors
         details = "\n".join(f"- {item}" for item in errors)
         super().__init__(f"Surge validation failed with {len(errors)} error(s):\n{details}")
-
-
-def tokenize_surge_line(line: str) -> list[str]:
-    tokens: list[str] = []
-    token: list[str] = []
-    quote = ""
-    escaped = False
-    token_started = False
-
-    for char in line:
-        if escaped:
-            token.append(char)
-            escaped = False
-            token_started = True
-            continue
-        if quote and char == "\\":
-            token.append(char)
-            escaped = True
-            token_started = True
-            continue
-        if char in ("'", '"'):
-            if quote == char:
-                quote = ""
-            elif not quote:
-                quote = char
-                token_started = True
-            else:
-                token.append(char)
-            continue
-        if char.isspace() and not quote:
-            if token_started:
-                tokens.append("".join(token))
-                token = []
-                token_started = False
-            continue
-        token.append(char)
-        token_started = True
-
-    if quote:
-        raise ValueError("unclosed quote")
-    if escaped:
-        raise ValueError("trailing escape")
-    if token_started:
-        tokens.append("".join(token))
-    return tokens
 
 
 def parse_sections(text: str, file: str, errors: list[str]) -> tuple[list[str], dict[str, list[tuple[int, str]]]]:
@@ -277,6 +236,8 @@ def validate_section_line(file: str, number: int, section: str, line: str, error
         }.get(tokens[2])
         if expected is None or len(tokens) != expected:
             errors.append(f"{prefix}: invalid Header Rewrite action or arity: {tokens}")
+        if tokens[3].lower() in FRAMING_HEADERS or "{{{" in tokens[3]:
+            errors.append(f"{prefix}: unsafe Header Rewrite framing field: {tokens[3]}")
         return
 
     if section == "Body Rewrite":
@@ -586,6 +547,16 @@ def validate_surge_modules(
         missing_panel_scripts = sorted(panel_script_names - script_names)
         if missing_panel_scripts:
             errors.append(f"{path.name}: Panel references missing Script names: {missing_panel_scripts}")
+
+        try:
+            problem = module_semantics_problem({
+                name: [line for _, line in lines if not line.startswith(("#", ";", "//"))]
+                for name, lines in sections.items()
+            })
+            if problem:
+                errors.append(f"{path.name}: unsafe conversion semantics: {problem[0]}")
+        except ValueError as exc:
+            errors.append(f"{path.name}: cannot check rewrite semantics: {exc}")
 
         manifest_item = manifest_by_output.get(path.name)
         if manifest_item and order != manifest_item.get("sections"):

@@ -26,7 +26,7 @@ DOMAIN,ad.chelaile.net.cn,REJECT,extended-matching,pre-matching
 ^https:\/\/api\.chelaile\.net\.cn\/encourage\/activity\/control\? data-type=text data="**YGKJ{}YGKJ##" status-code=200 header="Content-Type:application/json"
 
 [Script]
-清洗配置 = type=http-response, pattern=^https:\/\/api\.chelaile\.net\.cn\/bus-side\/appToggle\/getStatus\?, script-path=https://kelee.one/Resource/JavaScript/Chelaile/Chelaile_remove_ads.js, requires-body=true
+清洗配置 = type=http-response, pattern=^https:\/\/api\.chelaile\.net\.cn\/bus-side\/appToggle\/getStatus\?, script-path=https://kelee.one/Resource/JavaScript/Chelaile/Chelaile_remove_ads.js, requires-body=true, timeout=10
 
 [MITM]
 hostname = %APPEND% api.chelaile.net.cn, web.chelaile.net.cn, cdn.web.chelaile.net.cn, image3.chelaile.net.cn

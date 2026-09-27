@@ -10,7 +10,7 @@
 #!date=2026-08-22 12:51:37
 
 [Script]
-去广告 = type=http-response, pattern=^https:\/\/mobileconfig-gateway\.hellobike\.com\/api$, script-path=https://kelee.one/Resource/JavaScript/EasyBike/mobileconfig-gateway.js, requires-body=true
+去广告 = type=http-response, pattern=^https:\/\/mobileconfig-gateway\.hellobike\.com\/api$, script-path=https://kelee.one/Resource/JavaScript/EasyBike/mobileconfig-gateway.js, requires-body=true, timeout=10
 
 [MITM]
 hostname = %APPEND% mobileconfig-gateway.hellobike.com

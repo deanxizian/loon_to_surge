@@ -12,7 +12,7 @@
 #!arguments=CaptureCookie:#,AK,SK,MAX_RETRIES:5,CRONEXP:0 8 * * *
 
 [Script]
-{{{CaptureCookie}}}捕获Cookie = type=http-request, pattern=^https:\/\/moapi\.wps\.cn\/app\/ios\/v1\/app$, script-path=https://kelee.one/Resource/JavaScript/WPS/WPS_checkin.js, requires-body=true
+{{{CaptureCookie}}}捕获Cookie = type=http-request, pattern=^https:\/\/moapi\.wps\.cn\/app\/ios\/v1\/app$, script-path=https://kelee.one/Resource/JavaScript/WPS/WPS_checkin.js, requires-body=true, timeout=10
 WPS每日签到 = type=cron, cronexp="{{{CRONEXP}}}", script-path=https://kelee.one/Resource/JavaScript/WPS/WPS_checkin.js, timeout=120, argument="[{{{AK}}},{{{SK}}},{{{MAX_RETRIES}}}]"
 
 [MITM]
