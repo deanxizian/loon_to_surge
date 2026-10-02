@@ -33,9 +33,12 @@ from convert_kelee_to_surge import (  # noqa: E402
     SUPPORTED_RULE_TYPES,
     SURGE_5_14_FEATURE_REQUIREMENT,
     VERIFIED_SURGE_GENERIC_SCRIPT_PATHS,
+    WARP_PANEL_SCRIPT_PATH,
     module_semantics_problem,
     parse_lpx,
     parse_lpx_text,
+    script_name_has_inline_comment,
+    surge_script_reference_name,
     split_top_level,
     strip_wrapping_parentheses,
     unquote_property_value,
@@ -358,6 +361,8 @@ def validate_section_line(
         return
 
     if section == "Script":
+        if script_name_has_inline_comment(effective.partition(" = ")[0]):
+            errors.append(f"{prefix}: unsafe Script name contains an inline-comment delimiter")
         if " = type=" not in effective:
             errors.append(f"{prefix}: invalid Script line: {line}")
             return
@@ -587,6 +592,8 @@ def validate_surge_modules(
 
         panel_script_names: set[str] = set()
         script_names: set[str] = set()
+        script_name_counts: Counter[str] = Counter()
+        warp_script_names: set[str] = set()
         for name, lines in sections.items():
             if not lines:
                 errors.append(f"{path.name}: empty section [{name}]")
@@ -601,7 +608,13 @@ def validate_surge_modules(
                         if separator and key.strip() == "script-name":
                             panel_script_names.add(unquote_property_value(value))
                 if effective and name == "Script" and " = " in effective:
-                    script_names.add(effective.split(" = ", 1)[0].strip())
+                    identifier = surge_script_reference_name(effective)
+                    script_names.add(identifier)
+                    script_name_counts[identifier] += 1
+                    properties = dict((key.strip(), value.strip()) for part in split_top_level(effective.split(" = ", 1)[1], ",")
+                                      for key, separator, value in [part.partition("=")] if separator)
+                    if properties.get("type") == "generic" and unquote_property_value(properties.get("script-path", "")) == WARP_PANEL_SCRIPT_PATH:
+                        warp_script_names.add(identifier)
                 if name == "Body Rewrite":
                     try:
                         tokens = tokenize_surge_line(line)
@@ -610,6 +623,12 @@ def validate_surge_modules(
                     if tokens and tokens[0].endswith("-jq") and len(tokens) == 3 and tokens[2].strip():
                         jq_expressions.append((path.name, number, tokens[2]))
 
+        missing_warp_panels = sorted(warp_script_names - panel_script_names)
+        if missing_warp_panels:
+            errors.append(f"{path.name}: WARP Script has no linked Panel: {missing_warp_panels}")
+        ambiguous_panel_scripts = sorted(name for name in panel_script_names if script_name_counts[name] > 1)
+        if ambiguous_panel_scripts:
+            errors.append(f"{path.name}: Panel references ambiguous Script names: {ambiguous_panel_scripts}")
         missing_panel_scripts = sorted(panel_script_names - script_names)
         if missing_panel_scripts:
             errors.append(f"{path.name}: Panel references missing Script names: {missing_panel_scripts}")

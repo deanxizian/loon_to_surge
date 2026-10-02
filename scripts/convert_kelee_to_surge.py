@@ -1759,6 +1759,18 @@ def validate_static_cron(cron: str) -> None:
                     raise RewriteV2Error(f"Cron field outside {minimum}..{maximum}: {field}")
 
 
+def script_name_has_inline_comment(name: str) -> bool:
+    return re.search(r"\s(?:#|;|//)", name) is not None
+
+
+def surge_script_reference_name(line: str) -> str:
+    """Potential runtime identifier, including names behind enable prefixes."""
+    name = line.partition(" = ")[0].strip()
+    if name.startswith("#"):
+        name = name[1:].lstrip()
+    return re.sub(r"^(?:\{\{\{[A-Za-z_][A-Za-z0-9_]*\}\}\})+", "", name)
+
+
 def prepare_script_v2(script: V2Script) -> tuple[str | None, list[str]]:
     path = script_v2_constant(script.path, "Script path")
     if script.trigger == "network-changed" or (script.trigger == "generic" and path not in VERIFIED_SURGE_GENERIC_SCRIPT_PATHS):
@@ -1821,6 +1833,8 @@ def prepare_script_v2(script: V2Script) -> tuple[str | None, list[str]]:
     name = script_v2_constant(tag, "Script tag") if tag is not None else None
     if name is not None and (not name.strip() or name != name.strip() or "=" in name or name.startswith(("#", ";", "//", "["))):
         raise UnverifiedScriptV2("Script tag cannot be represented safely as a Surge script name")
+    if name is not None and script_name_has_inline_comment(name):
+        raise UnverifiedScriptV2("Script tag contains a Surge inline-comment delimiter")
     if script.trigger == "generic" and path == WARP_PANEL_SCRIPT_PATH and name is not None:
         if any(char in name for char in (",", '"', "'", "\\")):
             raise UnverifiedScriptV2("WARP tag contains Panel reference delimiters that are not safely represented")
@@ -2370,11 +2384,13 @@ def convert_file(
 
     if WARP_PANEL_SCRIPT_PATH in generic_paths:
         metadata["desc"] = "Displays WARP details for the current Surge route in an information panel."
-        warp_line, warp_props = next(
-            (line, props)
-            for line, props in generic_scripts
-            if unquote_property_value(props.get("script-path", "")) == WARP_PANEL_SCRIPT_PATH
-        )
+        warp_entries = [(line, props) for line, props in generic_scripts
+                        if unquote_property_value(props.get("script-path", "")) == WARP_PANEL_SCRIPT_PATH]
+        if len(warp_entries) != 1:
+            add_report(report, path.name, "module-excluded",
+                       "Module was excluded because multiple WARP generic entries require independently verified Panel mappings.", warp_entries[0][0])
+            return None
+        warp_line, warp_props = warp_entries[0]
         script_name = warp_props.get("tag") or "WARP INFO"
         sections["Panel"].append(
             f'{script_name} = title={json.dumps(script_name, ensure_ascii=False)}, '
@@ -2468,6 +2484,13 @@ def convert_file(
                 add_report(report, path.name, "script-property-corrected", "Dropped Script V2 img_url display metadata.", line)
         else:
             convert_script_line(line, sections["Script"], report, path.name, argument_defaults, shared_enable_argument_names)
+
+    if WARP_PANEL_SCRIPT_PATH in generic_paths:
+        linked_count = sum(surge_script_reference_name(line) == script_name for line in sections["Script"])
+        if linked_count != 1:
+            add_report(report, path.name, "module-excluded",
+                       "Module was excluded because the WARP Panel reference does not identify exactly one Script after enable-prefix expansion.", warp_line)
+            return None
 
     try:
         problem = module_semantics_problem(sections)

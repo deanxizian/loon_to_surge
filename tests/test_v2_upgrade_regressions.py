@@ -282,3 +282,77 @@ class SourceRepairIntegrationTest(unittest.TestCase):
                         convert_kelee_to_surge('Loon','Surge','Surge/convert-report.json')
                     self.assertEqual(prior,{p.name:p.read_bytes() for p in (root/'Surge').iterdir()})
                 finally:os.chdir(before)
+
+
+class PanelReferenceBoundaryTest(unittest.TestCase):
+    def test_warp_duplicate_script_identifiers_are_excluded(self):
+        others=[
+            'cron "0 8 * * *" then script("https://example.com/other.js") with tag="Same"',
+            'http-response ^https://example.com/ script-path=https://example.com/other.js, tag=Same',
+            'cron "0 8 * * *" then script("https://example.com/other.js") with tag="Same", enable=${Enabled}',
+            'cron "0 8 * * *" then script("https://example.com/other.js") with tag="Same", enable=false',
+        ]
+        for other in others:
+            with self.subTest(other=other),tempfile.TemporaryDirectory() as tmp:
+                root=Path(tmp);source=root/'Warp.lpx'
+                source.write_text('#!name=Warp\n[Argument]\nEnabled=switch,true,false\n[Script]\ngeneric then script("https://raw.githubusercontent.com/VirgilClyne/Cloudflare/main/js/1.1.1.1.panel.js") with tag="Same"\n'+other+'\n')
+                report=[];result=convert_file(source,root,report,{})
+                self.assertIsNone(result)
+                self.assertTrue(any(item['kind']=='module-excluded' and 'exactly one Script' in item['message'] for item in report))
+
+    def test_multiple_warp_entries_with_distinct_tags_are_explicitly_excluded(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);source=root/'Warp.lpx'
+            source.write_text('#!name=Warp\n[Script]\n'+''.join('generic then script("https://raw.githubusercontent.com/VirgilClyne/Cloudflare/main/js/1.1.1.1.panel.js") with tag="'+name+'"\n' for name in ('One','Two')))
+            report=[];result=convert_file(source,root,report,{})
+            self.assertIsNone(result)
+            self.assertEqual([item['kind'] for item in report],['module-excluded'])
+            self.assertIn('multiple WARP generic',report[0]['message'])
+
+    def test_inline_comment_tags_cannot_truncate_script_definitions(self):
+        for tag in ('WARP # INFO','WARP ; INFO','WARP // INFO'):
+            for trigger in ('generic','cron "0 8 * * *"'):
+                path='https://raw.githubusercontent.com/VirgilClyne/Cloudflare/main/js/1.1.1.1.panel.js' if trigger=='generic' else 'https://example.com/a.js'
+                with self.subTest(tag=tag,trigger=trigger),tempfile.TemporaryDirectory() as tmp:
+                    root=Path(tmp);source=root/'Sample.lpx'
+                    source.write_text('#!name=Sample\n[Script]\n'+trigger+' then script("'+path+'") with tag='+json.dumps(tag)+'\n')
+                    report=[];result=convert_file(source,root,report,{})
+                    self.assertIsNone(result)
+                    self.assertEqual([item['kind'] for item in report],['module-excluded'])
+                    self.assertIn('inline-comment',report[0]['message'])
+
+    def test_output_validator_rejects_inline_comment_in_name_only(self):
+        for name,bad in [('Test # comment',True),('Test ; comment',True),('Test // comment',True),('Test#Name',False)]:
+            errors=[]
+            validate_section_line('Sample',1,'Script',name+' = type=cron, cronexp="0 8 * * *", script-path=https://example.com/a.js, argument="text # preserved"',errors)
+            self.assertEqual(any('inline-comment' in error for error in errors),bad)
+
+
+    def test_independent_validator_rejects_ambiguous_panel_target(self):
+        with tempfile.TemporaryDirectory() as tmp,contextlib.redirect_stdout(io.StringIO()):
+            root=Path(tmp);(root/'Loon').mkdir()
+            shutil.copy(FIXTURES/'WARP_Node_Query.lpx',root/'Loon'/'WARP_Node_Query.lpx')
+            before=Path.cwd()
+            try:
+                os.chdir(root)
+                convert_kelee_to_surge('Loon','Surge','Surge/convert-report.json')
+                output=next((root/'Surge').glob('*.sgmodule'))
+                output.write_text(output.read_text().replace('\n[MITM]', '\nWARP · INFO = type=cron, cronexp="0 8 * * *", script-path=https://example.com/other.js\n\n[MITM]'))
+                with self.assertRaisesRegex(RuntimeError,'Panel references ambiguous Script names'):
+                    validate_surge_modules('Loon','Surge','Surge/convert-report.json')
+            finally:os.chdir(before)
+
+
+    def test_independent_validator_rejects_orphan_warp_script(self):
+        with tempfile.TemporaryDirectory() as tmp,contextlib.redirect_stdout(io.StringIO()):
+            root=Path(tmp);(root/'Loon').mkdir()
+            shutil.copy(FIXTURES/'WARP_Node_Query.lpx',root/'Loon'/'WARP_Node_Query.lpx')
+            before=Path.cwd()
+            try:
+                os.chdir(root)
+                convert_kelee_to_surge('Loon','Surge','Surge/convert-report.json')
+                output=next((root/'Surge').glob('*.sgmodule'))
+                output.write_text(output.read_text().replace('\n[MITM]', '\nOther = type=generic, script-path=https://raw.githubusercontent.com/VirgilClyne/Cloudflare/main/js/1.1.1.1.panel.js\n\n[MITM]'))
+                with self.assertRaisesRegex(RuntimeError,'WARP Script has no linked Panel'):
+                    validate_surge_modules('Loon','Surge','Surge/convert-report.json')
+            finally:os.chdir(before)
