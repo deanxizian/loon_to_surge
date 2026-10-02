@@ -62,17 +62,7 @@
       min-height: 88px;
       border-bottom: 1px solid var(--border);
     }
-    .brand { display: flex; align-items: center; gap: 12px; font-size: 18px; font-weight: 750; letter-spacing: -.5px; }
-    .brand-mark {
-      display: grid;
-      place-items: center;
-      width: 38px;
-      height: 38px;
-      border-radius: 11px;
-      background: var(--accent);
-      color: #fff;
-    }
-    .brand-mark .symbol { width: 23px; height: 23px; }
+    .brand { font-size: 18px; font-weight: 700; letter-spacing: -.5px; }
     .github-link {
       display: inline-flex;
       flex-shrink: 0;
@@ -130,11 +120,13 @@
     .clear-search { display: grid; place-items: center; flex-shrink: 0; width: 36px; height: 36px; margin-right: -8px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: var(--muted); }
     .clear-search:hover { background: var(--bg); color: var(--text); }
     .sort-box { position: relative; display: flex; align-items: center; color: var(--muted); }
-    .sort-box > .symbol { position: absolute; left: 13px; width: 18px; height: 18px; pointer-events: none; }
+    .sort-box > .symbol { position: absolute; right: 13px; width: 16px; height: 16px; pointer-events: none; }
     .sort {
+      appearance: none;
+      -webkit-appearance: none;
       height: 50px;
-      min-width: 150px;
-      padding: 0 12px 0 38px;
+      min-width: 136px;
+      padding: 0 36px 0 15px;
       border: 1px solid var(--border);
       border-radius: 12px;
       background: var(--surface);
@@ -212,27 +204,25 @@
     .meta { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 5px; margin-bottom: 18px; }
     .chip { padding: 2px 7px; border-radius: 5px; background: #f1f4f8; color: #63718a; font-size: 10px; line-height: 18px; }
     .chip.tag { background: #edf3ff; color: #496da9; }
-    .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: auto; padding-top: 14px; border-top: 1px solid #edf0f5; }
+    .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: auto; padding-top: 14px; border-top: 1px solid #edf0f5; }
     .button {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
       min-height: 42px;
       padding: 8px 10px;
       border: 1px solid transparent;
       border-radius: 9px;
       font-size: 12px;
-      font-weight: 650;
+      font-weight: 600;
       text-decoration: none;
       white-space: nowrap;
       transition: background .15s, border-color .15s;
     }
-    .button .symbol { width: 15px; height: 15px; }
     .button.surge { background: var(--accent); color: #fff; }
     .button.surge:hover { background: var(--accent-strong); }
-    .button.loon { background: #fff; border-color: #dce9e5; color: var(--loon); }
-    .button.loon:hover { background: #f0faf6; border-color: #afdbcc; }
+    .button.loon { background: #edf7f3; color: var(--loon); }
+    .button.loon:hover { background: #deefe7; }
     .feedback { padding: 56px 20px; margin-top: 22px; border: 1px dashed #cfd9e8; border-radius: var(--radius); text-align: center; color: var(--muted); }
     .feedback > .symbol { width: 28px; height: 28px; margin-bottom: 8px; color: #7a91b3; }
     .feedback h2 { margin: 0 0 6px; color: var(--text); font-size: 17px; }
@@ -252,8 +242,7 @@
       html { scroll-padding-top: 180px; }
       .page { width: calc(100% - 32px); }
       .site-header { min-height: 76px; }
-      .brand { gap: 10px; font-size: 17px; }
-      .brand-mark { width: 34px; height: 34px; border-radius: 10px; }
+      .brand { font-size: 17px; }
       .github-link { padding: 0; width: 44px; }
       .github-label { display: none; }
       .hero { padding: 26px 0 20px; gap: 14px; }
@@ -265,8 +254,8 @@
       .search-box { height: 46px; padding-left: 12px; gap: 8px; }
       .search { font-size: 16px; }
       .search::placeholder { font-size: 12px; }
-      .sort { min-width: 110px; width: 110px; height: 46px; padding-left: 10px; font-size: 12px; }
-      .sort-box > .symbol { display: none; }
+      .sort { min-width: 114px; width: 114px; height: 46px; padding: 0 28px 0 12px; font-size: 12px; }
+      .sort-box > .symbol { right: 10px; width: 14px; height: 14px; }
       .filter-row { flex-wrap: wrap; gap: 8px; }
       .filters { width: 100%; gap: 4px; }
       .filter { flex: 1 1 auto; gap: 5px; min-height: 40px; padding: 0 8px; font-size: 12px; }
@@ -292,18 +281,13 @@
 </head>
 <body>
   <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute" aria-hidden="true">
-    <symbol id="i-transfer" viewBox="0 0 24 24"><path d="M4 7h15m-4-4 4 4-4 4M20 17H5m4-4-4 4 4 4"/></symbol>
     <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="7.3"/><path d="m16 16 4.5 4.5"/></symbol>
     <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
-    <symbol id="i-sort" viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h4"/></symbol>
-    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-4-4 4 4 4-4M5 16v4h14v-4"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
   </svg>
   <div class="page">
     <header class="site-header">
-      <div class="brand">
-        <span class="brand-mark"><svg class="symbol" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><use href="#i-transfer"/></svg></span>
-        <span>Loon to Surge</span>
-      </div>
+      <div class="brand">Loon to Surge</div>
       <a class="github-link" href="https://github.com/deanxizian/loon_to_surge" target="_blank" rel="noopener noreferrer" aria-label="在 GitHub 查看 loon_to_surge 项目（新窗口打开）" title="查看 GitHub 项目">
         <!-- GitHub Mark from Primer Octicons; license: assets/github-mark.LICENSE -->
         <img src="assets/github-mark.svg" width="20" height="20" alt="">
@@ -334,7 +318,7 @@
             </button>
           </div>
           <label class="sort-box">
-            <svg class="symbol" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><use href="#i-sort"/></svg>
+            <svg class="symbol" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chevron"/></svg>
             <span class="sr-only">模块排序</span>
             <select id="sort" class="sort" disabled>
               <option value="name">按名称排序</option>
@@ -435,21 +419,6 @@
         .map(normalizeText).join(" ").includes(query);
     }
 
-    function icon(name) {
-      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-      svg.setAttribute("class", "symbol");
-      svg.setAttribute("aria-hidden", "true");
-      svg.setAttribute("fill", "none");
-      svg.setAttribute("stroke", "currentColor");
-      svg.setAttribute("stroke-width", "1.7");
-      svg.setAttribute("stroke-linecap", "round");
-      svg.setAttribute("stroke-linejoin", "round");
-      const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
-      use.setAttribute("href", "#i-" + name);
-      svg.append(use);
-      return svg;
-    }
-
     function moduleIcon(module) {
       const wrap = document.createElement("div");
       wrap.className = "icon-wrap";
@@ -518,7 +487,7 @@
         const label = client === "surge" ? "Surge" : "Loon";
         link.href = client === "surge" ? surgeInstallUrl(module.surgeFile) : loonInstallUrl(module.source);
         link.setAttribute("aria-label", "将" + module.name + "导入 " + label);
-        link.append(icon("download"), document.createTextNode("导入 " + label));
+        link.textContent = "导入 " + label;
         actions.append(link);
       }
       article.append(heading, desc, meta, actions);
