@@ -45,7 +45,42 @@
     }
 
     header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
       padding: 8px 0 12px;
+    }
+
+    .header-copy {
+      min-width: 0;
+    }
+
+    .github-link {
+      display: inline-flex;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-width: 44px;
+      height: 44px;
+      padding: 0 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .github-link:hover {
+      background: var(--surface-muted);
+      border-color: var(--muted);
+    }
+
+    .github-link:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
     }
 
     h1 {
@@ -266,6 +301,15 @@
         padding-top: 20px;
       }
 
+      .github-link {
+        padding: 0;
+        width: 44px;
+      }
+
+      .github-label {
+        display: none;
+      }
+
       .status-line {
         align-items: flex-start;
         flex-direction: column;
@@ -287,10 +331,15 @@
 <body>
   <main class="page">
     <header>
-      <div>
+      <div class="header-copy">
         <h1>Loon to Surge Modules</h1>
         <p class="summary">从 Kelee PluginHub 抓取 Loon 模块并转换为 Surge 模块。选择模块后可直接唤起对应客户端导入。</p>
       </div>
+      <a class="github-link" href="https://github.com/deanxizian/loon_to_surge" target="_blank" rel="noopener noreferrer" aria-label="在 GitHub 查看 loon_to_surge 项目（新窗口打开）" title="查看 GitHub 项目">
+        <!-- GitHub Mark from Primer Octicons; license: assets/github-mark.LICENSE -->
+        <img src="assets/github-mark.svg" width="24" height="24" alt="">
+        <span class="github-label" aria-hidden="true">GitHub</span>
+      </a>
     </header>
 
     <div class="status-line">
