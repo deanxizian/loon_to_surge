@@ -3,452 +3,536 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Loon to Surge Modules</title>
+  <meta name="theme-color" content="#f7f9fc">
+  <meta name="description" content="浏览来自 Kelee PluginHub 的模块，搜索、筛选并一键导入 Surge 或 Loon。">
+  <title>Loon to Surge · 模块库</title>
   <style>
     :root {
       color-scheme: light;
-      --bg: #f7f8fb;
-      --surface: #ffffff;
-      --surface-muted: #f0f4f8;
-      --text: #16202a;
-      --muted: #667586;
-      --border: #d9e0e8;
-      --accent: #1769e0;
-      --accent-strong: #0e54ba;
-      --loon: #0f8a65;
-      --shadow: 0 12px 28px rgba(18, 32, 46, 0.08);
-      --radius: 8px;
+      --bg: #f7f9fc;
+      --surface: #fff;
+      --text: #17243b;
+      --muted: #63718a;
+      --border: #e1e7f0;
+      --accent: #2563eb;
+      --accent-strong: #1d4ed8;
+      --accent-soft: #edf3ff;
+      --loon: #087f68;
+      --radius: 16px;
     }
-
-    * {
-      box-sizing: border-box;
-    }
-
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    html { scroll-padding-top: 148px; }
     body {
       margin: 0;
       min-width: 320px;
       background: var(--bg);
       color: var(--text);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      line-height: 1.5;
-      letter-spacing: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
     }
-
-    a {
-      color: inherit;
+    a { color: inherit; }
+    button, input, select { font: inherit; }
+    button, a, input, select { -webkit-tap-highlight-color: transparent; }
+    button, select { cursor: pointer; }
+    button { color: inherit; }
+    :where(a, button, input, select):focus-visible {
+      outline: 3px solid #90b5ff;
+      outline-offset: 3px;
     }
-
-    .page {
-      width: min(1180px, calc(100% - 32px));
-      margin: 0 auto;
-      padding: 32px 0 56px;
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
     }
-
-    header {
-      padding: 8px 0 12px;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: clamp(28px, 5vw, 44px);
-      line-height: 1.08;
-      font-weight: 760;
-      letter-spacing: 0;
-    }
-
-    .summary {
-      margin: 12px 0 0;
-      max-width: 720px;
-      color: var(--muted);
-      font-size: 15px;
-    }
-
-    .status-line {
+    .symbol { width: 20px; height: 20px; flex-shrink: 0; }
+    .page { width: min(1240px, calc(100% - 64px)); margin: 0 auto; }
+    .site-header {
       display: flex;
-      justify-content: flex-start;
+      align-items: center;
+      justify-content: space-between;
       gap: 16px;
-      margin: 8px 0 12px;
-      color: var(--muted);
-      font-size: 13px;
-      text-align: left;
+      min-height: 88px;
+      border-bottom: 1px solid var(--border);
     }
+    .brand { font-size: 18px; font-weight: 700; letter-spacing: -.5px; }
+    .github-link {
+      display: inline-flex;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-width: 44px;
+      height: 44px;
+      padding: 0 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface);
+      font-size: 13px;
+      font-weight: 650;
+      text-decoration: none;
+      transition: border-color .15s, background .15s;
+    }
+    .github-link:hover { background: #f0f4fa; border-color: #c4cfdf; }
+    .hero { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; padding: 36px 0 30px; }
+    h1 { margin: 0; font-size: clamp(28px, 3.5vw, 38px); line-height: 1.25; letter-spacing: -1px; font-weight: 750; }
+    .summary { margin: 12px 0 0; color: var(--muted); font-size: 14px; }
+    .sync-info { flex-shrink: 0; padding-bottom: 2px; text-align: right; font-size: 12px; color: var(--muted); }
+    .sync-label { display: inline-flex; align-items: center; gap: 7px; margin-bottom: 4px; color: #475873; font-weight: 600; }
+    .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: #149c80; }
+    #updated-at { display: block; font-variant-numeric: tabular-nums; }
 
     .toolbar {
       position: sticky;
       top: 0;
       z-index: 10;
-      padding: 6px 0 14px;
-      background: rgba(247, 248, 251, 0.94);
-      backdrop-filter: blur(10px);
+      padding: 16px 0 14px;
+      background: rgba(247, 249, 252, .96);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
     }
-
-    .search {
-      width: 100%;
-      height: 44px;
-      padding: 0 14px;
-      color: var(--text);
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      font: inherit;
-      outline: none;
-    }
-
-    .search:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(23, 105, 224, 0.14);
-    }
-
-    .module-list {
-      display: grid;
-      gap: 10px;
-    }
-
-    .module-card {
-      display: grid;
-      grid-template-columns: 52px minmax(0, 1fr) auto;
-      gap: 14px;
-      align-items: center;
-      padding: 14px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: 0 8px 20px rgba(18, 32, 46, 0.05);
-    }
-
-    .icon {
-      width: 52px;
-      height: 52px;
-      object-fit: cover;
-      border-radius: 12px;
-      background: var(--surface-muted);
-      border: 1px solid var(--border);
-    }
-
-    .module-title {
+    .search-row { display: flex; align-items: center; gap: 12px; }
+    .search-box {
       display: flex;
       align-items: center;
-      gap: 10px;
+      flex: 1;
       min-width: 0;
-      margin: 0;
-      font-size: 16px;
-      line-height: 1.3;
-      font-weight: 720;
+      height: 50px;
+      padding: 0 14px;
+      gap: 10px;
+      background: var(--surface);
+      border: 1px solid #d5deeb;
+      border-radius: 12px;
+      color: var(--muted);
+      transition: border-color .15s, box-shadow .15s;
     }
-
-    .module-title span:first-child {
-      overflow: hidden;
-      text-overflow: ellipsis;
+    .search-box:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px #2563eb12; }
+    .search { width: 100%; min-width: 0; padding: 0; border: 0; outline: none; background: transparent; color: var(--text); font-size: 14px; }
+    .search::placeholder { color: #7a879d; }
+    .search::-webkit-search-cancel-button { display: none; }
+    .clear-search { display: grid; place-items: center; flex-shrink: 0; width: 36px; height: 36px; margin-right: -8px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: var(--muted); }
+    .clear-search:hover { background: var(--bg); color: var(--text); }
+    .sort-box { position: relative; display: flex; align-items: center; color: var(--muted); }
+    .sort-box > .symbol { position: absolute; right: 13px; width: 16px; height: 16px; pointer-events: none; }
+    .sort {
+      appearance: none;
+      -webkit-appearance: none;
+      height: 50px;
+      min-width: 136px;
+      padding: 0 36px 0 15px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface);
+      color: var(--text);
+      font-size: 13px;
+    }
+    .filter-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 12px; }
+    .filters { display: flex; flex-wrap: wrap; gap: 6px; }
+    .filter {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      min-height: 40px;
+      padding: 0 13px;
+      border: 1px solid transparent;
+      border-radius: 9px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 550;
       white-space: nowrap;
     }
+    .filter:hover { background: #edf1f7; color: var(--text); }
+    .filter[aria-pressed="true"] { background: var(--text); color: #fff; }
+    .filter-count { font-size: 11px; font-variant-numeric: tabular-nums; opacity: .7; }
+    .result-count { flex-shrink: 0; margin: 0; color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
 
-    .date {
-      flex: 0 0 auto;
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 520;
+    .module-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; padding-top: 22px; }
+    .module-card {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      padding: 20px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: 0 2px 3px #182e4b03;
+      transition: border-color .18s, box-shadow .18s, transform .18s;
     }
-
+    .module-card:hover { border-color: #bdcde5; box-shadow: 0 8px 24px #182e4b08; transform: translateY(-2px); }
+    .card-heading { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .icon-wrap {
+      display: grid;
+      place-items: center;
+      position: relative;
+      flex: 0 0 46px;
+      width: 46px;
+      height: 46px;
+      overflow: hidden;
+      border: 1px solid #e5ebf4;
+      border-radius: 12px;
+      background: var(--icon-bg, #edf3ff);
+      color: var(--icon-color, #3865af);
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .icon { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: var(--surface); opacity: 0; }
+    .icon.loaded { opacity: 1; }
+    .card-title-group { min-width: 0; }
+    .module-title { margin: 0; font-size: 15px; line-height: 1.5; font-weight: 700; overflow-wrap: anywhere; }
+    .date { display: block; margin-top: 3px; color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
     .description {
       display: -webkit-box;
-      margin: 6px 0 0;
-      color: var(--muted);
+      min-height: 44px;
+      margin: 15px 0 12px;
       overflow: hidden;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
+      color: var(--muted);
       font-size: 13px;
+      line-height: 22px;
+      overflow-wrap: anywhere;
     }
-
-    .meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 8px;
-    }
-
-    .chip {
-      padding: 3px 8px;
-      border-radius: 999px;
-      background: var(--surface-muted);
-      color: #526170;
-      font-size: 12px;
-      white-space: nowrap;
-    }
-
-    .actions {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-
+    .meta { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 5px; margin-bottom: 18px; }
+    .chip { padding: 2px 7px; border-radius: 5px; background: #f1f4f8; color: #63718a; font-size: 10px; line-height: 18px; }
+    .chip.tag { background: #edf3ff; color: #496da9; }
+    .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: auto; padding-top: 14px; border-top: 1px solid #edf0f5; }
     .button {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-width: 88px;
-      height: 38px;
-      padding: 0 14px;
-      border-radius: var(--radius);
+      min-height: 42px;
+      padding: 8px 10px;
       border: 1px solid transparent;
-      font-size: 14px;
-      font-weight: 680;
+      border-radius: 9px;
+      font-size: 12px;
+      font-weight: 600;
       text-decoration: none;
-      cursor: pointer;
       white-space: nowrap;
+      transition: background .15s, border-color .15s;
     }
+    .button.surge { background: var(--accent); color: #fff; }
+    .button.surge:hover { background: var(--accent-strong); }
+    .button.loon { background: #edf7f3; color: var(--loon); }
+    .button.loon:hover { background: #deefe7; }
+    .feedback { padding: 56px 20px; margin-top: 22px; border: 1px dashed #cfd9e8; border-radius: var(--radius); text-align: center; color: var(--muted); }
+    .feedback > .symbol { width: 28px; height: 28px; margin-bottom: 8px; color: #7a91b3; }
+    .feedback h2 { margin: 0 0 6px; color: var(--text); font-size: 17px; }
+    .feedback p { margin: 0; font-size: 13px; }
+    .feedback button { margin-top: 18px; padding: 9px 16px; min-height: 42px; border: 1px solid var(--border); border-radius: 9px; background: var(--surface); color: var(--accent); font-size: 13px; font-weight: 600; }
+    .loading { padding: 56px 20px; text-align: center; color: var(--muted); font-size: 14px; }
+    .site-footer { display: flex; justify-content: space-between; gap: 12px; margin-top: 36px; padding: 24px 0 32px; border-top: 1px solid var(--border); color: var(--muted); font-size: 12px; }
 
-    .button.surge {
-      background: var(--accent);
-      color: #fff;
+    @media (min-width: 1500px) { .page { width: min(1360px, calc(100% - 96px)); } }
+    @media (max-width: 1050px) {
+      .module-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .hero { align-items: flex-start; flex-direction: column; gap: 16px; }
+      .sync-info { display: flex; align-items: center; gap: 12px; text-align: left; }
+      .sync-label { margin: 0; }
     }
-
-    .button.surge:hover {
-      background: var(--accent-strong);
+    @media (max-width: 600px) {
+      html { scroll-padding-top: 180px; }
+      .page { width: calc(100% - 32px); }
+      .site-header { min-height: 76px; }
+      .brand { font-size: 17px; }
+      .github-link { padding: 0; width: 44px; }
+      .github-label { display: none; }
+      .hero { padding: 26px 0 20px; gap: 14px; }
+      h1 { font-size: 28px; }
+      .summary { margin-top: 10px; max-width: 330px; font-size: 13px; line-height: 1.8; }
+      .sync-info { gap: 8px; flex-wrap: wrap; font-size: 11px; }
+      .toolbar { padding-top: 10px; padding-bottom: 12px; }
+      .search-row { gap: 8px; }
+      .search-box { height: 46px; padding-left: 12px; gap: 8px; }
+      .search { font-size: 16px; }
+      .search::placeholder { font-size: 12px; }
+      .sort { min-width: 114px; width: 114px; height: 46px; padding: 0 28px 0 12px; font-size: 12px; }
+      .sort-box > .symbol { right: 10px; width: 14px; height: 14px; }
+      .filter-row { flex-wrap: wrap; gap: 8px; }
+      .filters { width: 100%; gap: 4px; }
+      .filter { flex: 1 1 auto; gap: 5px; min-height: 40px; padding: 0 8px; font-size: 12px; }
+      .filter-count { font-size: 10px; }
+      .result-count { padding: 0 2px; font-size: 11px; }
+      .module-list { grid-template-columns: minmax(0, 1fr); gap: 12px; padding-top: 16px; }
+      .module-card { padding: 18px; }
+      .module-card:hover { transform: none; }
+      .module-title { font-size: 16px; }
+      .description { margin-top: 13px; }
+      .button { min-height: 44px; font-size: 13px; }
+      .site-footer { flex-direction: column; gap: 4px; margin-top: 28px; }
     }
-
-    .button.loon {
-      background: #e8f7f1;
-      border-color: #bfe8d9;
-      color: var(--loon);
+    @media (max-width: 360px) {
+      .page { width: calc(100% - 24px); }
+      .filter { padding: 0 6px; }
     }
-
-    .button.loon:hover {
-      background: #d9f1e8;
-    }
-
-    .empty {
-      display: none;
-      padding: 48px 20px;
-      text-align: center;
-      color: var(--muted);
-      background: var(--surface);
-      border: 1px dashed var(--border);
-      border-radius: var(--radius);
-    }
-
-    .empty.visible {
-      display: block;
-    }
-
-    .load-error {
-      margin: 24px 0 0;
-      padding: 16px;
-      border: 1px solid #f0b8b8;
-      border-radius: var(--radius);
-      background: #fff3f3;
-      color: #8e2424;
-    }
-
-    @media (max-width: 860px) {
-      .module-card {
-        grid-template-columns: 44px minmax(0, 1fr);
-      }
-
-      .icon {
-        width: 44px;
-        height: 44px;
-        border-radius: 10px;
-      }
-
-      .actions {
-        grid-column: 1 / -1;
-        justify-content: stretch;
-      }
-
-      .button {
-        flex: 1;
-      }
-    }
-
-    @media (max-width: 520px) {
-      .page {
-        width: min(100% - 20px, 1180px);
-        padding-top: 20px;
-      }
-
-      .status-line {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 4px;
-      }
-
-      .module-title {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 4px;
-      }
-
-      .module-title span:first-child {
-        white-space: normal;
-      }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; }
+      .module-card:hover { transform: none; }
     }
   </style>
 </head>
 <body>
-  <main class="page">
-    <header>
-      <div>
-        <h1>Loon to Surge Modules</h1>
-        <p class="summary">从 Kelee PluginHub 抓取 Loon 模块并转换为 Surge 模块。选择模块后可直接唤起对应客户端导入。</p>
-      </div>
+  <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="7.3"/><path d="m16 16 4.5 4.5"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  </svg>
+  <div class="page">
+    <header class="site-header">
+      <div class="brand">Loon to Surge</div>
+      <a class="github-link" href="https://github.com/deanxizian/loon_to_surge" target="_blank" rel="noopener noreferrer" aria-label="在 GitHub 查看 loon_to_surge 项目（新窗口打开）" title="查看 GitHub 项目">
+        <!-- GitHub Mark from Primer Octicons; license: assets/github-mark.LICENSE -->
+        <img src="assets/github-mark.svg" width="20" height="20" alt="">
+        <span class="github-label" aria-hidden="true">GitHub</span>
+      </a>
     </header>
 
-    <div class="status-line">
-      <span id="result-count">正在加载模块...</span>
-      <span id="updated-at"></span>
-    </div>
+    <main>
+      <section class="hero" aria-labelledby="page-title">
+        <div>
+          <h1 id="page-title">模块库</h1>
+          <p class="summary">浏览来自 Kelee PluginHub 的模块，一键导入 Surge 或 Loon。</p>
+        </div>
+        <div class="sync-info">
+          <span class="sync-label"><span class="sync-dot" aria-hidden="true"></span>每日自动同步</span>
+          <span id="updated-at"></span>
+        </div>
+      </section>
 
-    <section class="toolbar" aria-label="搜索模块">
-      <input id="search" class="search" type="search" placeholder="搜索模块、描述、标签或文件名" autocomplete="off">
-    </section>
+      <section class="toolbar" aria-label="查找模块">
+        <div class="search-row">
+          <div class="search-box">
+            <svg class="symbol" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><use href="#i-search"/></svg>
+            <label for="search" class="sr-only">搜索模块、描述、标签或文件名</label>
+            <input id="search" class="search" type="search" placeholder="搜索模块、标签…" autocomplete="off" disabled>
+            <button id="clear-search" class="clear-search" type="button" aria-label="清空搜索" hidden>
+              <svg class="symbol" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><use href="#i-close"/></svg>
+            </button>
+          </div>
+          <label class="sort-box">
+            <svg class="symbol" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chevron"/></svg>
+            <span class="sr-only">模块排序</span>
+            <select id="sort" class="sort" disabled>
+              <option value="name">按名称排序</option>
+              <option value="updated">最近更新</option>
+            </select>
+          </label>
+        </div>
+        <div class="filter-row">
+          <div id="filters" class="filters" role="group" aria-label="模块分类"></div>
+          <p id="result-count" class="result-count" role="status" aria-live="polite" aria-atomic="true">正在加载模块…</p>
+        </div>
+      </section>
 
-    <section id="module-list" class="module-list" aria-label="模块列表"></section>
-    <div id="empty" class="empty">没有可显示的模块。</div>
-  </main>
+      <div id="loading" class="loading">正在整理模块库…</div>
+      <section id="module-list" class="module-list" aria-label="模块列表" aria-busy="true"></section>
+      <div id="empty" class="feedback" hidden>
+        <svg class="symbol" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><use href="#i-search"/></svg>
+        <h2>没有找到匹配的模块</h2>
+        <p>试试其他关键词，或重置筛选条件。</p>
+        <button id="reset-filters" type="button">重置筛选</button>
+      </div>
+      <div id="load-error" class="feedback" role="alert" hidden>
+        <h2>模块暂时无法加载</h2>
+        <p>请检查网络连接后重试。</p>
+        <button id="retry" type="button">重新加载</button>
+      </div>
+      <noscript><p class="feedback">请启用 JavaScript，以浏览和搜索模块。</p></noscript>
+    </main>
+
+    <footer class="site-footer">
+      <span>模块来源于 Kelee PluginHub</span>
+      <span>选择模块，唤起对应客户端完成导入。</span>
+    </footer>
+  </div>
 
   <script>
-    const state = {
-      modules: [],
-      query: ""
-    };
-
+    const state = { modules: [], query: "", category: "all", sort: "name" };
+    const categories = [
+      { id: "all", label: "全部" },
+      { id: "去广告", label: "去广告" },
+      { id: "功能增强", label: "功能增强" },
+      { id: "other", label: "其他" }
+    ];
     const elements = {
       search: document.querySelector("#search"),
+      clearSearch: document.querySelector("#clear-search"),
+      sort: document.querySelector("#sort"),
+      filters: document.querySelector("#filters"),
       resultCount: document.querySelector("#result-count"),
       updatedAt: document.querySelector("#updated-at"),
       list: document.querySelector("#module-list"),
-      empty: document.querySelector("#empty")
+      empty: document.querySelector("#empty"),
+      loading: document.querySelector("#loading"),
+      loadError: document.querySelector("#load-error")
     };
 
     function fileUrl(directory, fileName) {
       const encoded = fileName.split("/").map(encodeURIComponent).join("/");
-      return `${window.location.origin}/${directory}/${encoded}`;
+      return window.location.origin + "/" + directory + "/" + encoded;
     }
-
     function surgeInstallUrl(fileName) {
-      return `surge:///install-module?url=${encodeURIComponent(fileUrl("Surge", fileName))}`;
+      return "surge:///install-module?url=" + encodeURIComponent(fileUrl("Surge", fileName));
     }
-
     function loonInstallUrl(fileName) {
-      return `loon://import?plugin=${encodeURIComponent(fileUrl("Loon", fileName))}`;
+      return "loon://import?plugin=" + encodeURIComponent(fileUrl("Loon", fileName));
     }
-
-    function normalizeText(value) {
-      return String(value || "").toLowerCase();
-    }
-
-    function tagsOf(module) {
-      return Array.isArray(module.tags) ? module.tags : [];
-    }
+    function normalizeText(value) { return String(value || "").toLowerCase(); }
+    function tagsOf(module) { return Array.isArray(module.tags) ? module.tags : []; }
 
     function formatTimestamp(value) {
       const text = String(value || "");
       const match = text.match(/^(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2}:\d{2})\s+([+-]\d{2}:\d{2})$/);
       if (!match) return text;
-
-      const date = new Date(`${match[1]}T${match[2]}${match[3]}`);
+      const date = new Date(match[1] + "T" + match[2] + match[3]);
       if (Number.isNaN(date.getTime())) return text.replace(/\s+[+-]\d{2}:\d{2}$/, "");
-
       const parts = Object.fromEntries(
         new Intl.DateTimeFormat("en-CA", {
-          timeZone: "Asia/Shanghai",
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          hourCycle: "h23",
-        }).formatToParts(date).map(({ type, value: part }) => [type, part]),
+          timeZone: "Asia/Shanghai", year: "numeric", month: "2-digit", day: "2-digit",
+          hour: "2-digit", minute: "2-digit", hourCycle: "h23"
+        }).formatToParts(date).map(({ type, value: part }) => [type, part])
       );
-      return `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute}:${parts.second}`;
+      return parts.year + "-" + parts.month + "-" + parts.day + " " + parts.hour + ":" + parts.minute;
+    }
+
+    function categoryMatches(module, category) {
+      if (category === "all") return true;
+      const tags = tagsOf(module);
+      if (category === "other") return !tags.includes("去广告") && !tags.includes("功能增强");
+      return tags.includes(category);
     }
 
     function moduleMatches(module) {
+      if (!categoryMatches(module, state.category)) return false;
       const query = normalizeText(state.query).trim();
       if (!query) return true;
+      return [module.name, module.desc, module.source, module.surgeFile,
+        tagsOf(module).join(" "), module.sections.join(" ")]
+        .map(normalizeText).join(" ").includes(query);
+    }
 
-      const searchable = [
-        module.name,
-        module.desc,
-        module.source,
-        module.surgeFile,
-        tagsOf(module).join(" "),
-        module.sections.join(" ")
-      ].map(normalizeText).join(" ");
-
-      return searchable.includes(query);
+    function moduleIcon(module) {
+      const wrap = document.createElement("div");
+      wrap.className = "icon-wrap";
+      wrap.setAttribute("aria-hidden", "true");
+      const colors = [["#edf3ff", "#3865af"], ["#eaf6f0", "#33816a"], ["#fff3e7", "#9d702d"], ["#f2effb", "#7a65a8"]];
+      const colorIndex = Array.from(module.name).reduce((sum, char) => sum + char.codePointAt(0), 0) % colors.length;
+      wrap.style.setProperty("--icon-bg", colors[colorIndex][0]);
+      wrap.style.setProperty("--icon-color", colors[colorIndex][1]);
+      wrap.textContent = Array.from(module.name).slice(0, 2).join("").toUpperCase();
+      if (module.icon) {
+        const img = document.createElement("img");
+        img.className = "icon";
+        img.alt = "";
+        img.loading = "lazy";
+        img.decoding = "async";
+        img.onload = () => { img.classList.add("loaded"); };
+        img.onerror = () => { img.remove(); };
+        img.src = module.icon;
+        wrap.append(img);
+      }
+      return wrap;
     }
 
     function moduleCard(module) {
       const article = document.createElement("article");
       article.className = "module-card";
 
-      const img = document.createElement("img");
-      img.className = "icon";
-      img.alt = "";
-      img.loading = "lazy";
-      img.src = module.icon || "";
-      img.onerror = () => {
-        img.removeAttribute("src");
-      };
-
-      const body = document.createElement("div");
+      const heading = document.createElement("div");
+      heading.className = "card-heading";
+      const titleGroup = document.createElement("div");
+      titleGroup.className = "card-title-group";
       const title = document.createElement("h2");
       title.className = "module-title";
-      const name = document.createElement("span");
-      name.textContent = module.name;
-      const date = document.createElement("span");
-      date.className = "date";
-      date.textContent = module.date || "";
-      title.append(name, date);
+      title.textContent = module.name;
+      titleGroup.append(title);
+      if (module.date) {
+        const date = document.createElement("span");
+        date.className = "date";
+        date.textContent = "更新于 " + module.date.slice(0, 10);
+        date.title = module.date;
+        titleGroup.append(date);
+      }
+      heading.append(moduleIcon(module), titleGroup);
 
       const desc = document.createElement("p");
       desc.className = "description";
-      desc.textContent = module.desc || "无描述";
+      desc.textContent = (module.desc || "暂无模块描述").replace(/\\n/g, " ");
+      desc.title = desc.textContent;
 
       const meta = document.createElement("div");
       meta.className = "meta";
-      const chips = [...tagsOf(module), ...module.sections.slice(0, 3)];
+      const tags = tagsOf(module);
+      const chips = [...new Set([...tags, ...module.sections.slice(0, 3)])];
       meta.replaceChildren(...chips.map((value) => {
         const chip = document.createElement("span");
-        chip.className = "chip";
+        chip.className = tags.includes(value) ? "chip tag" : "chip";
         chip.textContent = value;
         return chip;
       }));
 
-      body.append(title, desc, meta);
-
       const actions = document.createElement("div");
       actions.className = "actions";
-      const surge = document.createElement("a");
-      surge.className = "button surge";
-      surge.href = surgeInstallUrl(module.surgeFile);
-      surge.textContent = "导入 Surge";
-      const loon = document.createElement("a");
-      loon.className = "button loon";
-      loon.href = loonInstallUrl(module.source);
-      loon.textContent = "导入 Loon";
-      actions.append(surge, loon);
-
-      article.append(img, body, actions);
+      for (const client of ["surge", "loon"]) {
+        const link = document.createElement("a");
+        link.className = "button " + client;
+        const label = client === "surge" ? "Surge" : "Loon";
+        link.href = client === "surge" ? surgeInstallUrl(module.surgeFile) : loonInstallUrl(module.source);
+        link.setAttribute("aria-label", "将" + module.name + "导入 " + label);
+        link.textContent = "导入 " + label;
+        actions.append(link);
+      }
+      article.append(heading, desc, meta, actions);
       return article;
     }
 
+    function renderFilters() {
+      elements.filters.replaceChildren(...categories.map((category) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "filter";
+        button.dataset.category = category.id;
+        button.setAttribute("aria-pressed", String(state.category === category.id));
+        const count = document.createElement("span");
+        count.className = "filter-count";
+        count.textContent = state.modules.filter((module) => categoryMatches(module, category.id)).length;
+        button.append(document.createTextNode(category.label), count);
+        return button;
+      }));
+    }
+
     function render() {
-      const filtered = state.modules.filter(moduleMatches);
-      elements.resultCount.textContent = `显示 ${filtered.length} / ${state.modules.length} 个模块`;
-      elements.empty.textContent = state.query ? "没有匹配的模块。" : "没有可显示的模块。";
-      elements.empty.classList.toggle("visible", filtered.length === 0);
+      const filtered = state.modules.filter(moduleMatches).sort((a, b) => {
+        if (state.sort === "updated") {
+          const byDate = b.date.localeCompare(a.date);
+          if (byDate) return byDate;
+        }
+        return a.name.localeCompare(b.name, "zh-CN", { numeric: true });
+      });
+      const isFiltered = state.query.trim() || state.category !== "all";
+      elements.resultCount.textContent = isFiltered
+        ? "找到 " + filtered.length + " 个模块 · 共 " + state.modules.length + " 个"
+        : "共 " + state.modules.length + " 个模块";
+      elements.clearSearch.hidden = !state.query;
+      elements.empty.hidden = filtered.length !== 0;
+      elements.list.hidden = filtered.length === 0;
       elements.list.replaceChildren(...filtered.map(moduleCard));
+      for (const button of elements.filters.children) {
+        button.setAttribute("aria-pressed", String(button.dataset.category === state.category));
+      }
     }
 
     function mergeModules(loonIndex, surgeIndex) {
       const loonBySource = new Map();
-      for (const item of loonIndex.modules || []) {
-        loonBySource.set(item.file, item);
-      }
-
+      for (const item of loonIndex.modules || []) loonBySource.set(item.file, item);
       return surgeIndex.map((surgeItem) => {
         const loonItem = loonBySource.get(surgeItem.source) || {};
         return {
@@ -461,33 +545,41 @@
           surgeFile: surgeItem.output,
           sections: Array.isArray(surgeItem.sections) ? surgeItem.sections : []
         };
-      }).sort((a, b) => a.name.localeCompare(b.name, "zh-CN"));
+      });
     }
 
     async function loadJson(path) {
       const response = await fetch(path, { cache: "no-store" });
-      if (!response.ok) {
-        throw new Error(`${path} ${response.status}`);
-      }
+      if (!response.ok) throw new Error(path + " " + response.status);
       return response.json();
     }
 
     async function init() {
+      elements.loadError.hidden = true;
+      elements.empty.hidden = true;
+      elements.loading.hidden = false;
+      elements.list.hidden = true;
+      elements.list.setAttribute("aria-busy", "true");
+      elements.resultCount.textContent = "正在加载模块…";
+      elements.search.disabled = true;
+      elements.sort.disabled = true;
       try {
         const [loonIndex, surgeIndex] = await Promise.all([
-          loadJson("/Loon/modules.index.json"),
-          loadJson("/Surge/modules.index.json")
+          loadJson("/Loon/modules.index.json"), loadJson("/Surge/modules.index.json")
         ]);
-
         state.modules = mergeModules(loonIndex, surgeIndex);
-        elements.updatedAt.textContent = loonIndex.fetched_at ? `更新于 ${formatTimestamp(loonIndex.fetched_at)}` : "";
+        elements.updatedAt.textContent = loonIndex.fetched_at ? "更新于 " + formatTimestamp(loonIndex.fetched_at) + " · 北京时间" : "";
+        renderFilters();
         render();
+        elements.search.disabled = false;
+        elements.sort.disabled = false;
       } catch (error) {
-        elements.resultCount.textContent = "模块索引加载失败";
-        const box = document.createElement("div");
-        box.className = "load-error";
-        box.textContent = `无法读取模块索引：${error.message}`;
-        document.querySelector(".page").append(box);
+        console.error("Module index load failed:", error);
+        elements.resultCount.textContent = "加载失败，请重试";
+        elements.loadError.hidden = false;
+      } finally {
+        elements.loading.hidden = true;
+        elements.list.setAttribute("aria-busy", "false");
       }
     }
 
@@ -495,6 +587,30 @@
       state.query = event.target.value;
       render();
     });
+    elements.clearSearch.addEventListener("click", () => {
+      state.query = "";
+      elements.search.value = "";
+      render();
+      elements.search.focus();
+    });
+    elements.sort.addEventListener("change", (event) => {
+      state.sort = event.target.value;
+      render();
+    });
+    elements.filters.addEventListener("click", (event) => {
+      const button = event.target.closest("button[data-category]");
+      if (!button) return;
+      state.category = button.dataset.category;
+      render();
+    });
+    document.querySelector("#reset-filters").addEventListener("click", () => {
+      state.query = "";
+      state.category = "all";
+      elements.search.value = "";
+      render();
+      elements.search.focus();
+    });
+    document.querySelector("#retry").addEventListener("click", init);
 
     init();
   </script>
