@@ -26,6 +26,11 @@ except ModuleNotFoundError:
     from scripts.stable_output import file_contents_match, json_payload_matches, previous_timestamp, tree_contents_match
 
 try:
+    from source_repairs import apply_reviewed_source_repairs
+except ModuleNotFoundError:
+    from scripts.source_repairs import apply_reviewed_source_repairs
+
+try:
     from source_quality import inspect_source_quality
 except ModuleNotFoundError:
     from scripts.source_quality import inspect_source_quality
@@ -162,6 +167,7 @@ FATAL_REPORT_KINDS = {
     "unsupported-script",
     "unsupported-system",
     "source-quality",
+    "source-repair-blocked",
     "script-verification",
 }
 LOON_SCRIPT_COMMON_PROPERTIES = {
@@ -2027,11 +2033,15 @@ def safe_module_filename(name: str, seen: dict[str, int]) -> str:
 
 
 def parse_lpx(path: Path) -> tuple[OrderedDict[str, str], dict[str, list[str]]]:
+    return parse_lpx_text(path.read_bytes().decode("utf-8"))
+
+
+def parse_lpx_text(text: str) -> tuple[OrderedDict[str, str], dict[str, list[str]]]:
     metadata: OrderedDict[str, str] = OrderedDict()
     source_sections: dict[str, list[str]] = {}
     current_section: str | None = None
 
-    for raw in path.read_text(encoding="utf-8").splitlines():
+    for raw in text.splitlines():
         line = raw.strip()
         if not line:
             continue
@@ -2239,9 +2249,14 @@ def convert_file(
     report: list[dict[str, str]],
     seen_files: dict[str, int],
 ) -> dict[str, Any] | None:
-    metadata, source_sections = parse_lpx(path)
+    raw_source = path.read_bytes().decode("utf-8")
+    source_text, repair_items = apply_reviewed_source_repairs(path.name, raw_source)
+    report.extend(repair_items)
+    if any(item["kind"] == "source-repair-blocked" for item in repair_items):
+        return None
+    metadata, source_sections = parse_lpx_text(source_text)
     report_unsupported_source_sections(source_sections, report, path.name)
-    quality_items = inspect_source_quality(path.name, source_sections, source_text=path.read_text(encoding="utf-8"))
+    quality_items = inspect_source_quality(path.name, source_sections, source_text=source_text)
     report.extend(quality_items)
     if any(item["kind"] == "source-quality" for item in quality_items):
         return None
@@ -2275,6 +2290,16 @@ def convert_file(
             continue
         try:
             script = parse_script_v2_line(line)
+            if script.trigger == "generic":
+                generic_path = script_v2_constant(script.path, "Script path")
+                if generic_path == WARP_PANEL_SCRIPT_PATH and (
+                    isinstance(script.properties.get("enable"), V2Variable) or script.properties.get("enable") is False
+                ):
+                    raise UnverifiedScriptV2("WARP Panel adaptation requires an enabled script; dynamic or disabled Panel/Script linkage is not verified")
+                if generic_path == NODE_LINK_CHECK_SCRIPT_PATH and any(
+                    surge_argument_name(name) == "Policy" for name in argument_defaults
+                ):
+                    raise UnverifiedScriptV2("NodeLinkCheck injected Policy argument collides with an existing source declaration")
             adapted = adapt_script_v2(script, script_context, source_loader=fetch_script_source)
             name, parts = prepare_script_v2(adapted.script)
             parts = adapted.apply_parts(parts)

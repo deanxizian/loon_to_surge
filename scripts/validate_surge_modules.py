@@ -17,6 +17,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from surge_syntax import tokenize_surge_line  # noqa: E402
 from source_quality import inspect_source_quality, validate_generated_json_mock  # noqa: E402
+from source_repairs import apply_reviewed_source_repairs  # noqa: E402
 
 from convert_kelee_to_surge import (  # noqa: E402
     BASE_MODULE_FEATURE_REQUIREMENT,
@@ -34,6 +35,7 @@ from convert_kelee_to_surge import (  # noqa: E402
     VERIFIED_SURGE_GENERIC_SCRIPT_PATHS,
     module_semantics_problem,
     parse_lpx,
+    parse_lpx_text,
     split_top_level,
     strip_wrapping_parentheses,
     unquote_property_value,
@@ -54,6 +56,7 @@ INFORMATIONAL_REPORT_KINDS = {
     "script-enable-toggle-emitted",
     "script-property-corrected",
     "source-quality-unverified",
+    "source-repair-applied",
     "script-object-adapted",
     "script-dynamic-cron-adapted",
 }
@@ -492,7 +495,15 @@ def validate_surge_modules(
     # A stale or tampered report must not make known source defects publishable.
     for source in loon_files:
         try:
-            _, source_sections = parse_lpx(source)
+            source_text, expected_repairs = apply_reviewed_source_repairs(source.name, source.read_bytes().decode("utf-8"))
+            for item in expected_repairs:
+                if item["kind"] == "source-repair-blocked":
+                    errors.append(f"{source.name}: source repair: {item['message']}")
+            actual_repairs = [item for item in items if item.get("file") == source.name and item.get("kind") == "source-repair-applied"]
+            expected_applied = [item for item in expected_repairs if item["kind"] == "source-repair-applied"]
+            if actual_repairs != expected_applied:
+                errors.append(f"{source.name}: source repair provenance does not match pinned raw source")
+            _, source_sections = parse_lpx_text(source_text)
             for item in inspect_source_quality(source.name, source_sections):
                 if item["kind"] == "source-quality":
                     errors.append(f"{source.name}: source quality: {item['message']}")

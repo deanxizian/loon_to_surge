@@ -457,7 +457,7 @@ Loon 的 `img-url` 只用于其 generic 脚本界面，Surge `[Script]` 没有�
 - Object 参数：仅精确 URL + SHA-256 白名单中的 Spotify、网易云、YouTube 去广告/字幕脚本；核对其真实 String 解码分支，保留 Boolean/String 类型。仅接受已验证的 switch/select 值域；源码下载失败或 hash 变化记录 `script-verification` 并阻断，不能按临时排除继续发布。
 - 动态 Cron：声明默认值和所有有限选项须通过五/六段数字表达式检查；无引号、控制字符、占位符注入。Surge 用户仍须输入合法 Cron。
 - 动态 enable：只接受 Boolean switch，且同一参数不用于其他语义；输出 `#`/空前缀，不静默折叠共享动态变量。
-- NodeLinkCheck/WARP 新版 generic 复用专用 Policy/Panel 适配，其他 generic/network-changed 继续排除。
+- NodeLinkCheck/WARP 新版 generic 复用专用 Policy/Panel 适配，其他 generic/network-changed 继续排除。V2 NodeLinkCheck 若已有归一化名为 `Policy` 的声明会排除，避免注入参数碰撞；WARP 带动态 enable 或静态禁用时排除，避免 Panel/Script 链接产生未验证行为。
 
 Surge 是自由文本参数 UI，无法强制原 Loon 选项范围；仅声明值域内的参数受支持。Script V2 复合条件、未核实 Object、其他动态属性、本地脚本路径、URL `/m` 或 `/s` 仍整模块排除。FollowRSS、IT之家没有 String 参数解码分支；贴吧的分支改变字符串真值；WPS query 分隔符无法无损携带任意输入，目前不强转这些模块。
 
@@ -538,7 +538,7 @@ hostname = %APPEND% example.com, *.example.org
 
 `source_quality.py` 检查内联 JSON mock 的 UTF-8、Base64 和严格 JSON；生成端再次检查声明 JSON 的 Map Local 实际内容。车来了六个精确来源/URL允许已验证的协议外壳，内部仍须是合法 JSON；不全局放行这类外壳。远程/动态内容不能静态核验时明确记录验证范围。
 
-2026-10-02 已核实的八模块十五处对象/数组变字符串，按文件名、URL、动作、路径和值的精确组合阻断，不自动改写任何普通 JSON String。顺丰截断 JSON 和驾校一点通畸形规则继续报错；应由上游纠正或另行人工核对补丁，而非忽略行后发布。
+2026-10-02 已核实的八模块十五处对象/数组变字符串，按文件名、URL、动作、路径和值的精确组合阻断，不自动改写任何普通 JSON String。上述原始缺陷默认继续报错；已单独核对并授权的十项兼容补丁在 `source_repairs.py` 中以完整文件 SHA-256 固定。修复只在内存进行，原始下载文件保留。每条原始行、替换行和最终文件均校验 hash，任何断言失败均不应用部分修复；未知版本记录 `source-repair-blocked`，不得沿用旧补丁。补丁恢复十五处类型、驾校的 URL 和十二个删除字段、顺丰逐字节验证的完整旧 JSON。完整出处和语义回归见 `tests/fixtures/source-repairs/`。独立 validator 会重算修复并逐项核对报告出处，不能通过删掉或伪造报告放行。
 
 ## 报告类型
 
@@ -548,6 +548,8 @@ hostname = %APPEND% example.com, *.example.org
 - `script-object-adapted`：按精确源码版本核对的 String 解码器映射 Object 参数，报告源码 SHA-256；发布后远程 URL 仍可变。
 - `script-dynamic-cron-adapted`：通过声明检查的参数化 Cron。
 - `source-quality-unverified`：远程/动态 JSON 内容不在本次离线内容验证范围。
+- `source-repair-applied`：按精确源版本应用已审查补丁，记录原始/修复/历史文件 hash 和行 hash；原始下载不变。
+- `source-repair-blocked`：已审查文件遇到未知版本，或补丁断言失败，致命。
 - `source-quality`：已确认的源 JSON 损坏或已验证类型漂移，致命。
 - `script-verification`：必需脚本源码无法下载或版本与已审查版本不符，致命。
 - `generic-script-adapted`：已核实的 generic 使用其原生 Surge 接口补充了 Policy 参数或 Panel 配置。
@@ -573,7 +575,7 @@ hostname = %APPEND% example.com, *.example.org
 - `mitm-unsupported`：MITM 行不支持。
 - `unsupported-system`：Loon 平台限制无法映射为 Surge 的 `ios/mac`。
 
-`argument-unused-dropped`、`generic-script-adapted`、`script-object-adapted`、`script-dynamic-cron-adapted`、`source-quality-unverified`、`module-excluded`、`script-enable-*`、`script-property-corrected`、`rewrite-empty-skipped`、`rewrite-action-corrected` 和 `jq-expression-corrected` 是成功生成后的知情报告；其中 `module-excluded` 表示对应模块没有发布到 Surge。`source-quality`、`script-verification`、`general-pass-through`、`jq-path-inline-failed`、`unsupported-*`、`argument-parse`、`argument-default`、`argument-name-collision`、`mitm-unsupported` 属于致命转换错误；出现时 GitHub Action 失败并保留上一版 Surge 产物。
+`argument-unused-dropped`、`generic-script-adapted`、`script-object-adapted`、`script-dynamic-cron-adapted`、`source-quality-unverified`、`source-repair-applied`、`module-excluded`、`script-enable-*`、`script-property-corrected`、`rewrite-empty-skipped`、`rewrite-action-corrected` 和 `jq-expression-corrected` 是成功生成后的知情报告；其中 `module-excluded` 表示对应模块没有发布到 Surge。`source-repair-blocked`、`source-quality`、`script-verification`、`general-pass-through`、`jq-path-inline-failed`、`unsupported-*`、`argument-parse`、`argument-default`、`argument-name-collision`、`mitm-unsupported` 属于致命转换错误；出现时 GitHub Action 失败并保留上一版 Surge 产物。
 
 因此，成功生成的 `convert-report.json` 中存在 warning 不等于模块不可用。当前上游的空 JQ 和错标 JQ 会被明确记录，不会生成空规则或拆坏的规则。
 

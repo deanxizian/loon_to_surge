@@ -73,9 +73,12 @@ class UpgradeRegressionTest(unittest.TestCase):
             self.assertIn('script-name=generic 1',output)
             self.assertIn('generic 1 = type=generic',output)
 
-    def test_actual_migrated_driving_school_line_remains_a_blocker(self):
-        _, report = self.convert('JiaXiaoDrive_remove_ads.lpx')
-        self.assertTrue(any(item['kind'] == 'unsupported-rewrite' and 'JSON key path' in item['message'] for item in report))
+    def test_exact_migrated_driving_school_line_is_repaired_with_provenance(self):
+        output, report = self.convert('JiaXiaoDrive_remove_ads.lpx')
+        self.assertEqual([item['kind'] for item in report], ['source-repair-applied'])
+        self.assertIn('api\\.ksedt\\.com', output)
+        self.assertIn('examPageLoadADSwitch', output)
+        self.assertNotIn('(?i:http-response)', output)
 
     @unittest.skipUnless(shutil.which('jq'), 'jq is required for compilation checks')
     def test_real_supported_fixtures_pass_staged_full_validation(self):
@@ -192,6 +195,26 @@ response if ${url} ~= /ads/ then script("https://kelee.one/Resource/JavaScript/S
                 self.assertIsNone(result)
                 self.assertEqual([item['kind'] for item in report],['script-verification'])
 
+    def test_warp_dynamic_or_disabled_panel_linkage_is_explicitly_excluded(self):
+        for enable in ('${Enabled}', 'false'):
+            with self.subTest(enable=enable), tempfile.TemporaryDirectory() as tmp:
+                root=Path(tmp);source=root/'Warp.lpx'
+                source.write_text('#!name=Warp\n[Argument]\nEnabled=switch,false,true\n[Script]\ngeneric then script("https://raw.githubusercontent.com/VirgilClyne/Cloudflare/main/js/1.1.1.1.panel.js") with enable='+enable+', tag="WARP INFO"\n')
+                report=[];result=convert_file(source,root,report,{})
+                self.assertIsNone(result)
+                self.assertEqual([item['kind'] for item in report],['module-excluded'])
+                self.assertIn('Panel/Script linkage',report[0]['message'])
+
+    def test_injected_policy_never_reuses_an_existing_declaration(self):
+        for declaration in ('Policy=switch,false,true', 'Policy=input,"PROXY"', 'Policy=select,"A","B"'):
+            with self.subTest(declaration=declaration), tempfile.TemporaryDirectory() as tmp:
+                root=Path(tmp);source=root/'Node.lpx'
+                source.write_text('#!name=Node\n[Argument]\n'+declaration+'\n[Script]\ngeneric then script("https://kelee.one/Resource/JavaScript/NodeLinkCheck/NodeLinkCheck.js")\n')
+                report=[];result=convert_file(source,root,report,{})
+                self.assertIsNone(result)
+                self.assertEqual([item['kind'] for item in report],['module-excluded'])
+                self.assertIn('Policy argument collides',report[0]['message'])
+
     def test_dynamic_enable_and_cron_keep_declared_defaults(self):
         source='''#!name=Dynamic
 [Argument]
@@ -211,3 +234,41 @@ cron ${Cron} then script("https://example.com/a.js") with enable=${Enabled}, tag
                 self.assertIn('{{{Enabled}}}Daily = type=cron, cronexp="{{{Cron}}}"',output)
                 self.assertEqual(validate_surge_modules('Loon','Surge','Surge/convert-report.json')['modules'],1)
             finally:os.chdir(before)
+
+
+class SourceRepairIntegrationTest(unittest.TestCase):
+    def source(self):
+        return (Path(__file__).parent/'fixtures/source-repairs/upstream/BaiduMap_remove_ads.lpx').read_bytes()
+
+    def test_raw_source_is_preserved_and_repair_provenance_cannot_be_forged(self):
+        with tempfile.TemporaryDirectory() as tmp,contextlib.redirect_stdout(io.StringIO()):
+            root=Path(tmp);(root/'Loon').mkdir();p=root/'Loon'/'BaiduMap_remove_ads.lpx';p.write_bytes(self.source())
+            before=Path.cwd()
+            try:
+                os.chdir(root)
+                convert_kelee_to_surge('Loon','Surge','Surge/convert-report.json')
+                self.assertEqual(p.read_bytes(),self.source())
+                report_path=root/'Surge'/'convert-report.json'
+                report=json.loads(report_path.read_text())
+                self.assertEqual(report['items'][0]['kind'],'source-repair-applied')
+                report['items'][0]['source_sha256']='0'*64
+                report_path.write_text(json.dumps(report))
+                with self.assertRaisesRegex(RuntimeError,'source repair provenance'):
+                    validate_surge_modules('Loon','Surge','Surge/convert-report.json')
+            finally:os.chdir(before)
+
+    def test_crlf_or_unknown_source_version_cannot_replace_previous_output(self):
+        for changed in (self.source().replace(b'\n',b'\r\n'),self.source()+b'\n# upstream update\n'):
+            with self.subTest(size=len(changed)),tempfile.TemporaryDirectory() as tmp:
+                root=Path(tmp);(root/'Loon').mkdir();(root/'Surge').mkdir()
+                (root/'Loon'/'BaiduMap_remove_ads.lpx').write_bytes(changed)
+                for name in ('previous.sgmodule','convert-report.json','modules.index.json'):
+                    (root/'Surge'/name).write_bytes(b'previous '+name.encode())
+                prior={p.name:p.read_bytes() for p in (root/'Surge').iterdir()}
+                before=Path.cwd()
+                try:
+                    os.chdir(root)
+                    with self.assertRaisesRegex(RuntimeError,'source-repair-blocked'):
+                        convert_kelee_to_surge('Loon','Surge','Surge/convert-report.json')
+                    self.assertEqual(prior,{p.name:p.read_bytes() for p in (root/'Surge').iterdir()})
+                finally:os.chdir(before)
