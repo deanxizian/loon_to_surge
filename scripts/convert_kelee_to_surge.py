@@ -1821,6 +1821,9 @@ def prepare_script_v2(script: V2Script) -> tuple[str | None, list[str]]:
     name = script_v2_constant(tag, "Script tag") if tag is not None else None
     if name is not None and (not name.strip() or name != name.strip() or "=" in name or name.startswith(("#", ";", "//", "["))):
         raise UnverifiedScriptV2("Script tag cannot be represented safely as a Surge script name")
+    if script.trigger == "generic" and path == WARP_PANEL_SCRIPT_PATH and name is not None:
+        if any(char in name for char in (",", '"', "'", "\\")):
+            raise UnverifiedScriptV2("WARP tag contains Panel reference delimiters that are not safely represented")
     return name, parts
 
 

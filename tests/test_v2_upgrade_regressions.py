@@ -205,6 +205,16 @@ response if ${url} ~= /ads/ then script("https://kelee.one/Resource/JavaScript/S
                 self.assertEqual([item['kind'] for item in report],['module-excluded'])
                 self.assertIn('Panel/Script linkage',report[0]['message'])
 
+    def test_warp_panel_reference_delimiters_are_excluded_before_generation(self):
+        for tag in ('WARP, INFO', 'WARP "INFO"', "WARP 'INFO'", 'WARP \\ INFO'):
+            with self.subTest(tag=tag), tempfile.TemporaryDirectory() as tmp:
+                root=Path(tmp);source=root/'Warp.lpx'
+                source.write_text('#!name=Warp\n[Script]\ngeneric then script("https://raw.githubusercontent.com/VirgilClyne/Cloudflare/main/js/1.1.1.1.panel.js") with tag='+json.dumps(tag)+'\n')
+                report=[];result=convert_file(source,root,report,{})
+                self.assertIsNone(result)
+                self.assertEqual([item['kind'] for item in report],['module-excluded'])
+                self.assertIn('Panel reference delimiters',report[0]['message'])
+
     def test_injected_policy_never_reuses_an_existing_declaration(self):
         for declaration in ('Policy=switch,false,true', 'Policy=input,"PROXY"', 'Policy=select,"A","B"'):
             with self.subTest(declaration=declaration), tempfile.TemporaryDirectory() as tmp:
