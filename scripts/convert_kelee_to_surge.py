@@ -7,7 +7,7 @@ import re
 import shutil
 import tempfile
 import urllib.request
-from collections import OrderedDict
+from collections import Counter, OrderedDict
 from collections.abc import Callable
 from datetime import datetime
 from functools import cache
@@ -2272,6 +2272,7 @@ def convert_file(
     *,
     script_source_loader: Callable[[str], bytes] | None = None,
 ) -> dict[str, Any] | None:
+    report_start = len(report)
     raw_source = path.read_bytes().decode("utf-8")
     source_text, repair_items = apply_reviewed_source_repairs(path.name, raw_source)
     report.extend(repair_items)
@@ -2316,7 +2317,7 @@ def convert_file(
         (line for section, lines in source_sections.items() if section.lower() not in {"argument", "script"} for line in lines),
     )
     adapted_scripts = {}
-    prepared_scripts: dict[str, tuple[V2Script, str | None, list[str]]] = {}
+    prepared_scripts: dict[int, tuple[V2Script, str | None, list[str]]] = {}
     unverified_scripts: list[tuple[str, str]] = []
     invalid_scripts = False
     for script_index, line in enumerate(script_lines, start=1):
@@ -2337,9 +2338,9 @@ def convert_file(
             adapted = adapt_script_v2(script, script_context, source_loader=script_source_loader or fetch_script_source)
             name, parts = prepare_script_v2(adapted.script)
             parts = adapted.apply_parts(parts)
-            adapted_scripts[line] = adapted
+            adapted_scripts[script_index] = adapted
             name = name or f"{script.trigger} {script_index}"
-            prepared_scripts[line] = (script, name, parts)
+            prepared_scripts[script_index] = (script, name, parts)
         except (UnverifiedScriptV2, UnverifiedScriptArgument) as exc:
             unverified_scripts.append((line, str(exc)))
         except ScriptSourceVerificationError as exc:
@@ -2355,11 +2356,11 @@ def convert_file(
         add_report(report, path.name, "module-excluded", f"Module was excluded from Surge output: Script V2 {reason}.", line)
         return None
     generic_scripts = generic_script_properties(legacy_script_lines)
-    for line, (script, name, parts) in prepared_scripts.items():
+    for script_index, (script, name, parts) in prepared_scripts.items():
         if script.trigger == "generic":
             props = OrderedDict((part.partition("=")[0], part.partition("=")[2]) for part in parts)
             props["tag"] = name or "generic"
-            generic_scripts.append((line, props))
+            generic_scripts.append((script_lines[script_index - 1], props))
     generic_paths = {
         unquote_property_value(props.get("script-path", ""))
         for _, props in generic_scripts
@@ -2479,10 +2480,10 @@ def convert_file(
             )
             return None
 
-    for line in script_lines:
-        if line in prepared_scripts:
-            script, name, parts = prepared_scripts[line]
-            adapted = adapted_scripts[line]
+    for script_index, line in enumerate(script_lines, start=1):
+        if script_index in prepared_scripts:
+            script, name, parts = prepared_scripts[script_index]
+            adapted = adapted_scripts[script_index]
             prefix = adapted.enable_prefix if adapted.enable_prefix is not None else ("#" if script.properties.get("enable") is False else "")
             if adapted.argument_codec:
                 add_report(report, path.name, "script-object-adapted",
@@ -2552,6 +2553,20 @@ def convert_file(
 
     output: list[str] = []
     surge_system = convert_system_metadata(metadata.get("system"), report, path.name)
+    shared_http_names = sorted(name for name, count in Counter(
+        surge_script_reference_name(line) for line in sections["Script"]
+        if parse_properties(line.partition(" = ")[2]).get("type") in {"http-request", "http-response"}
+    ).items() if count > 1)
+    if shared_http_names and not fatal_report_items(report[report_start:]):
+        add_report(report, path.name, "script-http-name-shared",
+                   "Preserved repeated explicit HTTP Script names and source order. Surge documents "
+                   "line-based first-match selection, not a global name-uniqueness rule; repeated-name "
+                   "runtime behavior has not been device-tested. Names are observable via $script.name.",
+                   ", ".join(shared_http_names))
+    if not any(sections.values()) and not fatal_report_items(report[report_start:]):
+        add_report(report, path.name, "module-excluded",
+                   "Module was excluded because supported no-op conversion leaves no effective Surge sections.", "")
+        return None
     for key in ("name", "desc", "author", "icon"):
         if key in metadata:
             output.append(f"#!{key}={metadata[key]}")

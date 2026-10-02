@@ -885,7 +885,7 @@ request if ${url} ~= /^https:\/\/old\.example\/(.+)$/ as item then url.replace("
         self.assertIn("uses $n syntax", report[0]["message"])
 
     def test_empty_legacy_jq_is_skipped_and_reported(self) -> None:
-        output, report = self.convert_lpx(
+        output, report = self.convert_lpx_result(
             r'''#!name=Sample
 
 [Rewrite]
@@ -893,8 +893,8 @@ request if ${url} ~= /^https:\/\/old\.example\/(.+)$/ as item then url.replace("
 '''
         )
 
-        self.assertNotIn("[Body Rewrite]", output)
-        self.assertEqual([item["kind"] for item in report], ["rewrite-empty-skipped"])
+        self.assertIsNone(output)
+        self.assertEqual([item["kind"] for item in report], ["rewrite-empty-skipped", "module-excluded"])
 
     def test_mislabeled_json_delete_jq_is_preserved_as_one_expression(self) -> None:
         output, report = self.convert_lpx(

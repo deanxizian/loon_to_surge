@@ -62,6 +62,7 @@ INFORMATIONAL_REPORT_KINDS = {
     "source-repair-applied",
     "script-object-adapted",
     "script-dynamic-cron-adapted",
+    "script-http-name-shared",
 }
 MAP_LOCAL_DATA_TYPES = {"base64", "file", "text", "tiny-gif"}
 MAP_LOCAL_OPTIONS = {"data", "data-type", "header", "status-code"}

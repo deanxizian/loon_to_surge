@@ -35,6 +35,10 @@
 
 生成时会先写入临时目录，转换完成后再替换 `Surge` 目录和报告文件。若生成内容没有变化，`convert-report.json` 里的 `generated_at` 会尽量保持不变。报告中的 `total`、`converted`、`excluded` 分别表示 Loon 输入数、Surge 输出数和主动排除数；Surge 清单与排除报告必须完整覆盖全部 Loon 输入。
 
+受支持的空操作（例如空 JQ）或未使用参数处理后，若没有任何生成 section，模块会明确记录 `module-excluded`，不生成仅含元数据的模块。已有致命诊断优先，不能改记为排除来绕过发布阻断。固定禁用的 Script 定义仍按现有注释形式保留。
+
+Script V2 按源文件中的出现顺序逐条准备；重复文本也保留独立序号。显式 HTTP 脚本 tag 保留原值，不因同名而改名或整项排除；同名情况记录非阻断的 `script-http-name-shared`，注明未做该边界的 Surge 真机验证：[Surge Profile Format](https://manual.nssurge.com/profile/format.html) 明确 `[Script]` 为逐行 section，[HTTP 脚本](https://manual.nssurge.com/scripting/overview.html) 按配置顺序首次匹配。Panel 按名称引用的歧义检查仍保留；不把引用型限制推广成所有 HTTP 脚本名称必须唯一。
+
 输入只接受非空的 `[Argument]`、`[General]`、`[Rule]`、`[Rewrite]`、`[Script]` 和 `[MITM]`。出现其他非空 section，或仅大小写不同的重复 section 时，会记录 `unsupported-section` 并终止发布，避免静默丢掉上游新语法。
 
 ## 元数据
