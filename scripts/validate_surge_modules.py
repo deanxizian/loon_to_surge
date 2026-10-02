@@ -662,6 +662,8 @@ def validate_surge_modules(
                                       for key, separator, value in [part.partition("=")] if separator)
                     if properties.get("type") == "generic" and unquote_property_value(properties.get("script-path", "")) == WARP_PANEL_SCRIPT_PATH:
                         warp_script_names.add(identifier)
+                        if line.startswith("#") or re.match(r"^\{\{\{[A-Za-z_][A-Za-z0-9_]*\}\}\}", line):
+                            errors.append(f"{path.name}:{number}: WARP Script must be unconditionally enabled for Panel linkage")
                 if name == "Body Rewrite":
                     try:
                         tokens = tokenize_surge_line(line)

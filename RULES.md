@@ -461,7 +461,7 @@ Loon 的 `img-url` 只用于其 generic 脚本界面，Surge `[Script]` 没有�
 - Object 参数：仅精确 URL + SHA-256 白名单中的 Spotify、网易云、YouTube 去广告/字幕脚本；核对其真实 String 解码分支，保留 Boolean/String 类型。仅接受已验证的 switch/select 值域；源码下载失败或 hash 变化记录 `script-verification` 并阻断，不能按临时排除继续发布。
 - 动态 Cron：声明默认值和所有有限选项须通过五/六段数字表达式检查；无引号、控制字符、占位符注入。Surge 用户仍须输入合法 Cron。
 - 动态 enable：只接受 Boolean switch，且同一参数不用于其他语义；输出 `#`/空前缀，不静默折叠共享动态变量。
-- NodeLinkCheck/WARP 新版 generic 复用专用 Policy/Panel 适配，其他 generic/network-changed 继续排除。V2 NodeLinkCheck 若已有归一化名为 `Policy` 的声明会排除，避免注入参数碰撞；WARP 带动态 enable 或静态禁用时排除；标签含逗号、引号或反斜杠等 Panel 引用分隔符也会排除；模块只适配一条 WARP generic，Panel 目标须在展开 enable 前缀后仍唯一；独立校验会拒绝缺失 Panel 的 WARP Script。所有 V2 Script 名称拒绝空格后的注释分隔符，避免定义被截断。
+- NodeLinkCheck/WARP 新版 generic 复用专用 Policy/Panel 适配，其他 generic/network-changed 继续排除。V2 NodeLinkCheck 若已有归一化名为 `Policy` 的声明会排除，避免注入参数碰撞；新旧语法 WARP 均在联网验签前排除动态 enable 或静态禁用（旧语法 false/0/off/no 等别名同样处理）；标签含控制字符、占位符、注释标记、逗号、引号或反斜杠等 Panel 引用分隔符也会排除。旧语法不擅自去掉标签引号，未闭合或含尾随文本的带引号标签先记为致命语法错误；模块只适配一条 WARP generic，Panel 目标须在展开 enable 前缀后仍唯一；独立校验会拒绝缺失 Panel、固定注释或动态前缀控制的 WARP Script。所有 V2 Script 名称拒绝空格后的注释分隔符，避免定义被截断。
 
 Surge 是自由文本参数 UI，无法强制原 Loon 选项范围；仅声明值域内的参数受支持。Script V2 复合条件、未核实 Object、其他动态属性、本地脚本路径、URL `/m` 或 `/s` 仍整模块排除。FollowRSS、IT之家没有 String 参数解码分支；贴吧的分支改变字符串真值；WPS query 分隔符无法无损携带任意输入，目前不强转这些模块。
 
@@ -579,7 +579,7 @@ hostname = %APPEND% example.com, *.example.org
 - `mitm-unsupported`：MITM 行不支持。
 - `unsupported-system`：Loon 平台限制无法映射为 Surge 的 `ios/mac`。
 
-`argument-unused-dropped`、`generic-script-adapted`、`script-object-adapted`、`script-dynamic-cron-adapted`、`source-quality-unverified`、`source-repair-applied`、`module-excluded`、`script-enable-*`、`script-property-corrected`、`rewrite-empty-skipped`、`rewrite-action-corrected` 和 `jq-expression-corrected` 是成功生成后的知情报告；其中 `module-excluded` 表示对应模块没有发布到 Surge。`source-repair-blocked`、`source-quality`、`script-verification`、`general-pass-through`、`jq-path-inline-failed`、`unsupported-*`、`argument-parse`、`argument-default`、`argument-name-collision`、`mitm-unsupported` 属于致命转换错误；出现时 GitHub Action 失败并保留上一版 Surge 产物。
+`argument-unused-dropped`、`generic-script-adapted`、`script-object-adapted`、`script-dynamic-cron-adapted`、`script-http-name-shared`、`source-quality-unverified`、`source-repair-applied`、`module-excluded`、`script-enable-*`、`script-property-corrected`、`rewrite-empty-skipped`、`rewrite-action-corrected` 和 `jq-expression-corrected` 是成功生成后的知情报告；其中 `module-excluded` 表示对应模块没有发布到 Surge。`source-repair-blocked`、`source-quality`、`script-verification`、`general-pass-through`、`jq-path-inline-failed`、`unsupported-*`、`argument-parse`、`argument-default`、`argument-name-collision`、`mitm-unsupported` 属于致命转换错误；出现时 GitHub Action 失败并保留上一版 Surge 产物。
 
 因此，成功生成的 `convert-report.json` 中存在 warning 不等于模块不可用。当前上游的空 JQ 和错标 JQ 会被明确记录，不会生成空规则或拆坏的规则。
 

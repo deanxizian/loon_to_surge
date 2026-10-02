@@ -654,6 +654,25 @@ def validate_script_properties(
     if empty:
         errors.append(f"Empty script property/properties: {', '.join(empty)}")
 
+    if script_type == "generic" and unquote_property_value(props.get("script-path", "")) == WARP_PANEL_SCRIPT_PATH:
+        tag = props.get("tag", "")
+        quote = ""
+        escaped = False
+        for char in tag:
+            if quote:
+                if escaped:
+                    escaped = False
+                elif char == "\\":
+                    escaped = True
+                elif char == quote:
+                    quote = ""
+            elif char in ('"', "'"):
+                quote = char
+        if quote:
+            errors.append("Unable to parse unbalanced WARP tag quoting safely")
+        if tag.startswith(('"', "'")) and not re.fullmatch(r'''(?:"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')''', tag):
+            errors.append("Malformed quoted WARP tag")
+
     for key in ("binary-body-mode", "debug", "requires-body", "wake-system"):
         if key in props and props[key].lower() not in {"true", "false"}:
             errors.append(f"{key} must be true or false")
@@ -1770,6 +1789,21 @@ def surge_script_reference_name(line: str) -> str:
     return re.sub(r"^(?:\{\{\{[A-Za-z_][A-Za-z0-9_]*\}\}\})+", "", name)
 
 
+def warp_script_name_problem(name: str) -> str | None:
+    """Bounded common name checks for legacy and V2 WARP Panel references."""
+    if re.search(r"[\x00-\x1f\x7f]", name):
+        return "Script tag contains control characters"
+    if re.search(r"\{[A-Za-z_][A-Za-z0-9_.-]*\}|%[A-Za-z_][A-Za-z0-9_]*%", name):
+        return "Script tag contains literal placeholder-like text"
+    if not name.strip() or name != name.strip() or "=" in name or name.startswith(("#", ";", "//", "[")):
+        return "Script tag cannot be represented safely as a Surge script name"
+    if script_name_has_inline_comment(name):
+        return "Script tag contains a Surge inline-comment delimiter"
+    if any(char in name for char in (",", '"', "'", "\\")):
+        return "WARP tag contains Panel reference delimiters that are not safely represented"
+    return None
+
+
 def prepare_script_v2(script: V2Script) -> tuple[str | None, list[str]]:
     path = script_v2_constant(script.path, "Script path")
     if script.trigger == "network-changed" or (script.trigger == "generic" and path not in VERIFIED_SURGE_GENERIC_SCRIPT_PATHS):
@@ -1835,8 +1869,8 @@ def prepare_script_v2(script: V2Script) -> tuple[str | None, list[str]]:
     if name is not None and script_name_has_inline_comment(name):
         raise UnverifiedScriptV2("Script tag contains a Surge inline-comment delimiter")
     if script.trigger == "generic" and path == WARP_PANEL_SCRIPT_PATH and name is not None:
-        if any(char in name for char in (",", '"', "'", "\\")):
-            raise UnverifiedScriptV2("WARP tag contains Panel reference delimiters that are not safely represented")
+        if problem := warp_script_name_problem(name):
+            raise UnverifiedScriptV2(problem)
     return name, parts
 
 
@@ -2384,7 +2418,19 @@ def convert_file(
                        "Module was excluded because multiple WARP generic entries require independently verified Panel mappings.", warp_entries[0][0])
             return None
         warp_line, warp_props = warp_entries[0]
+        warp_enable = warp_props.get("enable")
+        if warp_enable is not None and (
+            enable_argument_name(warp_enable) is not None or surge_toggle_default(warp_enable) == "#"
+        ):
+            add_report(report, path.name, "module-excluded",
+                       "Module was excluded because WARP Panel adaptation requires an enabled script; "
+                       "dynamic or disabled Panel/Script linkage is not verified.", warp_line)
+            return None
         script_name = warp_props.get("tag") or "WARP INFO"
+        if problem := warp_script_name_problem(script_name):
+            add_report(report, path.name, "module-excluded",
+                       "Module was excluded because " + problem + ".", warp_line)
+            return None
         # Check Panel identity locally before Object-source verification. For V2
         # only names are needed, so no unverified Object argument is rendered.
         # Legacy conversion is local and preserves its position-based names.
