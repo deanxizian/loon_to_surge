@@ -1,0 +1,32 @@
+[
+  {
+    "file": "KuGou_remove_ads.lpx",
+    "url": "https://kelee.one/Tool/Loon/Lpx/KuGou_remove_ads.lpx",
+    "sha256": "39f97929d07a1400995c787670600c3954b3b929d59f1a23dcd09d4d93f0387b",
+    "retrieved_at": "2026-10-02T10:55:25Z"
+  },
+  {
+    "file": "iQiYi_Video_remove_ads.lpx",
+    "url": "https://kelee.one/Tool/Loon/Lpx/iQiYi_Video_remove_ads.lpx",
+    "sha256": "def8536ae65bb360c12c1234d471a1402c3972081750b099b1b1ba85cdca579b",
+    "retrieved_at": "2026-10-02T10:55:25Z"
+  },
+  {
+    "file": "NodeLinkCheck.lpx",
+    "url": "https://kelee.one/Tool/Loon/Lpx/NodeLinkCheck.lpx",
+    "sha256": "4335d32f3e4d42e286392eb613dd03f7a3c859ac3c89373f9a27ce27e3b5267c",
+    "retrieved_at": "2026-10-02T10:55:25Z"
+  },
+  {
+    "file": "WARP_Node_Query.lpx",
+    "url": "https://kelee.one/Tool/Loon/Lpx/WARP_Node_Query.lpx",
+    "sha256": "c6b28e5f7064f045c8a893d01fcc512468aaa7a2d8ff8000e15e637d8d4f5b1f",
+    "retrieved_at": "2026-10-02T10:55:25Z"
+  },
+  {
+    "file": "JiaXiaoDrive_remove_ads.lpx",
+    "url": "https://kelee.one/Tool/Loon/Lpx/JiaXiaoDrive_remove_ads.lpx",
+    "sha256": "b6c356cb056a05bcaae4985bbdb23f520dfbb250d0582bc7ee8f235298073eb1",
+    "retrieved_at": "2026-10-02T10:55:25Z"
+  }
+]

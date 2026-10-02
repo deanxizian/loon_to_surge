@@ -26,6 +26,20 @@ except ModuleNotFoundError:
     from scripts.stable_output import file_contents_match, json_payload_matches, previous_timestamp, tree_contents_match
 
 try:
+    from source_quality import inspect_source_quality
+except ModuleNotFoundError:
+    from scripts.source_quality import inspect_source_quality
+
+try:
+    from script_v2_compat import (
+        adapt_script_v2, build_script_v2_context, UnverifiedScriptArgument, ScriptSourceVerificationError,
+    )
+except ModuleNotFoundError:
+    from scripts.script_v2_compat import (
+        adapt_script_v2, build_script_v2_context, UnverifiedScriptArgument, ScriptSourceVerificationError,
+    )
+
+try:
     from loon_script_v2 import V2ArgumentObject, V2Script, is_script_v2_line, parse_script_v2_line
 except ModuleNotFoundError:
     from scripts.loon_script_v2 import V2ArgumentObject, V2Script, is_script_v2_line, parse_script_v2_line
@@ -85,6 +99,7 @@ SECTION_ORDER = (
     "MITM",
 )
 JQ_PATH_CACHE: dict[str, str] = {}
+SCRIPT_SOURCE_CACHE: dict[str, bytes] = {}
 JSON_PATH_KEY_PATTERN = r"""[^.\[\]'"\\\s\x00-\x1f\x7f]+"""
 JSON_PATH_BRACKET_PATTERN = r"""\[(?:-?[0-9]+|'[^'"\\\[\]\x00-\x1f\x7f]*'|"[^'"\\\[\]\x00-\x1f\x7f]*")\]"""
 JSON_PATH_PATTERN = re.compile(
@@ -146,6 +161,8 @@ FATAL_REPORT_KINDS = {
     "unsupported-rewrite",
     "unsupported-script",
     "unsupported-system",
+    "source-quality",
+    "script-verification",
 }
 LOON_SCRIPT_COMMON_PROPERTIES = {
     "argument",
@@ -443,6 +460,15 @@ def convert_replace_pairs_to_jq(text: str) -> list[str]:
     return parts
 
 
+def fetch_script_source(url: str) -> bytes:
+    """Download bytes only for exact reviewed adapters; never execute JavaScript."""
+    if url not in SCRIPT_SOURCE_CACHE:
+        request = urllib.request.Request(url, headers={"User-Agent": LOON_USER_AGENT, "Accept": "*/*"})
+        with urllib.request.urlopen(request, timeout=30) as response:
+            SCRIPT_SOURCE_CACHE[url] = response.read()
+    return SCRIPT_SOURCE_CACHE[url]
+
+
 def fetch_jq_path(url: str) -> str:
     if url not in JQ_PATH_CACHE:
         request = urllib.request.Request(
@@ -463,42 +489,77 @@ def quote_jq_expression(text: str) -> str:
     return "'" + text.replace("'", "\\'") + "'"
 
 
+def normalize_jq_program(expression: str, report: list[dict[str, str]], file: str, line: str) -> str | None:
+    """Share legacy/V2 empty-program policy and known JQ compatibility repairs."""
+    if not expression.strip():
+        add_report(report, file, "rewrite-empty-skipped",
+                   "Empty JQ expression was skipped because Surge requires a non-empty JQ program.", line)
+        return None
+    # JQ interpolation can contain nested code and strings. A flat quote scan
+    # cannot classify those safely; leave such programs byte-for-byte intact.
+    if "\\(" in expression:
+        return expression
+    original = expression
+    for old, new in JQ_COMPATIBILITY_REWRITES:
+        # Never rewrite matching text inside a JQ string or a comment.
+        positions: set[int] = set()
+        quoted = escaped = comment = False
+        for index, char in enumerate(expression):
+            if comment:
+                if char == "\n":
+                    comment = False
+                continue
+            if quoted:
+                if escaped:
+                    escaped = False
+                elif char == "\\":
+                    escaped = True
+                elif char == '"':
+                    quoted = False
+                continue
+            if char == '#':
+                comment = True
+            elif char == '"':
+                quoted = True
+            else:
+                positions.add(index)
+        chunks: list[str] = []
+        cursor = 0
+        while True:
+            at = expression.find(old, cursor)
+            if at < 0:
+                chunks.append(expression[cursor:])
+                break
+            chunks.append(expression[cursor:at])
+            chunks.append(new if at in positions else old)
+            cursor = at + len(old)
+        expression = "".join(chunks)
+    if expression != original:
+        add_report(report, file, "jq-expression-corrected",
+                   "Normalized missing JQ token separators and variable-binding grouping so the expression compiles.", line)
+    return expression
+
+
 def convert_jq_expression(text: str, report: list[dict[str, str]], file: str, line: str) -> str | None:
     stripped = text.strip()
-    if not stripped or stripped in ("''", '""'):
-        add_report(
-            report,
-            file,
-            "rewrite-empty-skipped",
-            "Empty JQ expression was skipped because Surge requires a non-empty JQ program.",
-            line,
-        )
-        return None
-
     match = re.fullmatch(r'jq-path=(["\']?)(.+?)\1', stripped)
-    if not match:
+    if match:
+        url = match.group(2)
+        try:
+            expression = fetch_jq_path(url)
+        except Exception as exc:
+            add_report(report, file, "jq-path-inline-failed", f"Unable to inline jq-path {url}: {exc}", line)
+            return text
+    else:
         quote = stripped[0] if len(stripped) >= 2 and stripped[0] == stripped[-1] and stripped[0] in ("'", '"') else ""
         expression = stripped[1:-1] if quote else stripped
-        original_expression = expression
-        for old, new in JQ_COMPATIBILITY_REWRITES:
-            expression = expression.replace(old, new)
-        if expression != original_expression:
-            add_report(
-                report,
-                file,
-                "jq-expression-corrected",
-                "Normalized missing JQ token separators and variable-binding grouping so the expression compiles.",
-                line,
-            )
-            return quote_jq_expression(expression)
+    normalized = normalize_jq_program(expression, report, file, line)
+    if normalized is None:
+        return None
+    # Keep unchanged legacy quoting for stable old output.
+    if not match and normalized == expression:
         return stripped
-
-    url = match.group(2)
-    try:
-        return quote_jq_expression(fetch_jq_path(url))
-    except Exception as exc:  # noqa: BLE001 - keep converting the module and report the fallback.
-        add_report(report, file, "jq-path-inline-failed", f"Unable to inline jq-path {url}: {exc}", line)
-        return text
+    return quote_jq_expression(normalized)
 
 
 def parse_properties(text: str | None) -> OrderedDict[str, str]:
@@ -1347,7 +1408,9 @@ def convert_v2_body_action(
     return converted
 
 
-def convert_v2_json_action(action: V2Action, phase: str, pattern: str) -> list[tuple[str, str]] | None:
+def convert_v2_json_action(
+    action: V2Action, phase: str, pattern: str, report: list[dict[str, str]], file: str, line: str,
+) -> list[tuple[str, str]] | None:
     matched = re.fullmatch(r"(request|response)\.json\.(add|delete|replace|jq|jq_file)", action.name)
     if not matched:
         return None
@@ -1390,7 +1453,9 @@ def convert_v2_json_action(action: V2Action, phase: str, pattern: str) -> list[t
             source = fetch_jq_path(source)
         except Exception as exc:  # noqa: BLE001 - turn remote resource failures into a fatal conversion report.
             raise RewriteV2Error(f"Unable to inline jq_file {source}: {exc}") from exc
-    converted.append(("Body Rewrite", f"{direction} {pattern} {quote_jq_expression(source)}"))
+    normalized = normalize_jq_program(source, report, file, line)
+    if normalized is not None:
+        converted.append(("Body Rewrite", f"{direction} {pattern} {quote_jq_expression(normalized)}"))
     return converted
 
 
@@ -1476,18 +1541,26 @@ def convert_rewrite_v2_line(
         converted: list[tuple[str, str]] = []
 
         for action in rewrite.actions:
-            action_lines = (
-                convert_v2_url_action(action, rewrite.phase, pattern, condition, argument_names)
-                or convert_v2_reject_action(action, rewrite.phase, pattern)
-                or convert_v2_header_action(action, rewrite.phase, pattern, condition, argument_names)
-                or convert_v2_body_action(action, rewrite.phase, pattern, condition, argument_names)
-                or convert_v2_json_action(action, rewrite.phase, pattern)
-                or convert_v2_mock_action(action, rewrite.phase, pattern)
+            # [] is a supported no-op (empty JQ), while None means not this action.
+            action_lines = None
+            converters = (
+                lambda: convert_v2_url_action(action, rewrite.phase, pattern, condition, argument_names),
+                lambda: convert_v2_reject_action(action, rewrite.phase, pattern),
+                lambda: convert_v2_header_action(action, rewrite.phase, pattern, condition, argument_names),
+                lambda: convert_v2_body_action(action, rewrite.phase, pattern, condition, argument_names),
+                lambda: convert_v2_json_action(action, rewrite.phase, pattern, report, file, line),
+                lambda: convert_v2_mock_action(action, rewrite.phase, pattern),
             )
-            if not action_lines:
+            for converter in converters:
+                action_lines = converter()
+                if action_lines is not None:
+                    break
+            if action_lines is None:
                 raise RewriteV2Error(f"Unsupported Rewrite V2 Action: {action.name}")
             converted.extend(action_lines)
 
+        if not converted:
+            return None
         target_sections = {section for section, _ in converted}
         if len(target_sections) != 1:
             raise RewriteV2Error(
@@ -1681,9 +1754,9 @@ def validate_static_cron(cron: str) -> None:
 
 
 def prepare_script_v2(script: V2Script) -> tuple[str | None, list[str]]:
-    if script.trigger in {"generic", "network-changed"}:
-        raise UnverifiedScriptV2(f"{script.trigger} runtime context and triggers are not verified")
     path = script_v2_constant(script.path, "Script path")
+    if script.trigger == "network-changed" or (script.trigger == "generic" and path not in VERIFIED_SURGE_GENERIC_SCRIPT_PATHS):
+        raise UnverifiedScriptV2(f"{script.trigger} runtime context and triggers are not verified")
     try:
         parsed_path = urlsplit(path)
     except ValueError as exc:
@@ -1711,6 +1784,9 @@ def prepare_script_v2(script: V2Script) -> tuple[str | None, list[str]]:
             raise UnverifiedScriptV2(str(exc)) from exc
         parts = [f"type=http-{script.trigger}", f"pattern={format_script_pattern(pattern)}"]
         default_timeout = "20"
+    elif script.trigger == "generic":
+        parts = ["type=generic"]
+        default_timeout = "300"
     else:
         cron = script_v2_constant(script.schedule, "Cron schedule")
         validate_static_cron(cron)
@@ -1726,6 +1802,14 @@ def prepare_script_v2(script: V2Script) -> tuple[str | None, list[str]]:
     if script.argument is not None:
         argument = script_v2_constant(script.argument, "Script argument")
         # Keep literal braces intact; legacy convert_argument_value treats them as variables.
+        parts.append("argument=" + json.dumps(argument, ensure_ascii=False))
+    if script.trigger == "generic" and path == NODE_LINK_CHECK_SCRIPT_PATH:
+        argument = script_v2_constant(script.argument, "Script argument") if script.argument is not None else ""
+        if any(part.partition("=")[0].strip().lower() == "policy" for part in argument.split("&")):
+            raise UnverifiedScriptV2("NodeLinkCheck supplies its own policy; the module Policy adapter cannot override it safely")
+        parts = [part for part in parts if not part.startswith("argument=")]
+        # This trusted adapter adds a module argument; user source strings stay literal.
+        argument = merge_query_argument(argument, "policy", surge_argument_placeholder("Policy"))
         parts.append("argument=" + json.dumps(argument, ensure_ascii=False))
     tag = script.properties.get("tag")
     name = script_v2_constant(tag, "Script tag") if tag is not None else None
@@ -2157,6 +2241,10 @@ def convert_file(
 ) -> dict[str, Any] | None:
     metadata, source_sections = parse_lpx(path)
     report_unsupported_source_sections(source_sections, report, path.name)
+    quality_items = inspect_source_quality(path.name, source_sections, source_text=path.read_text(encoding="utf-8"))
+    report.extend(quality_items)
+    if any(item["kind"] == "source-quality" for item in quality_items):
+        return None
     unsupported_rules = unsupported_module_rule_policies(source_sections)
     if unsupported_rules:
         policies = ", ".join(dict.fromkeys(policy for _, policy in unsupported_rules))
@@ -2174,18 +2262,30 @@ def convert_file(
     argument_lines = section_lines(source_sections, "Argument")
     argument_defaults = collect_argument_defaults(argument_lines)
     script_lines = section_lines(source_sections, "Script")
+    script_context = build_script_v2_context(
+        argument_lines, script_lines,
+        (line for section, lines in source_sections.items() if section.lower() not in {"argument", "script"} for line in lines),
+    )
+    adapted_scripts = {}
     prepared_scripts: dict[str, tuple[V2Script, str | None, list[str]]] = {}
     unverified_scripts: list[tuple[str, str]] = []
     invalid_scripts = False
-    for line in script_lines:
+    for script_index, line in enumerate(script_lines, start=1):
         if not is_script_v2_line(line):
             continue
         try:
             script = parse_script_v2_line(line)
-            name, parts = prepare_script_v2(script)
+            adapted = adapt_script_v2(script, script_context, source_loader=fetch_script_source)
+            name, parts = prepare_script_v2(adapted.script)
+            parts = adapted.apply_parts(parts)
+            adapted_scripts[line] = adapted
+            name = name or f"{script.trigger} {script_index}"
             prepared_scripts[line] = (script, name, parts)
-        except UnverifiedScriptV2 as exc:
+        except (UnverifiedScriptV2, UnverifiedScriptArgument) as exc:
             unverified_scripts.append((line, str(exc)))
+        except ScriptSourceVerificationError as exc:
+            add_report(report, path.name, "script-verification", str(exc), line)
+            invalid_scripts = True
         except RewriteV2Error as exc:
             add_report(report, path.name, "unsupported-script", f"Invalid Script V2: {exc}", line)
             invalid_scripts = True
@@ -2197,6 +2297,11 @@ def convert_file(
         return None
     legacy_script_lines = [line for line in script_lines if not is_script_v2_line(line)]
     generic_scripts = generic_script_properties(legacy_script_lines)
+    for line, (script, name, parts) in prepared_scripts.items():
+        if script.trigger == "generic":
+            props = OrderedDict((part.partition("=")[0], part.partition("=")[2]) for part in parts)
+            props["tag"] = name or "generic"
+            generic_scripts.append((line, props))
     generic_paths = {
         unquote_property_value(props.get("script-path", ""))
         for _, props in generic_scripts
@@ -2318,7 +2423,17 @@ def convert_file(
     for line in script_lines:
         if line in prepared_scripts:
             script, name, parts = prepared_scripts[line]
-            prefix = "#" if script.properties.get("enable") is False else ""
+            adapted = adapted_scripts[line]
+            prefix = adapted.enable_prefix if adapted.enable_prefix is not None else ("#" if script.properties.get("enable") is False else "")
+            if adapted.argument_codec:
+                add_report(report, path.name, "script-object-adapted",
+                           f"Used reviewed {adapted.argument_codec} String decoder for typed Object parameters; source SHA-256={adapted.source_sha256}. Remote URL remains mutable after publication.", line)
+            if adapted.cron_override is not None:
+                add_report(report, path.name, "script-dynamic-cron-adapted",
+                           "Mapped a validated String Cron declaration to a Surge module parameter; use only a valid five/six-field numeric Cron value.", line)
+            if adapted.enable_prefix is not None:
+                add_report(report, path.name, "script-enable-toggle-emitted",
+                           "Mapped a Boolean switch used only for enable to a Surge line-prefix toggle (# or empty).", line)
             name = name or f"{script.trigger} {len(sections['Script']) + 1}"
             sections["Script"].append(f"{prefix}{name} = " + ", ".join(parts))
             if "img_url" in script.properties:
@@ -2349,10 +2464,16 @@ def convert_file(
             add_report(report, path.name, "mitm-unsupported", "Unsupported MitM line", line)
 
     toggle_defaults = collect_enable_toggle_defaults(script_lines, argument_defaults, shared_enable_argument_names)
+    for adapted in adapted_scripts.values():
+        toggle_defaults.update(adapted.toggle_defaults)
     used_argument_names: set[str] = set()
     for section_name, lines in source_sections.items():
         if section_name.lower() != "argument":
             used_argument_names.update(collect_loon_placeholder_names("\n".join(lines)))
+    # V2 Object syntax ends in "${last}}", which the legacy brace regex
+    # intentionally excludes. Resolve usage from actual emitted placeholders too.
+    emitted_text = "\n".join(line for lines in sections.values() for line in lines)
+    used_argument_names.update(name for name in argument_defaults if surge_argument_placeholder(name) in emitted_text)
     argument_items = convert_argument_lines(
         argument_lines,
         report,
@@ -2417,7 +2538,9 @@ def replace_file(source: Path, target: Path, root: Path) -> None:
     shutil.move(str(source), str(target))
 
 
-def convert_kelee_to_surge(input_dir: str, output_dir: str, report_path: str) -> None:
+def convert_kelee_to_surge(
+    input_dir: str, output_dir: str, report_path: str, *, require_jq: bool = False,
+) -> None:
     root = Path.cwd().resolve()
     input_root = root / input_dir
     output_root = root / output_dir
@@ -2468,6 +2591,14 @@ def convert_kelee_to_surge(input_dir: str, output_dir: str, report_path: str) ->
             summary["generated_at"] = timestamp()
         temp_report_full_path.write_text(json.dumps(summary, ensure_ascii=False, indent=4), encoding="utf-8", newline="\n")
 
+        # Validate staged bytes before changing the last-known-good output tree.
+        # A runtime import avoids the validator/converter module dependency cycle.
+        try:
+            from validate_surge_modules import validate_surge_modules
+        except ModuleNotFoundError:
+            from scripts.validate_surge_modules import validate_surge_modules
+        validate_surge_modules(str(input_root), str(temp_output_root), str(temp_report_full_path), require_jq=require_jq)
+
         replace_tree(temp_output_root, output_root, root)
         replace_file(temp_manifest_path, manifest_full_path, root)
         replace_file(temp_report_full_path, report_full_path, root)
@@ -2488,8 +2619,9 @@ def main() -> None:
     parser.add_argument("--input-dir", default="Loon")
     parser.add_argument("--output-dir", default="Surge")
     parser.add_argument("--report-path", default="Surge/convert-report.json")
+    parser.add_argument("--require-jq", action="store_true")
     args = parser.parse_args()
-    convert_kelee_to_surge(args.input_dir, args.output_dir, args.report_path)
+    convert_kelee_to_surge(args.input_dir, args.output_dir, args.report_path, require_jq=args.require_jq)
 
 
 if __name__ == "__main__":

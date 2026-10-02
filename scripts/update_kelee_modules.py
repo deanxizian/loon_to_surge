@@ -22,7 +22,7 @@ def main() -> None:
     args = parser.parse_args()
 
     fetch_kelee_modules(args.base_url, args.loon_dir, args.allow_large_drop)
-    convert_kelee_to_surge(args.loon_dir, args.surge_dir, args.report_path)
+    convert_kelee_to_surge(args.loon_dir, args.surge_dir, args.report_path, require_jq=True)
     summary = validate_surge_modules(args.loon_dir, args.surge_dir, args.report_path, require_jq=True)
     print(f"Validated {summary['modules']} Surge modules.")
 

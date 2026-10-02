@@ -1,0 +1,158 @@
+[
+  {
+    "plugin": "Spotify_remove_ads.lpx",
+    "url": "https://kelee.one/Resource/JavaScript/Spotify/Spotify_remove_ads.js",
+    "bytes": 9389,
+    "sha256": "198cb5869d9710c56ed1945156c8f6227fdf9d19da38ee1c8870f4d72f26c6c8",
+    "content_type": "application/javascript",
+    "reviewed_at": "2026-10-02",
+    "excerpts": [
+      "y_sharing_enabled\"!==t||\"ios-feature-share\"!==l||(i.boolValue.value=!1)}}try{let a=\"string\"==typeof $argument?JSON.parse($argument):\"object\"==typeof $argument?$argument:null,s=function(a,s,u){if(s.includes(\"/u\")){let i,l=t(n(u));return A(a,l.success),e(l,i=r()),c(i)}{let s,b=function(e){let a={};e:for(;!f(e)",
+      "t||\"ios-feature-share\"!==l||(i.boolValue.value=!1)}}try{let a=\"string\"==typeof $argument?JSON.parse($argument):\"object\"==typeof $argument?$argument:null,s=function(a,s,u){if(s.includes(\"/u\")){let i,l=t(n(u));return A(a,l.success),e(l,i=r()),c(i)}{let s,b=function(e){let a={};e:for(;!f(e);){let s=p(e);switch("
+    ]
+  },
+  {
+    "plugin": "Tieba_remove_ads.lpx",
+    "url": "https://kelee.one/Resource/JavaScript/Tieba/tieba-proto.js",
+    "bytes": 97577,
+    "sha256": "2ab9006be369e1083072ec49f4163245d8c385b0f3acc40910c2922454ebbd78",
+    "content_type": "application/javascript",
+    "reviewed_at": "2026-10-02",
+    "excerpts": [
+      "\n            per_filter_video_thread: false, // ✅ 默认值改为 false（布尔）\n        };\n        switch (typeof $argument) {\n            case 'string':\n                const params = Object.fromEntries($argument.split('&').map(item => {\n                    const [key, value] = item.split('=');\n                    if (va",
+      "h (typeof $argument) {\n            case 'string':\n                const params = Object.fromEntries($argument.split('&').map(item => {\n                    const [key, value] = item.split('=');\n                    if (value === \"true\") return [key, true];   // ✅ 转换字符串 \"true\" → true\n                    if (val"
+    ]
+  },
+  {
+    "plugin": "IThome_remove_ads.lpx",
+    "url": "https://kelee.one/Resource/JavaScript/IThome/IThome_remove_ads.js",
+    "bytes": 3099,
+    "sha256": "3008c1a2831ec084c07e44c2219ee8776aefb45a9b4053da675fde6701caa141",
+    "content_type": "application/javascript",
+    "reviewed_at": "2026-10-02",
+    "excerpts": [
+      "SON解析失败: ${e.message}`);\n        return $done({});\n    }\n\n    // 获取参数值\n    const removeAllBanners = $argument?.removeAllBanners !== undefined ? $argument.removeAllBanners : true;\n    const removePinnedArticles = $argument?.removePinnedArticles !== undefined ? $argument.removePinnedArticles : true;\n    \n    /",
+      "e({});\n    }\n\n    // 获取参数值\n    const removeAllBanners = $argument?.removeAllBanners !== undefined ? $argument.removeAllBanners : true;\n    const removePinnedArticles = $argument?.removePinnedArticles !== undefined ? $argument.removePinnedArticles : true;\n    \n    // 移除全部横幅\n    const removeAllBannersFunc = ()"
+    ]
+  },
+  {
+    "plugin": "WPS_checkin.lpx",
+    "url": "https://kelee.one/Resource/JavaScript/WPS/WPS_checkin.js",
+    "bytes": 14064,
+    "sha256": "fc8f6fdf39c2adf5a2fb0c5e326375def5b3c09ecd68b33b910e4f3f0bda1c5c",
+    "content_type": "application/javascript",
+    "reviewed_at": "2026-10-02",
+    "excerpts": [
+      "ge:t=[],...e}){Object.keys(e).forEach((s=>{e[s]&&this[s](...t)}))}parseArgument(){return globalThis.$argument?'object'==typeof $argument?$argument:Object.fromEntries($argument.split('&').map((t=>t.split('=')))):{}}},new ToolClient(t,e)}",
+      "e).forEach((s=>{e[s]&&this[s](...t)}))}parseArgument(){return globalThis.$argument?'object'==typeof $argument?$argument:Object.fromEntries($argument.split('&').map((t=>t.split('=')))):{}}},new ToolClient(t,e)}"
+    ]
+  },
+  {
+    "plugin": "AppleWeatherEnhancer.lpx",
+    "url": "https://github.com/NSRingo/WeatherKit/releases/download/v3.1.0/response.bundle.js",
+    "bytes": 240960,
+    "sha256": "e7c75725d67c4e8f78d3fdc003481762a377c624ae89bba64b23b2cb5ea9f342",
+    "content_type": "application/octet-stream",
+    "reviewed_at": "2026-10-02",
+    "excerpts": [
+      "=Y.toPath(e)),e.reduce((t,i,a)=>a===e.length-1?(delete t[i],!0):Object(t)[i],t)}}switch(j.debug(\"☑️ $argument\"),typeof globalThis.$argument){case\"string\":{let t=Object.fromEntries(globalThis.$argument.split(\"&\").map(t=>t.split(\"=\",2).map(t=>t.replace(/\\\"/g,\"\"))));globalThis.$argument={},Object.keys(t).forEac",
+      "=>a===e.length-1?(delete t[i],!0):Object(t)[i],t)}}switch(j.debug(\"☑️ $argument\"),typeof globalThis.$argument){case\"string\":{let t=Object.fromEntries(globalThis.$argument.split(\"&\").map(t=>t.split(\"=\",2).map(t=>t.replace(/\\\"/g,\"\"))));globalThis.$argument={},Object.keys(t).forEach(e=>Y.set(globalThis.$argumen"
+    ]
+  },
+  {
+    "plugin": "FollowRSS_checkin.lpx",
+    "url": "https://kelee.one/Resource/JavaScript/FollowRSS/FollowRSS_checkin.js",
+    "bytes": 10581,
+    "sha256": "531fdce5c2f18b87811f029561063f6971a1b7e4658e431c0aba122d03d1727f",
+    "content_type": "application/javascript",
+    "reviewed_at": "2026-10-02",
+    "excerpts": [
+      "ipts/blob/master/follow/follow.js\n*/\nconst $ = new Env('Follow每日签到')\n$.desc = []\n\nconst csrfToken = $argument.token\nconst cookie = $argument.cookie\n\n!(async () => {\n  await sign()\n})()\n  .catch((e) => $.logErr(e))\n  .finally(() => $.done())\n\nfunction sign() {\n  return new Promise((resolve) => {\n    const opt",
+      "js\n*/\nconst $ = new Env('Follow每日签到')\n$.desc = []\n\nconst csrfToken = $argument.token\nconst cookie = $argument.cookie\n\n!(async () => {\n  await sign()\n})()\n  .catch((e) => $.logErr(e))\n  .finally(() => $.done())\n\nfunction sign() {\n  return new Promise((resolve) => {\n    const options = {\n      url: 'https://ap"
+    ]
+  },
+  {
+    "plugin": "YouTubeSubtitlesTranslation.lpx",
+    "url": "https://kelee.one/Resource/JavaScript/YouTube/YouTube_Subtitles_Translate/YouTube_Subtitles_request.js",
+    "bytes": 66369,
+    "sha256": "069cb5f3158c7777a8c0dbac926d3ce0ca605587d3123c386dc65a15d51fabc8",
+    "content_type": "application/javascript",
+    "reviewed_at": "2026-10-02",
+    "excerpts": [
+      "les\",\"\");let{Settings:i,Caches:l,Configs:o}=function(e,n,s){let r=t.getItem(e,s),i={};switch(typeof $argument){case\"string\":let e=Object.fromEntries($argument.split(\"&\").map((e=>e.split(\"=\").map((e=>e.replace(/\\\"/g,\"\"))))));for(let t in e)a.set(i,t,e[t]);break;case\"object\":for(let e in $argument)a.set(i,e,$a",
+      "ion(e,n,s){let r=t.getItem(e,s),i={};switch(typeof $argument){case\"string\":let e=Object.fromEntries($argument.split(\"&\").map((e=>e.split(\"=\").map((e=>e.replace(/\\\"/g,\"\"))))));for(let t in e)a.set(i,t,e[t]);break;case\"object\":for(let e in $argument)a.set(i,e,$argument[e])}const l={Settings:s?.Default?.Setting"
+    ]
+  },
+  {
+    "plugin": "YouTubeSubtitlesTranslation.lpx",
+    "url": "https://kelee.one/Resource/JavaScript/YouTube/YouTube_Subtitles_Translate/YouTube_Subtitles_response.js",
+    "bytes": 65371,
+    "sha256": "624bec4a6b3162971a458e2ccb097efd20a906016b82293c341d344152edc09c",
+    "content_type": "application/javascript",
+    "reviewed_at": "2026-10-02",
+    "excerpts": [
+      "les\",\"\");let{Settings:i,Caches:o,Configs:l}=function(e,n,s){let r=t.getItem(e,s),i={};switch(typeof $argument){case\"string\":let e=Object.fromEntries($argument.split(\"&\").map((e=>e.split(\"=\").map((e=>e.replace(/\\\"/g,\"\"))))));for(let t in e)a.set(i,t,e[t]);break;case\"object\":for(let e in $argument)a.set(i,e,$a",
+      "ion(e,n,s){let r=t.getItem(e,s),i={};switch(typeof $argument){case\"string\":let e=Object.fromEntries($argument.split(\"&\").map((e=>e.split(\"=\").map((e=>e.replace(/\\\"/g,\"\"))))));for(let t in e)a.set(i,t,e[t]);break;case\"object\":for(let e in $argument)a.set(i,e,$argument[e])}const o={Settings:s?.Default?.Setting"
+    ]
+  },
+  {
+    "plugin": "Bilibili_remove_ads.lpx",
+    "url": "https://kelee.one/Resource/JavaScript/Bilibili/Bilibili_proto_request_kokoryh.js",
+    "bytes": 63468,
+    "sha256": "1b7e1d51efd960b10a22ea322630e72ecee646f2fdaad8a097c9e530fde1a857",
+    "content_type": "application/javascript",
+    "reviewed_at": "2026-10-02",
+    "excerpts": [
+      "){return this.body},set(t){this.body=t}}})}initArgument(e){if(Object.assign(this.argument,e),typeof $argument==\"string\")try{Object.assign(this.argument,JSON.parse($argument))}catch(t){B.log(t)}}getVal(e){return $persistentStore.read(e)}setVal(e,t){$persistentStore.write(e,t)}fetch(e){let{method:t,body:n,time",
+      "bject.assign(this.argument,e),typeof $argument==\"string\")try{Object.assign(this.argument,JSON.parse($argument))}catch(t){B.log(t)}}getVal(e){return $persistentStore.read(e)}setVal(e,t){$persistentStore.write(e,t)}fetch(e){let{method:t,body:n,timeout:i=5,...r}=e;return new Promise((l,o)=>{$httpClient[t.toLowe"
+    ]
+  },
+  {
+    "plugin": "Bilibili_remove_ads.lpx",
+    "url": "https://kelee.one/Resource/JavaScript/Bilibili/Bilibili_proto_response_kokoryh.js",
+    "bytes": 97466,
+    "sha256": "e4a8426cffbfca85c78286126a10813051a2d1aeed018119bbabe3db5da85728",
+    "content_type": "application/javascript",
+    "reviewed_at": "2026-10-02",
+    "excerpts": [
+      "){return this.body},set(t){this.body=t}}})}initArgument(e){if(Object.assign(this.argument,e),typeof $argument==\"string\")try{Object.assign(this.argument,JSON.parse($argument))}catch(t){T.log(t)}}getVal(e){return $persistentStore.read(e)}setVal(e,t){$persistentStore.write(e,t)}fetch(e){let{method:t,body:n,time",
+      "bject.assign(this.argument,e),typeof $argument==\"string\")try{Object.assign(this.argument,JSON.parse($argument))}catch(t){T.log(t)}}getVal(e){return $persistentStore.read(e)}setVal(e,t){$persistentStore.write(e,t)}fetch(e){let{method:t,body:n,timeout:r=5,...i}=e;return new Promise((f,s)=>{$httpClient[t.toLowe"
+    ]
+  },
+  {
+    "plugin": "YouTube_remove_ads.lpx",
+    "url": "https://kelee.one/Resource/JavaScript/YouTube/YouTube_remove_ads/YouTube_remove_ads_response.js",
+    "bytes": 133107,
+    "sha256": "b926d339069a8f54e84bd5d29e8c8364ee9ea72bb170197e281b04eda49e3568",
+    "content_type": "application/javascript",
+    "reviewed_at": "2026-10-02",
+    "excerpts": [
+      "body=t.bodyBytes,delete t.bodyBytes),$done(e.response?{response:t}:t)}decodeParams(e){return typeof $argument==\"string\"&&!$argument.includes(\"{{{\")&&Object.assign(e,JSON.parse($argument)),e}},we=Ve;pe(we,\"clientAdapter\",{bodyBytes:\"body\"});var G=class extends K{static transferBodyBytes(e,t){return e instance",
+      "e t.bodyBytes),$done(e.response?{response:t}:t)}decodeParams(e){return typeof $argument==\"string\"&&!$argument.includes(\"{{{\")&&Object.assign(e,JSON.parse($argument)),e}},we=Ve;pe(we,\"clientAdapter\",{bodyBytes:\"body\"});var G=class extends K{static transferBodyBytes(e,t){return e instanceof ArrayBuffer?t===\"Ui"
+    ]
+  },
+  {
+    "plugin": "YouTube_remove_ads.lpx",
+    "url": "https://kelee.one/Resource/JavaScript/YouTube/YouTube_remove_ads/YouTube_remove_ads_request.js",
+    "bytes": 44157,
+    "sha256": "af0646890f9847aa4576181b0637e31b86a3e2f6dd4d2041a56ffa971aacc10b",
+    "content_type": "application/javascript",
+    "reviewed_at": "2026-10-02",
+    "excerpts": [
+      "body=t.bodyBytes,delete t.bodyBytes),$done(e.response?{response:t}:t)}decodeParams(e){return typeof $argument==\"string\"&&!$argument.includes(\"{{{\")&&Object.assign(e,JSON.parse($argument)),e}},H=pe;Y(H,\"clientAdapter\",{bodyBytes:\"body\"});var q=class extends ${static transferBodyBytes(e,t){return e instanceof ",
+      "e t.bodyBytes),$done(e.response?{response:t}:t)}decodeParams(e){return typeof $argument==\"string\"&&!$argument.includes(\"{{{\")&&Object.assign(e,JSON.parse($argument)),e}},H=pe;Y(H,\"clientAdapter\",{bodyBytes:\"body\"});var q=class extends ${static transferBodyBytes(e,t){return e instanceof ArrayBuffer?t===\"Uint8"
+    ]
+  },
+  {
+    "plugin": "NeteaseCloudMusic_remove_ads.lpx",
+    "url": "https://kelee.one/Resource/JavaScript/NeteaseCloudMusic/NeteaseCloudMusic_remove_ads.js",
+    "bytes": 17392,
+    "sha256": "20c13c7c598b8e59058493e2143d5c62d27ce6ac2917d04c400fa16caa092528",
+    "content_type": "application/javascript",
+    "reviewed_at": "2026-10-02",
+    "excerpts": [
+      "RECOMMEND_RANK\",PRMST:\"PAGE_RECOMMEND_MY_SHEET\",PRCN:\"PAGE_RECOMMEND_COMBINATION\"};try{D=JSON.parse($argument)}catch{D=$argument}G=Object.keys(D).filter(h=>D[h]!=1).map(h=>f[h])}catch{}}var D;function oe(f){f?.musicPackage&&(f.musicPackage&&(f.musicPackage.expireTime=z,f.musicPackage.vipLevel=7),f.associator",
+      "ST:\"PAGE_RECOMMEND_MY_SHEET\",PRCN:\"PAGE_RECOMMEND_COMBINATION\"};try{D=JSON.parse($argument)}catch{D=$argument}G=Object.keys(D).filter(h=>D[h]!=1).map(h=>f[h])}catch{}}var D;function oe(f){f?.musicPackage&&(f.musicPackage&&(f.musicPackage.expireTime=z,f.musicPackage.vipLevel=7),f.associator&&(f.associator.exp"
+    ]
+  }
+]

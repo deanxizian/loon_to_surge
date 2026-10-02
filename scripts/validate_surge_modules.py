@@ -16,6 +16,7 @@ from typing import Any
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from surge_syntax import tokenize_surge_line  # noqa: E402
+from source_quality import inspect_source_quality, validate_generated_json_mock  # noqa: E402
 
 from convert_kelee_to_surge import (  # noqa: E402
     BASE_MODULE_FEATURE_REQUIREMENT,
@@ -32,6 +33,7 @@ from convert_kelee_to_surge import (  # noqa: E402
     SURGE_5_14_FEATURE_REQUIREMENT,
     VERIFIED_SURGE_GENERIC_SCRIPT_PATHS,
     module_semantics_problem,
+    parse_lpx,
     split_top_level,
     strip_wrapping_parentheses,
     unquote_property_value,
@@ -51,6 +53,9 @@ INFORMATIONAL_REPORT_KINDS = {
     "script-enable-shared-kept",
     "script-enable-toggle-emitted",
     "script-property-corrected",
+    "source-quality-unverified",
+    "script-object-adapted",
+    "script-dynamic-cron-adapted",
 }
 MAP_LOCAL_DATA_TYPES = {"base64", "file", "text", "tiny-gif"}
 MAP_LOCAL_OPTIONS = {"data", "data-type", "header", "status-code"}
@@ -158,7 +163,33 @@ def validate_nested_rule_matcher(prefix: str, matcher: str, errors: list[str]) -
             validate_nested_rule_matcher(prefix, child, errors)
 
 
-def validate_section_line(file: str, number: int, section: str, line: str, errors: list[str]) -> None:
+def map_local_declares_json(header: str) -> bool:
+    """Parse both documented Surge header forms, not a substring heuristic."""
+    if not header:
+        return False
+    if ":" in header:
+        lines = header.split("|")
+    else:
+        try:
+            decoded = base64.b64decode(header, validate=True).decode("utf-8")
+        except (ValueError, UnicodeError) as exc:
+            raise ValueError("Map Local header is not valid UTF-8 Base64") from exc
+        lines = decoded.splitlines()
+    types: list[str] = []
+    for line in lines:
+        if not line.strip():
+            continue
+        key, separator, value = line.partition(":")
+        if not separator or not key.strip():
+            raise ValueError("Map Local header contains a malformed key-value pair")
+        if key.strip().lower() == "content-type":
+            types.append(value.split(";", 1)[0].strip().lower())
+    return "application/json" in types
+
+
+def validate_section_line(
+    file: str, number: int, section: str, line: str, errors: list[str], *, source_file: str = "",
+) -> None:
     effective = effective_section_line(section, line)
     if effective is None:
         return
@@ -277,6 +308,19 @@ def validate_section_line(file: str, number: int, section: str, line: str, error
                 base64.b64decode(options.get("data", ""), validate=True)
             except Exception:
                 errors.append(f"{prefix}: invalid Map Local base64 data")
+        try:
+            declares_json = map_local_declares_json(options.get("header", ""))
+        except ValueError as exc:
+            errors.append(f"{prefix}: {exc}")
+            declares_json = False
+        if declares_json and data_type in {"text", "base64"}:
+            try:
+                body = options.get("data", "")
+                if data_type == "base64":
+                    body = base64.b64decode(body, validate=True)
+                validate_generated_json_mock(source_file, tokens[0], body)
+            except (ValueError, UnicodeError) as exc:
+                errors.append(f"{prefix}: invalid Map Local JSON payload: {exc}")
         return
 
     if section == "Panel":
@@ -444,6 +488,17 @@ def validate_surge_modules(
     if fatal_items:
         errors.append(f"report contains {len(fatal_items)} fatal conversion item(s)")
 
+    # Recheck source payload integrity independently of the converter's report.
+    # A stale or tampered report must not make known source defects publishable.
+    for source in loon_files:
+        try:
+            _, source_sections = parse_lpx(source)
+            for item in inspect_source_quality(source.name, source_sections):
+                if item["kind"] == "source-quality":
+                    errors.append(f"{source.name}: source quality: {item['message']}")
+        except (OSError, UnicodeError) as exc:
+            errors.append(f"{source.name}: cannot inspect source quality: {exc}")
+
     manifest_by_output = {
         item["output"]: item for item in manifest if isinstance(item, dict) and isinstance(item.get("output"), str)
     }
@@ -527,7 +582,7 @@ def validate_surge_modules(
             section_modules[name] += 1
             section_lines[name] += len(lines)
             for number, line in lines:
-                validate_section_line(path.name, number, name, line, errors)
+                validate_section_line(path.name, number, name, line, errors, source_file=manifest_by_output.get(path.name, {}).get("source", ""))
                 effective = effective_section_line(name, line)
                 if effective and name == "Panel" and " = " in effective:
                     for item in split_top_level(effective.split(" = ", 1)[1], ","):
