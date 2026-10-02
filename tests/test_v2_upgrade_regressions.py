@@ -356,3 +356,36 @@ class PanelReferenceBoundaryTest(unittest.TestCase):
                 with self.assertRaisesRegex(RuntimeError,'WARP Script has no linked Panel'):
                     validate_surge_modules('Loon','Surge','Surge/convert-report.json')
             finally:os.chdir(before)
+
+
+class LegacyPreflightPriorityTest(unittest.TestCase):
+    def test_malformed_legacy_script_remains_fatal_before_warp_exclusions(self):
+        path='https://raw.githubusercontent.com/VirgilClyne/Cloudflare/main/js/1.1.1.1.panel.js'
+        cases=[
+            f'generic script-path={path}, tag=One\ngeneric script-path={path}, tag=Two, unknown=true',
+            f'generic then script("{path}") with tag="One"\ngeneric script-path={path}, tag=Two, unknown=true',
+            f'generic then script("{path}") with tag="One"\ngeneric then script("{path}") with tag="Two"\nhttp-response ^https://example/ script-path=https://example.com/a.js, unknown=true',
+            f'generic then script("{path}") with enable=${{Enabled}}\nhttp-response ^https://example/ script-path=https://example.com/a.js, requires-body=invalid',
+        ]
+        for scripts in cases:
+            with self.subTest(scripts=scripts),tempfile.TemporaryDirectory() as tmp:
+                root=Path(tmp);source=root/'Warp.lpx'
+                source.write_text('#!name=Warp\n[Argument]\nEnabled=switch,true,false\n[Script]\n'+scripts+'\n')
+                report=[];result=convert_file(source,root,report,{})
+                self.assertIsNone(result)
+                self.assertTrue(any(item['kind']=='unsupported-script' for item in report))
+                self.assertNotIn('module-excluded',[item['kind'] for item in report])
+
+    def test_malformed_duplicate_legacy_warp_cannot_replace_previous_output(self):
+        path='https://raw.githubusercontent.com/VirgilClyne/Cloudflare/main/js/1.1.1.1.panel.js'
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);(root/'Loon').mkdir();(root/'Surge').mkdir()
+            (root/'Loon'/'Warp.lpx').write_text(f'#!name=Warp\n[Script]\ngeneric script-path={path}, tag=One\ngeneric script-path={path}, tag=Two, unknown=true\n')
+            sentinel=root/'Surge'/'previous.sgmodule';sentinel.write_text('previous')
+            before=Path.cwd()
+            try:
+                os.chdir(root)
+                with self.assertRaisesRegex(RuntimeError,'unsupported-script'):
+                    convert_kelee_to_surge('Loon','Surge','Surge/convert-report.json')
+                self.assertEqual(sentinel.read_text(),'previous')
+            finally:os.chdir(before)

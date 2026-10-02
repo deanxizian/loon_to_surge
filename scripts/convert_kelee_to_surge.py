@@ -2294,6 +2294,17 @@ def convert_file(
     argument_lines = section_lines(source_sections, "Argument")
     argument_defaults = collect_argument_defaults(argument_lines)
     script_lines = section_lines(source_sections, "Script")
+    legacy_script_lines = [line for line in script_lines if not is_script_v2_line(line)]
+    shared_enable_argument_names = collect_enable_argument_names(script_lines) & collect_script_argument_names(script_lines)
+    # Validate legacy syntax before any supported-but-unrepresentable V2/generic
+    # exclusion. An early exclusion must not downgrade malformed source to green.
+    preflight_report: list[dict[str, str]] = []
+    for line in legacy_script_lines:
+        convert_script_line(line, [], preflight_report, path.name, argument_defaults, shared_enable_argument_names)
+    preflight_fatal = fatal_report_items(preflight_report)
+    if preflight_fatal:
+        report.extend(preflight_fatal)
+        return None
     script_context = build_script_v2_context(
         argument_lines, script_lines,
         (line for section, lines in source_sections.items() if section.lower() not in {"argument", "script"} for line in lines),
@@ -2337,7 +2348,6 @@ def convert_file(
         line, reason = unverified_scripts[0]
         add_report(report, path.name, "module-excluded", f"Module was excluded from Surge output: Script V2 {reason}.", line)
         return None
-    legacy_script_lines = [line for line in script_lines if not is_script_v2_line(line)]
     generic_scripts = generic_script_properties(legacy_script_lines)
     for line, (script, name, parts) in prepared_scripts.items():
         if script.trigger == "generic":
@@ -2404,7 +2414,6 @@ def convert_file(
             "Added a Surge information Panel linked to the verified WARP generic script.",
             warp_line,
         )
-    shared_enable_argument_names = collect_enable_argument_names(script_lines) & collect_script_argument_names(script_lines)
 
     for line in section_lines(source_sections, "General"):
         match = re.match(r"^real-ip\s*=\s*(.+)$", line, flags=re.IGNORECASE)

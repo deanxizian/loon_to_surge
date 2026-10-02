@@ -587,7 +587,7 @@ response if ${url} ~= /^https:\/\/api\.example\.com\/v1/ && ${response.status} =
         self.assertIn("then script", report[0]["line"])
 
     def test_unknown_or_incomplete_script_properties_are_fatal_reports(self) -> None:
-        output, report = self.convert_lpx(
+        output, report = self.convert_lpx_result(
             """#!name=Sample
 
 [Script]
@@ -595,7 +595,7 @@ http-response ^https://example.com tag=MissingPath, future-option=true
 """
         )
 
-        self.assertNotIn("[Script]", output)
+        self.assertIsNone(output)
         self.assertEqual([item["kind"] for item in report], ["unsupported-script"])
         self.assertIn("future-option", report[0]["message"])
         self.assertIn("script-path", report[0]["message"])
@@ -614,7 +614,7 @@ http-request ^https://example.com script-path=https://example.com/a.js, timeout=
         self.assertEqual([item["kind"] for item in report], ["script-property-corrected"])
 
     def test_conflicting_duplicate_script_property_is_a_fatal_report(self) -> None:
-        output, report = self.convert_lpx(
+        output, report = self.convert_lpx_result(
             """#!name=Sample
 
 [Script]
@@ -622,7 +622,7 @@ http-request ^https://example.com script-path=https://example.com/a.js, timeout=
 """
         )
 
-        self.assertNotIn("[Script]", output)
+        self.assertIsNone(output)
         self.assertEqual([item["kind"] for item in report], ["unsupported-script"])
         self.assertIn("Conflicting duplicate", report[0]["message"])
 

@@ -465,7 +465,7 @@ Surge 原生 `$argument` 是 String，不能对未知脚本把 Loon 对象参数
 
 含控制字符或类似模块占位符的静态文本目前也会排除。重复/未知属性、错误类型、非正或非有限超时、缺失脚本地址等无效语法仍记录 `unsupported-script` 并阻止替换产物。这里的转换只覆盖配置语义：脚本自身若依赖 Loon API、缺省 `$argument=null` 或专属上下文，仍需检查脚本的 Surge 分支并运行验证。
 
-所有旧版 Script 类型都要求非空 `script-path`。未知属性、冲突的重复属性或无效布尔值会记录为 `unsupported-script` 并阻止发布；相同值的重复属性会安全去重并记录 `script-property-corrected`。
+在进入 Script 适配流程时先预校验旧语法，只有语法合法的未知/未验证能力才可作为普通排除；多 WARP 或未支持 V2 组合不能把旧 Script 的格式错误降级为排除。所有旧版 Script 类型都要求非空 `script-path`。未知属性、冲突的重复属性或无效布尔值会记录为 `unsupported-script` 并阻止发布；相同值的重复属性会安全去重并记录 `script-property-corrected`。
 
 ## Script enable 开关
 
