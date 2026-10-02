@@ -233,6 +233,136 @@ class LocalValidationPhaseTest(unittest.TestCase):
                 self.assertNotIn("script-verification", [item["kind"] for item in reports])
                 self.assertNotIn("script-object-adapted", [item["kind"] for item in reports])
 
+    def remote_jq_line(self, syntax, *, overlaps=False):
+        pattern = r"^https://api\.example\.com/ads" if overlaps else r"^https://jq\.example\.com/payload"
+        if syntax == "legacy":
+            return f"{pattern} response-body-json-jq jq-path={JQ_URL}"
+        escaped_pattern = pattern.replace("/", r"\/")
+        return (f'response if ${{url}} ~= /{escaped_pattern}/ '
+                f'then response.json.jq_file("{JQ_URL}")')
+
+    def test_remote_and_local_body_overlap_excludes_before_any_resource_fetch(self):
+        plain_response = (r"http-response ^https://api\.example\.com/ads "
+                          "script-path=https://example.com/plain.js, tag=Plain")
+        matrix = itertools.product(("v2", "legacy"), (False, True), (False, True),
+                                   (False, True), (False, True))
+        for syntax, has_object, remote_overlaps, reverse_rewrites, reverse_sections in matrix:
+            remote = self.remote_jq_line(syntax, overlaps=remote_overlaps)
+            local_pattern = r"^https:\/\/local\.example\.com\/ads" if remote_overlaps else r"^https:\/\/api\.example\.com\/ads"
+            local = f'response if ${{url}} ~= /{local_pattern}/ then response.json.delete("ads")'
+            rewrites = (local, remote) if reverse_rewrites else (remote, local)
+            source = self.source((OBJECT if has_object else plain_response,),
+                                 extra="[Rewrite]\n" + "\n".join(rewrites) + "\n",
+                                 reverse_sections=reverse_sections)
+            observed_reports = []
+            for resource_state in ("offline", "available", "empty"):
+                with self.subTest(syntax=syntax, has_object=has_object, remote_overlaps=remote_overlaps,
+                                  reverse_rewrites=reverse_rewrites, script_section_first=reverse_sections,
+                                  resource_state=resource_state):
+                    jq_fetch = (Mock(side_effect=TimeoutError("offline")) if resource_state == "offline"
+                                else Mock(return_value="" if resource_state == "empty" else "del(.remote_ads)"))
+                    with patch.object(converter, "fetch_jq_path", jq_fetch):
+                        result, reports, files, object_fetch = self.convert(source, verification="valid")
+                    observed_reports.append(reports)
+                    self.assertIsNone(result, reports)
+                    self.assertEqual(files, {})
+                    self.assertFalse(fatal_report_items(reports), reports)
+                    self.assertTrue(any(item["kind"] == "module-excluded" and "Body Rewrite" in item["message"]
+                                        for item in reports), reports)
+                    self.assertNotIn("script-object-adapted", [item["kind"] for item in reports])
+                    jq_fetch.assert_not_called()
+                    object_fetch.assert_not_called()
+            with self.subTest(syntax=syntax, has_object=has_object, remote_overlaps=remote_overlaps,
+                              reverse_rewrites=reverse_rewrites, script_section_first=reverse_sections,
+                              same_diagnostic_without_network=True):
+                for reports in observed_reports[1:]:
+                    self.assertEqual(observed_reports[0], reports)
+
+    def remote_macro_source(self, syntax, has_object, enabled_is_used, *, reverse_sections=False):
+        scripts = [OBJECT if has_object else PLAIN_LEGACY]
+        if enabled_is_used:
+            scripts.append('cron "0 8 * * *" then script("https://example.com/toggle.js") '
+                           'with tag="Toggle", enable=${Enabled}')
+        return self.source(scripts, extra="[Rewrite]\n" + self.remote_jq_line(syntax) + "\n",
+                           extra_argument="Enabled=switch, true, false\n", reverse_sections=reverse_sections)
+
+    def test_remote_jq_raw_macros_are_fatal_without_creating_argument_usage(self):
+        raw_program = '{"literal":"{{{Enabled}}}","ordinary":"kept"}'
+        for syntax, has_object, enabled_is_used, reverse_sections, resource_source in itertools.product(
+                ("v2", "legacy"), (False, True), (False, True), (False, True), ("loader", "cache")):
+            with self.subTest(syntax=syntax, has_object=has_object, enabled_is_used=enabled_is_used,
+                              script_section_first=reverse_sections, resource_source=resource_source):
+                if resource_source == "cache":
+                    cache_context = patch.dict(converter.JQ_PATH_CACHE, {JQ_URL: raw_program}, clear=True)
+                    # Spy on the real cached-resource reader, not a fabricated
+                    # fetch return, so cached bytes undergo the same rejection.
+                    fetch_context = patch.object(converter, "fetch_jq_path", wraps=converter.fetch_jq_path)
+                else:
+                    cache_context = contextlib.nullcontext()
+                    fetch_context = patch.object(converter, "fetch_jq_path", return_value=raw_program)
+                with cache_context, fetch_context as jq_fetch:
+                    result, reports, files, object_fetch = self.convert(self.remote_macro_source(
+                        syntax, has_object, enabled_is_used, reverse_sections=reverse_sections), verification="valid")
+                jq_fetch.assert_called_once_with(JQ_URL)
+                self.assertTrue(fatal_report_items(reports), reports)
+                object_fetch.assert_not_called()
+                self.assertNotIn("script-object-adapted", [item["kind"] for item in reports])
+                if has_object:
+                    self.assertIsNone(result, reports)
+                    self.assertEqual(files, {})
+                # Non-Object failures may keep a diagnostic candidate, but it
+                # cannot contain the rejected program or invent argument use.
+                for text in files.values():
+                    body_lines = [line for line in text.splitlines() if line.startswith("http-response-jq ")]
+                    self.assertFalse(any("{{{Enabled}}}" in line for line in body_lines), body_lines)
+                    if not enabled_is_used:
+                        arguments = [line for line in text.splitlines() if line.startswith("#!arguments=")]
+                        self.assertFalse(any("Enabled" in line for line in arguments), arguments)
+
+    def test_remote_jq_raw_macros_cannot_replace_published_modules(self):
+        raw_program = '{"literal":"{{{Enabled}}}"}'
+        for syntax, has_object, enabled_is_used in itertools.product(("v2", "legacy"), (False, True), (False, True)):
+            with self.subTest(syntax=syntax, has_object=has_object, enabled_is_used=enabled_is_used), \
+                    tempfile.TemporaryDirectory() as temporary, contextlib.redirect_stdout(io.StringIO()):
+                root = Path(temporary)
+                (root / "Loon").mkdir()
+                (root / "Surge").mkdir()
+                (root / "Loon/Matrix.lpx").write_text(self.remote_macro_source(syntax, has_object, enabled_is_used))
+                (root / "Loon/Good.lpx").write_text("#!name=Good\n[Rule]\nDOMAIN,example.com,DIRECT\n")
+                sentinel = root / "Surge/previous.sgmodule"
+                sentinel.write_bytes(b"last-known-good")
+                object_fetch = Mock(return_value=PROBE)
+                with working_directory(root), \
+                        patch.object(converter, "fetch_jq_path", return_value=raw_program) as jq_fetch, \
+                        patch.object(converter, "fetch_script_source", object_fetch):
+                    with self.assertRaises(RuntimeError):
+                        convert_kelee_to_surge("Loon", "Surge", "Surge/convert-report.json")
+                jq_fetch.assert_called_once_with(JQ_URL)
+                object_fetch.assert_not_called()
+                self.assertEqual(list((root / "Surge").iterdir()), [sentinel])
+                self.assertEqual(sentinel.read_bytes(), b"last-known-good")
+
+    def test_remote_jq_escaped_braces_preserve_program_and_real_argument_usage(self):
+        safe_program = r'{"literal":"\u007b\u007b\u007bEnabled\u007d\u007d\u007d"}'
+        for syntax, has_object, enabled_is_used in itertools.product(("v2", "legacy"), (False, True), (False, True)):
+            with self.subTest(syntax=syntax, has_object=has_object, enabled_is_used=enabled_is_used):
+                with patch.object(converter, "fetch_jq_path", return_value=safe_program) as jq_fetch:
+                    result, reports, files, object_fetch = self.convert(self.remote_macro_source(
+                        syntax, has_object, enabled_is_used), verification="valid")
+                self.assertIsNotNone(result, reports)
+                self.assertFalse(fatal_report_items(reports), reports)
+                jq_fetch.assert_called_once_with(JQ_URL)
+                if has_object:
+                    object_fetch.assert_called_once_with(SPOTIFY)
+                else:
+                    object_fetch.assert_not_called()
+                lines = files["Matrix.sgmodule"].splitlines()
+                body_lines = [line for line in lines if line.startswith("http-response-jq ")]
+                self.assertEqual(len(body_lines), 1)
+                self.assertTrue(body_lines[0].endswith(" '" + safe_program + "'"), body_lines)
+                arguments = [line for line in lines if line.startswith("#!arguments=")]
+                self.assertEqual(any("Enabled" in line for line in arguments), enabled_is_used, arguments)
+
     def warp(self, syntax, *, tag=None, enable=None):
         if syntax == "legacy":
             return (f"generic script-path={WARP_PANEL_SCRIPT_PATH}, timeout=10"

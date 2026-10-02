@@ -39,7 +39,7 @@
 
 Script V2 按源文件中的出现顺序逐条准备；重复文本也保留独立序号。显式 HTTP 脚本 tag 保留原值，不因同名而改名或整项排除；同名情况记录非阻断的 `script-http-name-shared`，注明未做该边界的 Surge 真机验证：[Surge Profile Format](https://manual.nssurge.com/profile/format.html) 明确 `[Script]` 为逐行 section，[HTTP 脚本](https://manual.nssurge.com/scripting/overview.html) 按配置顺序首次匹配。Panel 按名称引用的歧义检查仍保留；不把引用型限制推广成所有 HTTP 脚本名称必须唯一。
 
-转换先完成不依赖远程内容的语法与已知排除检查；`jq_file`/`jq-path` 的预检查只验证本地调用形状，不下载资源，也不把占位内容写入产物。确定候选资格后解析所需 JQ 资源、构造内存候选并检查组合语义，再核对 Object 脚本的当前 hash；未验签的 Object 候选不会落盘。最后仍须通过独立暂存产物校验与 JQ 编译，才替换发布目录。Rewrite 排除不会终止其余行的语法检查，已有致命诊断优先。
+转换先完成不依赖远程内容的语法与已知排除检查；`jq_file`/`jq-path` 的预检查只验证本地调用形状与潜在改写范围，不下载资源，也不把占位内容写入产物；远程 JQ 按可能生效的 Body Rewrite 做组合排除，不以资源可能为空来放宽重叠判定。确定候选资格后解析所需 JQ 资源、构造内存候选并检查组合语义，再核对 Object 脚本的当前 hash；未验签的 Object 候选不会落盘。最后仍须通过独立暂存产物校验与 JQ 编译，才替换发布目录。Rewrite 排除不会终止其余行的语法检查，已有致命诊断优先。
 
 输入只接受非空的 `[Argument]`、`[General]`、`[Rule]`、`[Rewrite]`、`[Script]` 和 `[MITM]`。出现其他非空 section，或仅大小写不同的重复 section 时，会记录 `unsupported-section` 并终止发布，避免静默丢掉上游新语法。
 
@@ -465,7 +465,7 @@ Loon 的 `img-url` 只用于其 generic 脚本界面，Surge `[Script]` 没有�
 - 动态 enable：只接受 Boolean switch，且同一参数不用于其他语义；输出 `#`/空前缀，不静默折叠共享动态变量。
 - NodeLinkCheck/WARP 新版 generic 复用专用 Policy/Panel 适配，其他 generic/network-changed 继续排除。V2 NodeLinkCheck 若已有归一化名为 `Policy` 的声明会排除，避免注入参数碰撞；新旧语法 WARP 均在联网验签前排除动态 enable 或静态禁用（旧语法 false/0/off/no 等别名同样处理）；标签含控制字符、占位符、注释标记、逗号、引号或反斜杠等 Panel 引用分隔符也会排除。旧语法不擅自去掉标签引号，未闭合或含尾随文本的带引号标签先记为致命语法错误；模块只适配一条 WARP generic；新旧语法省略 tag 时，Panel 和 Script 均使用同一条脚本实际生成的位置名称，Panel 目标须在展开 enable 前缀后仍唯一；独立校验会拒绝缺失 Panel、固定注释或动态前缀控制的 WARP Script。所有 V2 Script 名称拒绝空格后的注释分隔符，避免定义被截断。
 
-V2 参数使用情况按解析后的变量节点判断；原始字符串、正则及转义字面值不算真实变量引用。输出中看似 `{Name}` 的文本只有在源 AST、section、整条生成行、具体范围及出现次数均证明为字面值时，才豁免残留检测；实际变量仍须转换。字面 `{{{Name}}}` 若会留在 Surge 文本并触发模块插值，则整模块排除；编码到 Base64 mock 后不会触发插值的情况可保留。`jq_file` 同行的本地 Action 可单独提供字面值证明，下载的 JQ 内容不享有豁免；远程 JQ 的 URL 条件若含占位符样的字面文本，当前明确排除并且不下载。
+V2 参数使用情况按解析后的变量节点判断；原始字符串、正则及转义字面值不算真实变量引用。输出中看似 `{Name}` 的文本只有在源 AST、section、整条生成行、具体范围及出现次数均证明为字面值时，才豁免残留检测；实际变量仍须转换。字面 `{{{Name}}}` 若会留在 Surge 文本并触发模块插值，则整模块排除；编码到 Base64 mock 后不会触发插值的情况可保留。`jq_file` 同行的本地 Action 可单独提供字面值证明，下载的 JQ 内容不享有豁免，其中的 Surge 三重括号目标宏（含缓存文本）在写入改写行或保留参数声明之前即作为致命错误阻断；远程 JQ 的 URL 条件若含占位符样的字面文本，当前明确排除并且不下载。
 
 Surge 是自由文本参数 UI，无法强制原 Loon 选项范围；仅声明值域内的参数受支持。Script V2 复合条件、未核实 Object、其他动态属性、本地脚本路径、URL `/m` 或 `/s` 仍整模块排除。FollowRSS、IT之家没有 String 参数解码分支；贴吧的分支改变字符串真值；WPS query 分隔符无法无损携带任意输入，目前不强转这些模块。
 

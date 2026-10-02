@@ -494,6 +494,15 @@ def fetch_jq_path(url: str) -> str:
     return JQ_PATH_CACHE[url]
 
 
+def checked_remote_jq_program(program: str) -> str:
+    """Remote JQ is literal program text, never a source of module variables."""
+    if not isinstance(program, str):
+        raise JsonRewriteError("Remote JQ resource did not provide text")
+    if re.search(r"\{\{\{.*?\}\}\}", program, flags=re.DOTALL):
+        raise JsonRewriteError("Remote JQ contains an unproven Surge module placeholder")
+    return program
+
+
 def quote_jq_expression(text: str) -> str:
     return "'" + text.replace("'", "\\'") + "'"
 
@@ -556,7 +565,7 @@ def convert_jq_expression(text: str, report: list[dict[str, str]], file: str, li
     if match:
         url = match.group(2)
         try:
-            expression = (jq_loader or fetch_jq_path)(url)
+            expression = checked_remote_jq_program((jq_loader or fetch_jq_path)(url))
         except Exception as exc:
             add_report(report, file, "jq-path-inline-failed", f"Unable to inline jq-path {url}: {exc}", line)
             return text
@@ -1493,7 +1502,7 @@ def convert_v2_json_action(
         if not re.match(r"^https?://", source):
             raise RewriteV2Error("Relative jq_file resources are not downloaded with standalone Kelee .lpx files")
         try:
-            source = (jq_loader or fetch_jq_path)(source)
+            source = checked_remote_jq_program((jq_loader or fetch_jq_path)(source))
         except Exception as exc:  # noqa: BLE001 - turn remote resource failures into a fatal conversion report.
             raise RewriteV2Error(f"Unable to inline jq_file {source}: {exc}") from exc
     normalized = normalize_jq_program(source, report, file, line)
@@ -2573,9 +2582,33 @@ def convert_file(
                        "Module was excluded because the WARP Panel reference does not identify exactly one Script after enable-prefix expansion.", warp_line)
             return None
 
-    # Local preflight used an inert JQ body solely to validate call shape. It
-    # never enters sections or output. Resolve resource contents only after the
-    # known local Script/Rewrite exclusions above; Object verification is later.
+    # Combine every local Rewrite shape (including unknown remote JQ) with the
+    # actual planned Script types, patterns and enable prefixes before fetching.
+    # Unknown remote JQ is conservatively treated as an active body rewrite even
+    # if a future download could be empty. Inline empty JQ remains a known no-op.
+    semantic_preview: OrderedDict[str, list[str]] = OrderedDict(
+        (name, list(sections[name]) + list(rewrite_preflight_sections[name])) for name in SECTION_ORDER
+    )
+    for script_index, line in enumerate(script_lines, start=1):
+        if script_index in prepared_scripts:
+            script, name, parts = prepared_scripts[script_index]
+            adapted = adapted_scripts[script_index]
+            prefix = adapted.enable_prefix if adapted.enable_prefix is not None else ("#" if script.properties.get("enable") is False else "")
+            semantic_preview["Script"].append(f"{prefix}{name} = " + ", ".join(parts))
+        else:
+            convert_script_line(line, semantic_preview["Script"], [], path.name, argument_defaults, shared_enable_argument_names)
+    try:
+        preflight_problem = module_semantics_problem(semantic_preview)
+    except ValueError as exc:
+        add_report(report, path.name, "unsupported-rewrite", "Cannot check local rewrite preview", str(exc))
+        return None
+    if preflight_problem:
+        message, converted_line = preflight_problem
+        add_report(report, path.name, "module-excluded", "Module was excluded from Surge output: " + message, converted_line)
+        return None
+
+    # Inert JQ is never emitted. Resolve actual resources only after local
+    # combined eligibility succeeds; Object verification and final checks follow.
     for line in section_lines(source_sections, "Rewrite"):
         if line in invalid_rewrite_lines:
             continue
