@@ -233,23 +233,17 @@ def _safe_finite_values(declaration: ArgumentDeclaration, *, boolean: bool) -> N
         raise UnverifiedScriptArgument(f"{declaration.name} requires finite, quote-safe String choices")
 
 
-def serialize_object_argument(script: V2Script, context: ScriptV2Context,
-                              source_loader: Callable[[str], bytes] | None) -> str:
+def _serialize_object_argument(script: V2Script, context: ScriptV2Context) -> str:
+    """Validate and serialize locally; this does not verify remote source bytes."""
     if not isinstance(script.argument, V2ArgumentObject):
         raise TypeError("Object argument expected")
+    if not isinstance(script.path, V2String) or any(not isinstance(part, str) for part in script.path.parts):
+        raise UnverifiedScriptArgument("Object adapter requires a fixed String script path")
     path = "".join(script.path.parts)
     adapter = VERIFIED_OBJECT_ADAPTERS.get(path)
     if adapter is None:
         reason = UNSUPPORTED_OBJECT_REASONS.get(path, "no reviewed Surge String adapter for this script URL")
         raise UnverifiedScriptArgument(reason)
-    if source_loader is None:
-        raise ScriptSourceVerificationError("current script bytes are required to verify the reviewed Object adapter")
-    try:
-        data = source_loader(path)
-    except Exception as exc:
-        raise ScriptSourceVerificationError(f"unable to verify current Object adapter source: {type(exc).__name__}") from exc
-    if not isinstance(data, bytes) or hashlib.sha256(data).hexdigest() != adapter.sha256:
-        raise ScriptSourceVerificationError("script source digest differs from the reviewed Object adapter")
     pairs = []
     for variable in script.argument.variables:
         name = variable.name
@@ -295,9 +289,12 @@ class AdaptedScriptV2:
     toggle_defaults: tuple[tuple[str, str], ...] = ()
     argument_codec: str | None = None
     source_sha256: str | None = None
+    source_verified: bool = False
 
     def apply_parts(self, parts: list[str]) -> list[str]:
-        """Call only after prepare_script_v2(self.script) validated normal syntax."""
+        """Apply a locally validated plan only after its remote source was verified."""
+        if self.argument_override is not None and not self.source_verified:
+            raise ScriptSourceVerificationError("Object adapter source must be verified before rendering")
         output = list(parts)
         if self.argument_override is not None:
             output = [part for part in output if not part.startswith("argument=")]
@@ -307,20 +304,20 @@ class AdaptedScriptV2:
         return output
 
 
-def adapt_script_v2(script: V2Script, context: ScriptV2Context, *,
-                    source_loader: Callable[[str], bytes] | None = None) -> AdaptedScriptV2:
-    """Remove only verified typed features, retaining normal parser validation.
+def plan_script_v2(script: V2Script, context: ScriptV2Context) -> AdaptedScriptV2:
+    """Plan representable typed features without downloading remote scripts.
 
-    The caller must pass the returned script through its usual prepare_script_v2,
-    then apply_parts and emit enable_prefix when present. Merge toggle_defaults
-    into the module defaults. Never use the prepared script alone as the result.
+    Pass every plan's script through prepare_script_v2 before verifying any
+    Object source. After local validation, call verify_script_v2_source and then
+    apply_parts. Emit enable_prefix and merge toggle_defaults as before. A plan
+    alone is not a verified adapter and cannot render its Object argument.
     """
     argument_override = cron_override = enable_prefix = None
     toggle_defaults: tuple[tuple[str, str], ...] = ()
     prepared = script
     argument_codec = source_sha256 = None
     if isinstance(script.argument, V2ArgumentObject):
-        argument_override = serialize_object_argument(script, context, source_loader)
+        argument_override = _serialize_object_argument(script, context)
         adapter = VERIFIED_OBJECT_ADAPTERS["".join(script.path.parts)]
         argument_codec, source_sha256 = adapter.codec, adapter.sha256
         prepared = replace(prepared, argument=None)
@@ -345,3 +342,40 @@ def adapt_script_v2(script: V2Script, context: ScriptV2Context, *,
         enable_prefix = placeholder(enable.name)
         toggle_defaults = ((enable.name, "" if declaration.default else "#"),)
     return AdaptedScriptV2(prepared, argument_override, cron_override, enable_prefix, toggle_defaults, argument_codec, source_sha256)
+
+
+def verify_script_v2_source(adapted: AdaptedScriptV2, *,
+                            source_loader: Callable[[str], bytes] | None = None) -> AdaptedScriptV2:
+    """Verify the exact reviewed bytes after all local validation has succeeded."""
+    if adapted.argument_override is None:
+        return adapted
+    if not isinstance(adapted.script.path, V2String) or any(not isinstance(part, str) for part in adapted.script.path.parts):
+        raise ScriptSourceVerificationError("Object adapter plan requires a fixed String script path")
+    path = "".join(adapted.script.path.parts)
+    adapter = VERIFIED_OBJECT_ADAPTERS.get(path)
+    if adapter is None or adapter.sha256 != adapted.source_sha256 or adapter.codec != adapted.argument_codec:
+        raise ScriptSourceVerificationError("Object adapter plan no longer matches the reviewed source")
+    if source_loader is None:
+        raise ScriptSourceVerificationError("current script bytes are required to verify the reviewed Object adapter")
+    try:
+        data = source_loader(path)
+    except Exception as exc:
+        raise ScriptSourceVerificationError(f"unable to verify current Object adapter source: {type(exc).__name__}") from exc
+    if not isinstance(data, bytes) or hashlib.sha256(data).hexdigest() != adapter.sha256:
+        raise ScriptSourceVerificationError("script source digest differs from the reviewed Object adapter")
+    return replace(adapted, source_verified=True)
+
+
+def adapt_script_v2(script: V2Script, context: ScriptV2Context, *,
+                    source_loader: Callable[[str], bytes] | None = None,
+                    local_validator: Callable[[V2Script], object] | None = None) -> AdaptedScriptV2:
+    """Single-script convenience API; Object adapters always verify source bytes.
+
+    Supply the caller's ordinary-feature validator to reject unsupported local
+    features before downloading. For a complete module, use plan_script_v2 for
+    every line, validate all plans, then verify_script_v2_source for each plan.
+    """
+    planned = plan_script_v2(script, context)
+    if local_validator is not None:
+        local_validator(planned.script)
+    return verify_script_v2_source(planned, source_loader=source_loader)

@@ -39,11 +39,11 @@ except ModuleNotFoundError:
 
 try:
     from script_v2_compat import (
-        adapt_script_v2, build_script_v2_context, UnverifiedScriptArgument, ScriptSourceVerificationError,
+        plan_script_v2, verify_script_v2_source, build_script_v2_context, UnverifiedScriptArgument, ScriptSourceVerificationError,
     )
 except ModuleNotFoundError:
     from scripts.script_v2_compat import (
-        adapt_script_v2, build_script_v2_context, UnverifiedScriptArgument, ScriptSourceVerificationError,
+        plan_script_v2, verify_script_v2_source, build_script_v2_context, UnverifiedScriptArgument, ScriptSourceVerificationError,
     )
 
 try:
@@ -2335,17 +2335,13 @@ def convert_file(
                     surge_argument_name(name) == "Policy" for name in argument_defaults
                 ):
                     raise UnverifiedScriptV2("NodeLinkCheck injected Policy argument collides with an existing source declaration")
-            adapted = adapt_script_v2(script, script_context, source_loader=script_source_loader or fetch_script_source)
+            adapted = plan_script_v2(script, script_context)
             name, parts = prepare_script_v2(adapted.script)
-            parts = adapted.apply_parts(parts)
             adapted_scripts[script_index] = adapted
             name = name or f"{script.trigger} {script_index}"
             prepared_scripts[script_index] = (script, name, parts)
         except (UnverifiedScriptV2, UnverifiedScriptArgument) as exc:
             unverified_scripts.append((line, str(exc)))
-        except ScriptSourceVerificationError as exc:
-            add_report(report, path.name, "script-verification", str(exc), line)
-            invalid_scripts = True
         except RewriteV2Error as exc:
             add_report(report, path.name, "unsupported-script", f"Invalid Script V2: {exc}", line)
             invalid_scripts = True
@@ -2380,6 +2376,44 @@ def convert_file(
         )
         return None
 
+    warp_entries = [(line, props) for line, props in generic_scripts
+                    if unquote_property_value(props.get("script-path", "")) == WARP_PANEL_SCRIPT_PATH]
+    if warp_entries:
+        if len(warp_entries) != 1:
+            add_report(report, path.name, "module-excluded",
+                       "Module was excluded because multiple WARP generic entries require independently verified Panel mappings.", warp_entries[0][0])
+            return None
+        warp_line, warp_props = warp_entries[0]
+        script_name = warp_props.get("tag") or "WARP INFO"
+        # Check Panel identity locally before Object-source verification. For V2
+        # only names are needed, so no unverified Object argument is rendered.
+        # Legacy conversion is local and preserves its position-based names.
+        reference_lines: list[str] = []
+        for script_index, line in enumerate(script_lines, start=1):
+            if script_index in prepared_scripts:
+                reference_lines.append(f"{prepared_scripts[script_index][1]} = ")
+            else:
+                convert_script_line(line, reference_lines, [], path.name, argument_defaults, shared_enable_argument_names)
+        if sum(surge_script_reference_name(line) == script_name for line in reference_lines) != 1:
+            add_report(report, path.name, "module-excluded",
+                       "Module was excluded because the WARP Panel reference does not identify exactly one Script after enable-prefix expansion.", warp_line)
+            return None
+
+    # Finish local syntax/declaration/ordinary-feature checks for every script
+    # before fetching any Object adapter source. Unsupported local features must
+    # not become fatal verification failures merely because the network is down.
+    for script_index, adapted in adapted_scripts.items():
+        try:
+            verified = verify_script_v2_source(adapted, source_loader=script_source_loader or fetch_script_source)
+            script, name, parts = prepared_scripts[script_index]
+            prepared_scripts[script_index] = (script, name, verified.apply_parts(parts))
+            adapted_scripts[script_index] = verified
+        except ScriptSourceVerificationError as exc:
+            add_report(report, path.name, "script-verification", str(exc), script_lines[script_index - 1])
+            invalid_scripts = True
+    if invalid_scripts:
+        return None
+
     if NODE_LINK_CHECK_SCRIPT_PATH in generic_paths:
         metadata["desc"] = (
             "Checks the proxy chain for a Surge policy using Sub-Store node data. "
@@ -2401,14 +2435,6 @@ def convert_file(
 
     if WARP_PANEL_SCRIPT_PATH in generic_paths:
         metadata["desc"] = "Displays WARP details for the current Surge route in an information panel."
-        warp_entries = [(line, props) for line, props in generic_scripts
-                        if unquote_property_value(props.get("script-path", "")) == WARP_PANEL_SCRIPT_PATH]
-        if len(warp_entries) != 1:
-            add_report(report, path.name, "module-excluded",
-                       "Module was excluded because multiple WARP generic entries require independently verified Panel mappings.", warp_entries[0][0])
-            return None
-        warp_line, warp_props = warp_entries[0]
-        script_name = warp_props.get("tag") or "WARP INFO"
         sections["Panel"].append(
             f'{script_name} = title={json.dumps(script_name, ensure_ascii=False)}, '
             'content="Refresh to query the current Surge route.", style=info, '

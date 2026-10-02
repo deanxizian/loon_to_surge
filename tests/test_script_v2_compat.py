@@ -6,14 +6,16 @@ import itertools
 import json
 from pathlib import Path
 import sys
+import tempfile
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'scripts'))
 
 import script_v2_compat as compat
 from loon_script_v2 import parse_script_v2_line
-from convert_kelee_to_surge import prepare_script_v2
+from loon_rewrite_v2 import V2String, V2Variable
+from convert_kelee_to_surge import convert_file, prepare_script_v2, UnverifiedScriptV2, WARP_PANEL_SCRIPT_PATH
 
 
 SPOTIFY = compat.BASE + 'Spotify/Spotify_remove_ads.js'
@@ -99,13 +101,14 @@ class ScriptV2CompatibilityTest(unittest.TestCase):
 
     def test_missing_unavailable_or_changed_source_is_fatal_not_exclusion(self):
         script = parse_script_v2_line(self.line())
+        context = self.context(['tab=switch, false, true', 'useractivity=switch, true, false'])
         for loader in [None, lambda _: b'changed', lambda _: 'not bytes']:
             with self.subTest(loader=loader), self.assertRaises(compat.ScriptSourceVerificationError):
-                compat.adapt_script_v2(script, self.context([]), source_loader=loader)
+                compat.adapt_script_v2(script, context, source_loader=loader)
         def unavailable(_):
             raise TimeoutError('offline')
         with self.assertRaisesRegex(compat.ScriptSourceVerificationError, 'TimeoutError'):
-            compat.adapt_script_v2(script, self.context([]), source_loader=unavailable)
+            compat.adapt_script_v2(script, context, source_loader=unavailable)
         self.assertFalse(issubclass(compat.ScriptSourceVerificationError, compat.UnverifiedScriptArgument))
 
     def test_known_non_lossless_adapters_remain_excluded(self):
@@ -254,6 +257,187 @@ class ScriptV2CompatibilityTest(unittest.TestCase):
                 self.adapt_with_probe(line, [declaration])
         adapted = self.adapt_with_probe(line, ['captionLang=select, "off", "zh-Hans"'])
         self.assertEqual(adapted.argument_override, '{"captionLang":"{{{captionLang}}}"}')
+
+    def test_local_object_declarations_are_checked_before_source_fetch(self):
+        line = self.line(variables=['tab'])
+        for declarations in [[], ['tab=input, "false"'], ['tab=switch, false, true, tag=Tab, bogus']]:
+            loader = Mock(side_effect=TimeoutError('offline'))
+            with self.subTest(declarations=declarations), self.assertRaises(compat.UnverifiedScriptArgument):
+                compat.adapt_script_v2(parse_script_v2_line(line), self.context(declarations), source_loader=loader)
+            loader.assert_not_called()
+
+    def test_object_enable_and_cron_declarations_are_checked_without_fetching(self):
+        object_line = self.line(variables=['tab'])
+        cron_line = object_line.replace('response if ${url} ~= /ads/', 'cron ${Schedule}')
+        cases = [(object_line + ' with enable=${Enabled}', ['tab=switch, false, true']),
+                 (object_line + ' with enable=${tab}', ['tab=switch, false, true']),
+                 (cron_line, ['tab=switch, false, true']),
+                 (cron_line, ['tab=switch, false, true', 'Schedule=input, "invalid"'])]
+        for line, declarations in cases:
+            with self.subTest(line=line, declarations=declarations):
+                loader = Mock(side_effect=TimeoutError('offline'))
+                with self.assertRaises(compat.UnverifiedScriptArgument):
+                    compat.adapt_script_v2(parse_script_v2_line(line), self.context(declarations, [line]), source_loader=loader)
+                loader.assert_not_called()
+
+    def test_single_script_api_runs_local_validator_before_verification(self):
+        line = self.line(variables=['tab']) + ' with timeout=${Timeout}'
+        loader = Mock(side_effect=TimeoutError('offline'))
+        with self.assertRaisesRegex(UnverifiedScriptV2, 'Dynamic timeout'):
+            compat.adapt_script_v2(parse_script_v2_line(line), self.context(['tab=switch, false, true']),
+                                   source_loader=loader, local_validator=prepare_script_v2)
+        loader.assert_not_called()
+
+    def test_interpolated_object_script_path_is_rejected_without_fetching(self):
+        script = parse_script_v2_line(self.line(variables=['tab']))
+        context = self.context(['tab=switch, false, true'])
+        for path in [V2Variable('ScriptPath'), V2String(('https://example.com/', V2Variable('File')))]:
+            with self.subTest(path=path):
+                loader = Mock(side_effect=TimeoutError('offline'))
+                with self.assertRaisesRegex(compat.UnverifiedScriptArgument, 'fixed String script path'):
+                    compat.adapt_script_v2(replace(script, path=path), context, source_loader=loader,
+                                           local_validator=prepare_script_v2)
+                loader.assert_not_called()
+        loader = Mock(side_effect=TimeoutError('offline'))
+        output, report = self.convert_with_loader([self.line(variables=['tab']).replace(SPOTIFY, 'https://example.com/${File}')], loader)
+        self.assertIsNone(output)
+        self.assertEqual([item['kind'] for item in report], ['unsupported-script'])
+        loader.assert_not_called()
+
+    def test_unverified_object_plan_cannot_render(self):
+        plan = compat.plan_script_v2(parse_script_v2_line(self.line(variables=['tab'])),
+                                    self.context(['tab=switch, false, true']))
+        self.assertFalse(plan.source_verified)
+        _, parts = prepare_script_v2(plan.script)
+        with self.assertRaisesRegex(compat.ScriptSourceVerificationError, 'before rendering'):
+            plan.apply_parts(parts)
+        with self.assertRaises(compat.ScriptSourceVerificationError):
+            compat.verify_script_v2_source(plan)
+
+    def convert_with_loader(self, script_lines, loader, declarations=None):
+        declarations = declarations if declarations is not None else ['tab=switch, false, true']
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / 'Sample.lpx'
+            source.write_text('#!name=Sample\n[Argument]\n' + '\n'.join(declarations) +
+                              '\n[Script]\n' + '\n'.join(script_lines) + '\n')
+            report = []
+            result = convert_file(source, root, report, {}, script_source_loader=loader)
+            output = (root / result['output']).read_text() if result else None
+            return output, report
+
+    def test_converter_excludes_unsupported_object_features_without_fetching(self):
+        object_line = self.line(variables=['tab'])
+        unsupported = [object_line + ' with timeout=${Timeout}', object_line + ' with debug=${Debug}',
+                       object_line + ' with tag="invalid # inline comment"',
+                       object_line.replace('/ads/', '/ads/ && ${response.status} == 200'),
+                       object_line.replace('response if ${url} ~= /ads/', 'network-changed')]
+        for line in unsupported:
+            with self.subTest(line=line):
+                loader = Mock(side_effect=TimeoutError('offline'))
+                output, report = self.convert_with_loader([line], loader)
+                self.assertIsNone(output)
+                self.assertEqual([item['kind'] for item in report], ['module-excluded'])
+                loader.assert_not_called()
+
+    def test_converter_reports_malformed_object_properties_without_fetching(self):
+        object_line = self.line(variables=['tab'])
+        malformed = ['body_limit=${Limit}', 'body-limit=100', 'requires_body=${Body}',
+                     'timeout=0', 'debug="true"', 'tag="A", tag="B"', 'timeout=']
+        for properties in malformed:
+            with self.subTest(properties=properties):
+                loader = Mock(side_effect=TimeoutError('offline'))
+                output, report = self.convert_with_loader([object_line + ' with ' + properties], loader)
+                self.assertIsNone(output)
+                self.assertEqual([item['kind'] for item in report], ['unsupported-script'])
+                loader.assert_not_called()
+
+    def test_converter_checks_all_local_lines_before_fetching_any_object(self):
+        first = self.line(variables=['tab'])
+        cases = [(first + ' with timeout=${Timeout}', 'module-excluded'),
+                 (first + ' with body_limit=${Limit}', 'unsupported-script'),
+                 (first + ' with timeout=0', 'unsupported-script'),
+                 ('generic script-path=https://example.com/not-reviewed.js', 'module-excluded')]
+        for second, kind in cases:
+            for lines in ([first, second], [second, first]):
+                with self.subTest(lines=lines):
+                    loader = Mock(side_effect=TimeoutError('offline'))
+                    output, report = self.convert_with_loader(lines, loader)
+                    self.assertIsNone(output)
+                    self.assertEqual([item['kind'] for item in report], [kind])
+                    loader.assert_not_called()
+
+    def test_converter_checks_warp_cardinality_before_any_object_fetch(self):
+        object_line = self.line(variables=['tab'])
+        for warp_lines in [
+            [f'generic then script("{WARP_PANEL_SCRIPT_PATH}") with tag="One"',
+             f'generic then script("{WARP_PANEL_SCRIPT_PATH}") with tag="Two"'],
+            [f'generic script-path={WARP_PANEL_SCRIPT_PATH}, tag=One',
+             f'generic then script("{WARP_PANEL_SCRIPT_PATH}") with tag="Two"'],
+        ]:
+            for lines in itertools.permutations([object_line, *warp_lines]):
+                with self.subTest(lines=lines):
+                    loader = Mock(side_effect=TimeoutError('offline'))
+                    output, report = self.convert_with_loader(lines, loader)
+                    self.assertIsNone(output)
+                    self.assertEqual([item['kind'] for item in report], ['module-excluded'])
+                    self.assertIn('multiple WARP generic entries', report[0]['message'])
+                    loader.assert_not_called()
+
+    def test_converter_checks_warp_reference_collisions_before_any_object_fetch(self):
+        object_line = self.line(variables=['tab'])
+        warp = f'generic then script("{WARP_PANEL_SCRIPT_PATH}") with tag="Same"'
+        declarations = ['tab=switch, false, true', 'Enabled=switch, false, true']
+        for other in ['cron "0 8 * * *" then script("https://example.com/a.js") with tag="Same"',
+                      'cron "0 8 * * *" then script("https://example.com/a.js") with tag="Same", enable=${Enabled}',
+                      'cron "0 8 * * *" then script("https://example.com/a.js") with tag="Same", enable=false',
+                      'http-response ^https://example.com script-path=https://example.com/a.js, tag=Same, enable={Enabled}']:
+            for lines in itertools.permutations([object_line, warp, other]):
+                with self.subTest(lines=lines):
+                    loader = Mock(side_effect=TimeoutError('offline'))
+                    output, report = self.convert_with_loader(lines, loader, declarations)
+                    self.assertIsNone(output)
+                    self.assertEqual([item['kind'] for item in report], ['module-excluded'])
+                    self.assertIn('does not identify exactly one Script', report[0]['message'])
+                    loader.assert_not_called()
+
+    def test_converter_checks_warp_fallback_name_collisions_before_object_fetch(self):
+        object_line = self.line(variables=['tab'])
+        for order in itertools.permutations(['object', 'warp', 'other']):
+            cases = [
+                {'object': object_line,
+                 'warp': f'generic then script("{WARP_PANEL_SCRIPT_PATH}")',
+                 'other': 'cron "0 8 * * *" then script("https://example.com/a.js") with tag="generic ' + str(order.index('warp') + 1) + '"'},
+                {'object': object_line,
+                 'warp': f'generic then script("{WARP_PANEL_SCRIPT_PATH}") with tag="http-response {order.index("other") + 1}"',
+                 'other': 'http-response ^https://example.com script-path=https://example.com/a.js'},
+            ]
+            for case in cases:
+                lines = [case[key] for key in order]
+                with self.subTest(lines=lines):
+                    loader = Mock(side_effect=TimeoutError('offline'))
+                    output, report = self.convert_with_loader(lines, loader)
+                    self.assertIsNone(output)
+                    self.assertEqual([item['kind'] for item in report], ['module-excluded'])
+                    self.assertIn('does not identify exactly one Script', report[0]['message'])
+                    loader.assert_not_called()
+
+    def test_converter_valid_object_still_fetches_and_fails_closed(self):
+        line = self.line(variables=['tab'])
+        adapters = dict(compat.VERIFIED_OBJECT_ADAPTERS)
+        adapters[SPOTIFY] = replace(adapters[SPOTIFY], sha256=hashlib.sha256(PROBE_BYTES).hexdigest())
+        with patch.object(compat, 'VERIFIED_OBJECT_ADAPTERS', adapters):
+            loader = Mock(return_value=PROBE_BYTES)
+            output, report = self.convert_with_loader([line], loader)
+            self.assertIsNotNone(output)
+            self.assertIn('script-object-adapted', [item['kind'] for item in report])
+            loader.assert_called_once_with(SPOTIFY)
+            for bad_loader in [Mock(return_value=b'changed bytes'), Mock(side_effect=TimeoutError('offline'))]:
+                with self.subTest(loader=bad_loader):
+                    output, report = self.convert_with_loader([line], bad_loader)
+                    self.assertIsNone(output)
+                    self.assertEqual([item['kind'] for item in report], ['script-verification'])
+                    bad_loader.assert_called_once_with(SPOTIFY)
 
     def test_static_and_generic_scripts_are_unchanged(self):
         for line in ['cron "0 8 * * *" then script("https://example.com/a.js", "x=y") with enable=false',
