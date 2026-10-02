@@ -4,11 +4,11 @@
 
 参考方向：
 
-- Loon Rewrite V2 官方文档：作为新版 Rewrite 的语法、类型、Action 顺序和执行阶段依据。
-- QingRex/LoonKissSurge：主要对照其 Kelee 成品模块的 Surge 输出形态，包括 section 组织、`Map Local`、`http-response-jq`、`extended-matching`、`pre-matching` 等规则标记。
-- Script-Hub-Org/Script-Hub：主要参考 `enable={...}` 转 Surge 行前缀开关、参数引号与顶层分隔处理，以及规则标记处理的边界。
-- Loon Script 与 Script API 官方文档：用于确认 `generic` 可接收被操作节点的 `$environment.params.node/nodeInfo`。
-- Surge 官方文档：作为最终语法边界，覆盖模块结构、`#!arguments`、`#!system`、`#!requirement`、`[Rule]`、`[Script]`、`[Map Local]`、`[MITM]` 和 `pre-matching` 的适用范围；Surge generic/Panel 只使用自身的普通脚本上下文及 `$input/$trigger`，不假设存在 Loon 的被选节点上下文。
+- [Loon Rewrite V2 官方文档](https://nsloon.app/docs/Rewrite/rewrite_v2/)：作为新版 Rewrite 的语法、类型、Action 顺序和执行阶段依据。
+- [QingRex/LoonKissSurge](https://github.com/QingRex/LoonKissSurge)：主要对照其 Kelee 成品模块的 Surge 输出形态，包括 section 组织、`Map Local`、`http-response-jq`、`extended-matching`、`pre-matching` 等规则标记。
+- [Script-Hub-Org/Script-Hub](https://github.com/Script-Hub-Org/Script-Hub)：主要参考 `enable={...}` 转 Surge 行前缀开关、参数引号与顶层分隔处理，以及规则标记处理的边界。
+- [Loon Script](https://nsloon.app/docs/Script/)、[Script V2](https://nsloon.app/docs/Script/script_v2/) 与 [Script API](https://nsloon.app/docs/Script/script_api/) 官方文档：作为触发器、参数类型和运行上下文依据，包括 `generic` 的 `$environment.params.node/nodeInfo`。
+- [Surge 官方文档](https://manual.nssurge.com/)：作为最终语法边界，覆盖模块结构、`#!arguments`、`#!system`、`#!requirement`、`[Rule]`、`[Script]`、`[Map Local]`、`[MITM]` 和 `pre-matching` 的适用范围；Surge generic/Panel 只使用自身的普通脚本上下文及 `$input/$trigger`，不假设存在 Loon 的被选节点上下文。
 
 当前规则不是对任一项目逐行照搬。参考项目与 Surge Manual 冲突时，以当前 Surge Manual 为准。
 
