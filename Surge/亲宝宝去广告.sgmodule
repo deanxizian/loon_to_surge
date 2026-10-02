@@ -5,9 +5,9 @@
 #!category=iKeLee
 #!openUrl=https://apps.apple.com/app/id672984826
 #!tag=去广告
-#!loon_version=3.5.1(980)
+#!loon_version=3.5.1(998)
 #!homepage=https://hub.kelee.one
-#!date=2026-08-26 11:08:19
+#!date=2026-10-02 13:57:49
 #!requirement=CORE_VERSION>=6008000
 
 [Rule]
@@ -24,8 +24,8 @@ DOMAIN,apimall.qbb6.com,REJECT,extended-matching,pre-matching
 (?i:^https:\/\/apimall\.qbb6\.com\/mall\/homepage\/data\/get\/v\d$) data-type=base64 data="e30=" status-code=200 header="Content-Type:application/json"
 
 [Script]
-精简我的页面 = type=http-response, pattern=^https:\/\/api\.qbb6\.com\/commons\/self\/button\/group\/get\/v\d\?, script-path=https://kelee.one/Resource/JavaScript/Qbb/my.js, requires-body=true, timeout=10
-精简育儿页面 = type=http-response, pattern=^https:\/\/apipt\.qbb6\.com\/parenting\/pt\/homepage\/get\/v\d\?, script-path=https://kelee.one/Resource/JavaScript/Qbb/homepage.js, requires-body=true, timeout=10
+精简我的页面 = type=http-response, pattern=(?i:^https:\/\/api\.qbb6\.com\/commons\/self\/button\/group\/get\/v\d\?), script-path=https://kelee.one/Resource/JavaScript/Qbb/my.js, timeout=20, requires-body=true
+精简育儿页面 = type=http-response, pattern=(?i:^https:\/\/apipt\.qbb6\.com\/parenting\/pt\/homepage\/get\/v\d\?), script-path=https://kelee.one/Resource/JavaScript/Qbb/homepage.js, timeout=20, requires-body=true
 
 [MITM]
 hostname = %APPEND% api.qbb6.com, apicommunity.qbb6.com, apipt.qbb6.com, apiuser.qbb6.com, apimall.qbb6.com

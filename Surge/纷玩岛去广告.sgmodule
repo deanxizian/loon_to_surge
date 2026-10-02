@@ -5,19 +5,19 @@
 #!category=iKeLee
 #!openUrl=https://apps.apple.com/app/id1566835977
 #!tag=去广告
-#!loon_version=3.4.0(962)
+#!loon_version=3.5.1(998)
 #!homepage=https://hub.kelee.one
-#!date=2026-06-01 17:11:35
+#!date=2026-10-02 13:57:49
 #!requirement=CORE_VERSION>=6008000
 
 [Body Rewrite]
-http-response-jq ^https:\/\/api\.livelab\.com\.cn\/appShow\/app\/homepage\/modules\?tabId=5$ '.data |= map(select(.id | IN(51, 52, 81, 82, 83, 84)))'
+http-response-jq (?i:^https:\/\/api\.livelab\.com\.cn\/appShow\/app\/homepage\/modules\?tabId=5$) '.data |= map(select(.id | IN(51, 52, 81, 82, 83, 84)))'
 
 [Map Local]
-^https:\/\/api\.livelab\.com\.cn\/pgc\/advert\/ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
-^https:\/\/api\.livelab\.com\.cn\/search\/appHotWords\/app\/queryHotWords$ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
-^https:\/\/api\.livelab\.com\.cn\/appShow\/hotSearch\/app\/rankList$ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
-^https:\/\/api\.livelab\.com\.cn\/appShow\/app\/homepage\/banners\?bannerModuleId=(82|84|53) data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+(?i:^https:\/\/api\.livelab\.com\.cn\/pgc\/advert\/) data-type=base64 data="e30=" status-code=200 header="Content-Type:application/json"
+(?i:^https:\/\/api\.livelab\.com\.cn\/search\/appHotWords\/app\/queryHotWords$) data-type=base64 data="e30=" status-code=200 header="Content-Type:application/json"
+(?i:^https:\/\/api\.livelab\.com\.cn\/appShow\/hotSearch\/app\/rankList$) data-type=base64 data="e30=" status-code=200 header="Content-Type:application/json"
+(?i:^https:\/\/api\.livelab\.com\.cn\/appShow\/app\/homepage\/banners\?bannerModuleId=(82|84|53)) data-type=base64 data="e30=" status-code=200 header="Content-Type:application/json"
 
 [MITM]
 hostname = %APPEND% api.livelab.com.cn

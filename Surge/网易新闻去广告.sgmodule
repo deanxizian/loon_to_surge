@@ -5,28 +5,28 @@
 #!category=iKeLee
 #!openUrl=https://apps.apple.com/app/id425349261
 #!tag=去广告
-#!loon_version=3.4.0(962)
+#!loon_version=3.5.1(998)
 #!homepage=https://hub.kelee.one
-#!date=2026-06-01 17:11:35
+#!date=2026-10-02 13:57:49
 #!requirement=CORE_VERSION>=20
 
 [Rule]
 DOMAIN,nex.163.com,DIRECT,extended-matching
 DOMAIN,gw.m.163.com,DIRECT,extended-matching
 
-[URL Rewrite]
-^https?:\/\/interface\.music\.163\.com\/eapi\/ad _ reject
-^https?:\/\/c\.m\.163\.com\/nc\/gl\/ _ reject
-^https?:\/\/client\.mail\.163\.com\/apptrack\/confinfo\/searchMultiAds _ reject
-^https?:\/\/g1\.163\.com\/madfeedback _ reject
-^https?:\/\/interface\.music\.163\.com\/eapi\/ad\/ _ reject
-^https?:\/\/support\.you\.163\.com\/xhr\/boot\/getBootMedia\.json _ reject
-^https?:\/\/interface3?\.music\.163\.com/eapi/(ad|abtest|sp|hot|store|search/(specialkeyword|defaultkeyword|hot)) _ reject
+[Map Local]
+(?i:^https?:\/\/interface\.music\.163\.com\/eapi\/ad) data-type=text data="" status-code=404
+(?i:^https?:\/\/c\.m\.163\.com\/nc\/gl\/) data-type=text data="" status-code=404
+(?i:^https?:\/\/client\.mail\.163\.com\/apptrack\/confinfo\/searchMultiAds) data-type=text data="" status-code=404
+(?i:^https?:\/\/g1\.163\.com\/madfeedback) data-type=text data="" status-code=404
+(?i:^https?:\/\/interface\.music\.163\.com\/eapi\/ad\/) data-type=text data="" status-code=404
+(?i:^https?:\/\/support\.you\.163\.com\/xhr\/boot\/getBootMedia\.json) data-type=text data="" status-code=404
+(?i:^https?:\/\/interface3?\.music\.163\.com\/eapi\/(ad|abtest|sp|hot|store|search\/(specialkeyword|defaultkeyword|hot))) data-type=text data="" status-code=404
 
 [Script]
-移除网易新闻广告 = type=http-response, pattern=^https:\/\/nex\.163\.com\/q, script-path=https://kelee.one/Resource/JavaScript/NeteaseNews/NeteaseNews_remove_ads.js, requires-body=true, timeout=10
-移除网易新闻广告 = type=http-response, pattern=^https:\/\/gw\.m\.163\.com\/nc\/api\/v1\/feed\/dynamic\/headline-list\?, script-path=https://kelee.one/Resource/JavaScript/NeteaseNews/NeteaseNews_remove_ads.js, requires-body=true, timeout=10
-移除网易新闻广告 = type=http-response, pattern=^https:\/\/gw\.m\.163\.com\/nc\/api\/v1\/search\/hot-word, script-path=https://kelee.one/Resource/JavaScript/NeteaseNews/NeteaseNews_remove_ads.js, requires-body=true, timeout=10
+移除网易新闻广告 = type=http-response, pattern=(?i:^https:\/\/nex\.163\.com\/q), script-path=https://kelee.one/Resource/JavaScript/NeteaseNews/NeteaseNews_remove_ads.js, timeout=20, requires-body=true
+移除网易新闻广告 = type=http-response, pattern=(?i:^https:\/\/gw\.m\.163\.com\/nc\/api\/v1\/feed\/dynamic\/headline-list\?), script-path=https://kelee.one/Resource/JavaScript/NeteaseNews/NeteaseNews_remove_ads.js, timeout=20, requires-body=true
+移除网易新闻广告 = type=http-response, pattern=(?i:^https:\/\/gw\.m\.163\.com\/nc\/api\/v1\/search\/hot-word), script-path=https://kelee.one/Resource/JavaScript/NeteaseNews/NeteaseNews_remove_ads.js, timeout=20, requires-body=true
 
 [MITM]
 hostname = %APPEND% nex.163.com, interface.music.163.com, c.m.163.com, client.mail.163.com, g1.163.com, support.you.163.com, interface3?.music.163.com, gw.m.163.com

@@ -5,9 +5,9 @@
 #!category=iKeLee
 #!openUrl=https://apps.apple.com/app/id1529434108
 #!tag=去广告
-#!loon_version=3.4.0(962)
+#!loon_version=3.5.1(998)
 #!homepage=https://hub.kelee.one
-#!date=2026-06-01 17:11:35
+#!date=2026-10-02 13:57:49
 #!requirement=CORE_VERSION>=6008000
 
 [Rule]
@@ -20,8 +20,8 @@ DOMAIN,qh-material.taobao.com,REJECT,extended-matching,pre-matching
 DOMAIN-SUFFIX,admobile.top,REJECT,extended-matching,pre-matching
 
 [Body Rewrite]
-http-response-jq ^https:?\/\/switch.jumpvg.com\/jump\/getlaunchad\/v2$ 'del(.data.adList)|.data.launchAd.showType=0'
-http-response-jq ^https:?\/\/switch.jumpvg.com\/jump\/recommend\/ad_conf$ '.data=[]'
+http-response-jq (?i:^https:?\/\/switch.jumpvg.com\/jump\/getlaunchad\/v2$) 'del(.data.adList)|.data.launchAd.showType=0'
+http-response-jq (?i:^https:?\/\/switch.jumpvg.com\/jump\/recommend\/ad_conf$) '.data=[]'
 
 [MITM]
 hostname = %APPEND% switch.jumpvg.com

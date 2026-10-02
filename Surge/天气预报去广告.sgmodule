@@ -5,9 +5,9 @@
 #!category=iKeLee
 #!openUrl=https://apps.apple.com/app/id455611831
 #!tag=去广告
-#!loon_version=3.4.0(962)
+#!loon_version=3.5.1(998)
 #!homepage=https://hub.kelee.one
-#!date=2026-06-30 19:41:51
+#!date=2026-10-02 13:57:49
 #!requirement=CORE_VERSION>=6008000
 
 [Rule]
@@ -15,4 +15,4 @@ DOMAIN,adsys.nineton.cn,REJECT,extended-matching,pre-matching
 DOMAIN,adcdn.ccqyj.com,REJECT,extended-matching,pre-matching
 
 [Map Local]
-^http:\/\/weatherapi\.ccqyj\.com\/server\/listsv\d$ data-type=base64 data="eyJkYXRhIjpbeyJ0aXRsZSI6IuWwj+W3peWFtyIsInR5cGUiOjEsInNvcnQiOjEsImlkIjoiNWQ1ZmI3YzQxYTBjNDAwMTU2NzlhM2UzIiwibGlzdCI6W3sidGl0bGUiOiLkuLvpopjnmq7ogqQiLCJncm91cElkIjoiNWQ1ZmI3YzQxYTBjNDAwMTU2NzlhM2UzIiwiaW1hZ2UiOiJodHRwOi8vY2RuLndlYXRoZXIubmluZXRvbi5jbi9iNTJiZTI2YWUwNmY2ODI0ZDE3MTM3NWQwZGFjNTFmMS5wbmciLCJkYXJrX2ljb24iOiJodHRwOi8vY2RuLndlYXRoZXIubmluZXRvbi5jbi9lNzE0YWQ2NDIxOTY1YzgzNjhjYTZhZjQzOGFjZGUzNi5wbmciLCJ0eXBlIjoxLCJwcm90b2NvbCI6Im50d2VhdGhlcjovL29wZW50aGVtZSIsInNvcnQiOjExMDMsInZlcnNpb24iOjgxNCwicmlnaHRWZXJzaW9uIjowLCJzeW1ib2wiOjF9XX1dLCJjb2RlIjoxLCJpbmZvIjoib2sifQ==" status-code=200 header="Content-Type:application/json"
+(?i:^http:\/\/weatherapi\.ccqyj\.com\/server\/listsv\d$) data-type=base64 data="eyJkYXRhIjpbeyJ0aXRsZSI6IuWwj+W3peWFtyIsInR5cGUiOjEsInNvcnQiOjEsImlkIjoiNWQ1ZmI3YzQxYTBjNDAwMTU2NzlhM2UzIiwibGlzdCI6W3sidGl0bGUiOiLkuLvpopjnmq7ogqQiLCJncm91cElkIjoiNWQ1ZmI3YzQxYTBjNDAwMTU2NzlhM2UzIiwiaW1hZ2UiOiJodHRwOi8vY2RuLndlYXRoZXIubmluZXRvbi5jbi9iNTJiZTI2YWUwNmY2ODI0ZDE3MTM3NWQwZGFjNTFmMS5wbmciLCJkYXJrX2ljb24iOiJodHRwOi8vY2RuLndlYXRoZXIubmluZXRvbi5jbi9lNzE0YWQ2NDIxOTY1YzgzNjhjYTZhZjQzOGFjZGUzNi5wbmciLCJ0eXBlIjoxLCJwcm90b2NvbCI6Im50d2VhdGhlcjovL29wZW50aGVtZSIsInNvcnQiOjExMDMsInZlcnNpb24iOjgxNCwicmlnaHRWZXJzaW9uIjowLCJzeW1ib2wiOjF9XX1dLCJjb2RlIjoxLCJpbmZvIjoib2sifQ==" status-code=200 header="Content-Type:application/json"

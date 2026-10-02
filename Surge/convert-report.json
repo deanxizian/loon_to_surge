@@ -1,12 +1,24 @@
 {
-    "generated_at": "2026-09-28 21:30:32 +00:00",
+    "generated_at": "2026-10-02 16:32:24 +00:00",
     "input_dir": "Loon",
     "output_dir": "Surge",
     "total": 275,
-    "converted": 263,
-    "excluded": 12,
-    "warnings": 18,
+    "converted": 259,
+    "excluded": 16,
+    "warnings": 63,
     "items": [
+        {
+            "file": "AliYunDrive_remove_ads.lpx",
+            "kind": "script-http-name-shared",
+            "message": "Preserved repeated explicit HTTP Script names and source order. Surge documents line-based first-match selection, not a global name-uniqueness rule; repeated-name runtime behavior has not been device-tested. Names are observable via $script.name.",
+            "line": "移除阿里云盘广告"
+        },
+        {
+            "file": "Amap_remove_ads.lpx",
+            "kind": "script-http-name-shared",
+            "message": "Preserved repeated explicit HTTP Script names and source order. Surge documents line-based first-match selection, not a global name-uniqueness rule; repeated-name runtime behavior has not been device-tested. Names are observable via $script.name.",
+            "line": "移除路线规划推广, 移除首页推广"
+        },
         {
             "file": "AppleWeatherEnhancer.lpx",
             "kind": "module-excluded",
@@ -14,10 +26,31 @@
             "line": "DOMAIN, weather-analytics-events.apple.com, REJECT-DROP"
         },
         {
+            "file": "AutoHome_remove_ads.lpx",
+            "kind": "script-http-name-shared",
+            "message": "Preserved repeated explicit HTTP Script names and source order. Surge documents line-based first-match selection, not a global name-uniqueness rule; repeated-name runtime behavior has not been device-tested. Names are observable via $script.name.",
+            "line": "精简我的页面"
+        },
+        {
             "file": "Auto_Join_TF.lpx",
             "kind": "module-excluded",
             "message": "Module was excluded from Surge output because module rules may only use DIRECT, REJECT, or REJECT-TINYGIF; found: PROXY.",
             "line": "DOMAIN, testflight.apple.com, PROXY"
+        },
+        {
+            "file": "BaiduMap_remove_ads.lpx",
+            "kind": "source-repair-applied",
+            "reason": "reviewed-exact-source-repair",
+            "message": "Restore verified empty object/array replacement types through guarded JQ without coercing arbitrary strings. Applied only to the pinned source version; raw upstream bytes are retained.",
+            "line": "response if ${url} ~= /^https:\\/\\/newclient\\.map\\.baidu\\.com\\/(client\\/)?usersystem\\/mine\\/page\\?/i then response.json.replace(\"data\", \"{}\")",
+            "line_number": "20",
+            "source_url": "https://kelee.one/Tool/Loon/Lpx/BaiduMap_remove_ads.lpx",
+            "source_sha256": "49522f58512a3d88da58eb4208793a12d1634c12a626d91d19514ac9aa627ded",
+            "repaired_sha256": "f758e0eae724a049f37eccede1801b20563070fbd9ddb39c65e68e3ef993185e",
+            "baseline_sha256": "7f38daaa731c0918ec9bae278efd1fa92cab929b22689959392a55218df92731",
+            "baseline_revision": "a991b1d3a6b9af719dedc1be8a2c767e8f4228f0",
+            "original_line_sha256": "346146ac71805c8590a82485d654fa0e5ba739dd2b22b6008a0bf8e0bdeeb825",
+            "replacement_line_sha256": "378d056fa906d5444629b3e3e767aa26cd623f59c2eb2268b14cfad23e3458fb"
         },
         {
             "file": "Bilibili_remove_ads.lpx",
@@ -32,16 +65,121 @@
             "line": "DOMAIN-SUFFIX, jsdelivr.net, PROXY"
         },
         {
+            "file": "CaixinMedia_remove_ads.lpx",
+            "kind": "script-http-name-shared",
+            "message": "Preserved repeated explicit HTTP Script names and source order. Surge documents line-based first-match selection, not a global name-uniqueness rule; repeated-name runtime behavior has not been device-tested. Names are observable via $script.name.",
+            "line": "移除正文广告"
+        },
+        {
+            "file": "DiDi_remove_ads.lpx",
+            "kind": "source-repair-applied",
+            "reason": "reviewed-exact-source-repair",
+            "message": "Restore verified empty object/array replacement types through guarded JQ without coercing arbitrary strings. Applied only to the pinned source version; raw upstream bytes are retained.",
+            "line": "response if ${url} ~= /^https:\\/\\/htwkop\\.xiaojukeji\\.com(:443)?\\/gateway\\?api=hm\\.fa\\.querySellCardSummary/i then response.json.replace(\"data\", \"{}\")",
+            "line_number": "61",
+            "source_url": "https://kelee.one/Tool/Loon/Lpx/DiDi_remove_ads.lpx",
+            "source_sha256": "bc7385fe302ae697a08c3dbf345079548917b7f2e6cc2454431417a7a601b970",
+            "repaired_sha256": "f06307b524d4765fc3e1bff6784e6456c806685a1ee8e4c4d2f0233cb1f83541",
+            "baseline_sha256": "1184e4c2a0f55e98411ca25812fc22407ee455e4cdcf295a7d9b23eb8199ca0f",
+            "baseline_revision": "a991b1d3a6b9af719dedc1be8a2c767e8f4228f0",
+            "original_line_sha256": "deb1a383bf72d2d713b65f31b4e6475fb85545ac8609f4fccd932aa1d8f997b5",
+            "replacement_line_sha256": "70b23c71b3a29a67f926f64dbf468dba776f8fde80a765e311f122ef9fb436ea"
+        },
+        {
+            "file": "DiDi_remove_ads.lpx",
+            "kind": "source-repair-applied",
+            "reason": "reviewed-exact-source-repair",
+            "message": "Restore verified empty object/array replacement types through guarded JQ without coercing arbitrary strings. Applied only to the pinned source version; raw upstream bytes are retained.",
+            "line": "response if ${url} ~= /^https:\\/\\/htwkop\\.xiaojukeji\\.com(:443)?\\/gateway\\?api=hm\\.fa\\.queryWelfareCenter/i then response.json.replace(\"data\", \"{}\")",
+            "line_number": "63",
+            "source_url": "https://kelee.one/Tool/Loon/Lpx/DiDi_remove_ads.lpx",
+            "source_sha256": "bc7385fe302ae697a08c3dbf345079548917b7f2e6cc2454431417a7a601b970",
+            "repaired_sha256": "f06307b524d4765fc3e1bff6784e6456c806685a1ee8e4c4d2f0233cb1f83541",
+            "baseline_sha256": "1184e4c2a0f55e98411ca25812fc22407ee455e4cdcf295a7d9b23eb8199ca0f",
+            "baseline_revision": "a991b1d3a6b9af719dedc1be8a2c767e8f4228f0",
+            "original_line_sha256": "a9bc2b0112c3473aeb9f749b3b8f9c5d1976e0da1c167d53f27d00a9763150db",
+            "replacement_line_sha256": "e4abbebcdcd6fb15aa48a1b7ba571279538d09f076d7b1a4e1d90ebfeab1df3c"
+        },
+        {
+            "file": "DigitalHeartbeat_remove_ads.lpx",
+            "kind": "source-repair-applied",
+            "reason": "reviewed-exact-source-repair",
+            "message": "Restore verified empty object/array replacement types through guarded JQ without coercing arbitrary strings. Applied only to the pinned source version; raw upstream bytes are retained.",
+            "line": "response if ${url} ~= /^https:\\/\\/api-changzheng\\.chinaath\\.com\\/changzheng-common-proxy-api\\/api\\/advertising\\/proxy\\/getOpenScreenAdvertising$/i then response.json.replace(\"data.advertisingList\", \"[]\")",
+            "line_number": "14",
+            "source_url": "https://kelee.one/Tool/Loon/Lpx/DigitalHeartbeat_remove_ads.lpx",
+            "source_sha256": "802fd6e67f3aae15b144ef4da4b4cd502959a26a4fe47e422ade1072ed1f8fe0",
+            "repaired_sha256": "3a856019591eebe26f3729cce98f3dca6edd93d5bae7ce665971238a2ecc49a7",
+            "baseline_sha256": "f2c237ccb3d4d489693a3d3952659f38e2ca7e1114fb9d3b83ab553b9177e258",
+            "baseline_revision": "a991b1d3a6b9af719dedc1be8a2c767e8f4228f0",
+            "original_line_sha256": "e776436d52cfc1c5564a864a08c74f0747fed8b37fd54524be44094c5349e1da",
+            "replacement_line_sha256": "dd7f94259c7ea6774d6ec4c45931ff0a80789c966bbb3b44813e630efa15d8a5"
+        },
+        {
+            "file": "FollowRSS_checkin.lpx",
+            "kind": "module-excluded",
+            "message": "Module was excluded from Surge output: Script V2 script reads Object properties directly and has no String argument adapter.",
+            "line": "cron ${cron} then script(\"https://kelee.one/Resource/JavaScript/FollowRSS/FollowRSS_checkin.js\", {${token}, ${cookie}}) with tag=\"Follow每日签到\", timeout=120"
+        },
+        {
+            "file": "HUPU_remove_ads.lpx",
+            "kind": "script-http-name-shared",
+            "message": "Preserved repeated explicit HTTP Script names and source order. Surge documents line-based first-match selection, not a global name-uniqueness rule; repeated-name runtime behavior has not been device-tested. Names are observable via $script.name.",
+            "line": "移除虎扑广告"
+        },
+        {
             "file": "HongKongToolbar_remove_ads.lpx",
             "kind": "module-excluded",
             "message": "Module was excluded from Surge output because module rules may only use DIRECT, REJECT, or REJECT-TINYGIF; found: REJECT-DROP.",
             "line": "URL-REGEX, \"^https:\\/\\/a\\.881903\\.com\\/live\\/preroll\\/.*\\/.*\", REJECT-DROP"
         },
         {
+            "file": "IThome_remove_ads.lpx",
+            "kind": "module-excluded",
+            "message": "Module was excluded from Surge output: Script V2 script reads Object properties directly and has no String argument adapter.",
+            "line": "response if ${url} ~= /^https:\\/\\/napi\\.ithome\\.com\\/api\\/(news\\/indexv2\\/iphone\\/\\d+|topmenu\\/getfeeds\\?)/i then script(\"https://kelee.one/Resource/JavaScript/IThome/IThome_remove_ads.js\", {${removeAllBanners}, ${removePinnedArticles}}) with tag=\"IT之家去广告\", requires_body=true"
+        },
+        {
+            "file": "JiaXiaoDrive_remove_ads.lpx",
+            "kind": "source-repair-applied",
+            "reason": "reviewed-exact-source-repair",
+            "message": "Restore the verified URL guard and all twelve baseline JSON deletion paths lost in the malformed migration. Applied only to the pinned source version; raw upstream bytes are retained.",
+            "line": "response if ${url} ~= /http-response/i then response.json.delete(\"^https:\\\\/\\\\/api\\\\.ksedt\\\\.com\\\\/api\\\\/config\\\\/\")",
+            "line_number": "19",
+            "source_url": "https://kelee.one/Tool/Loon/Lpx/JiaXiaoDrive_remove_ads.lpx",
+            "source_sha256": "b6c356cb056a05bcaae4985bbdb23f520dfbb250d0582bc7ee8f235298073eb1",
+            "repaired_sha256": "68e073cd8578df5d738e8087e629c6fe16ec2da4f962e24e4c8c7fce59963597",
+            "baseline_sha256": "ab74079290e3f5efc10245846a1905bb81b8e654a7962f8ca27112fe21a44dd4",
+            "baseline_revision": "a991b1d3a6b9af719dedc1be8a2c767e8f4228f0",
+            "original_line_sha256": "810c7722bc13127d094d0f9841aad8b7452fc51bf0e636ef53bae84d6dc7ee0c",
+            "replacement_line_sha256": "334c271bb55f88b2dc89d375856e0187844010cf67d7226ad5bfa3f67691dbb9"
+        },
+        {
+            "file": "KebidaDushu_remove_ads.lpx",
+            "kind": "script-http-name-shared",
+            "message": "Preserved repeated explicit HTTP Script names and source order. Surge documents line-based first-match selection, not a global name-uniqueness rule; repeated-name runtime behavior has not been device-tested. Names are observable via $script.name.",
+            "line": "帆书去广告"
+        },
+        {
+            "file": "Keep_remove_ads.lpx",
+            "kind": "source-repair-applied",
+            "reason": "reviewed-exact-source-repair",
+            "message": "Restore verified empty object/array replacement types through guarded JQ without coercing arbitrary strings. Applied only to the pinned source version; raw upstream bytes are retained.",
+            "line": "response if ${url} ~= /^https:\\/\\/api\\.gotokeep\\.com\\/twins\\/v4\\/feed\\/entryDetail\\?/i then response.json.replace(\"data\", \"{}\")",
+            "line_number": "29",
+            "source_url": "https://kelee.one/Tool/Loon/Lpx/Keep_remove_ads.lpx",
+            "source_sha256": "015279fe23c9b7323b2c97adf0740dc6f697ccd938675f3adfd81c22610659ff",
+            "repaired_sha256": "3a145cee93031bb440c0a83796a4bdca6dbb687f5236ee4b32173ef2c50af623",
+            "baseline_sha256": "2ee11147bbaefc6e6e0e4b058e461b4792e535525355e9f8bf26a794b316399e",
+            "baseline_revision": "a991b1d3a6b9af719dedc1be8a2c767e8f4228f0",
+            "original_line_sha256": "55d491da98bb934e6a66373bedcf86ee90e6f7f7301854724580eed66c50b67b",
+            "replacement_line_sha256": "4e475dabac1f9bcadaf83c7e6b67c363b217b2a8d7dd12abd23d77050ea04945"
+        },
+        {
             "file": "KuGou_remove_ads.lpx",
             "kind": "jq-expression-corrected",
             "message": "Normalized missing JQ token separators and variable-binding grouping so the expression compiles.",
-            "line": "^https:\\/\\/gateway(retry)?\\.kugou\\.com\\/ocean\\/v\\d\\/tab\\/list_v\\d response-body-json-jq 'def namesToRemove:[\"AI帮唱\",\"长相思2\",\"K歌\",\"小说\",\"游戏\"];def removeParentIfNameMatches:if type==\"object\"then with_entries(select(.value|(type==\"object\"and .name as $name|$name|IN(namesToRemove[])|not)))|map_values(removeParentIfNameMatches)else .end;removeParentIfNameMatches'"
+            "line": "response if ${url} ~= /^https:\\/\\/gateway(retry)?\\.kugou\\.com\\/ocean\\/v\\d\\/tab\\/list_v\\d/i then response.json.jq(\"def namesToRemove:[\\\"AI帮唱\\\",\\\"长相思2\\\",\\\"K歌\\\",\\\"小说\\\",\\\"游戏\\\"];def removeParentIfNameMatches:if type==\\\"object\\\"then with_entries(select(.value|(type==\\\"object\\\"and .name as $name|$name|IN(namesToRemove[])|not)))|map_values(removeParentIfNameMatches)else .end;removeParentIfNameMatches\")"
         },
         {
             "file": "Line_remove_ads.lpx",
@@ -50,16 +188,85 @@
             "line": "URL-REGEX, \"^https:\\/\\/a\\.line\\.me\\/lass\\/api\\/v\\d\\/ads$\", REJECT-DROP"
         },
         {
+            "file": "MeiRiSaiChe_remove_ads.lpx",
+            "kind": "source-repair-applied",
+            "reason": "reviewed-exact-source-repair",
+            "message": "Restore verified empty object/array replacement types through guarded JQ without coercing arbitrary strings. Applied only to the pinned source version; raw upstream bytes are retained.",
+            "line": "response if ${url} ~= /^https:\\/\\/api\\.romielf\\.com\\/index\\/indexv\\d\\?/i then response.json.replace([\"data.advertisement\", \"data.listadvertising\"], [\"[]\", \"[]\"])",
+            "line_number": "14",
+            "source_url": "https://kelee.one/Tool/Loon/Lpx/MeiRiSaiChe_remove_ads.lpx",
+            "source_sha256": "712c7adec68d9d749622f1ea98e79b2b8e5a61efc0cd1303525a2481365f0a31",
+            "repaired_sha256": "6523d92bac2cf1db43cc1c133ce153c480a71fb4e225cd7e8ced8cc70ab4da5a",
+            "baseline_sha256": "4ce75f469df00a8be1b8321500b3b3dfc1993b18406dd66daa5f31a18d28949f",
+            "baseline_revision": "a991b1d3a6b9af719dedc1be8a2c767e8f4228f0",
+            "original_line_sha256": "c26d40f1a77f0ce74f60d66376bf6a8fe278ef04d44516619bb1a05da0debfca",
+            "replacement_line_sha256": "04aba540200d694d2174006335624937f87470bfac98353f88f6b51b02044ca4"
+        },
+        {
+            "file": "NeteaseCloudMusic_remove_ads.lpx",
+            "kind": "script-object-adapted",
+            "message": "Used reviewed json String decoder for typed Object parameters; source SHA-256=20c13c7c598b8e59058493e2143d5c62d27ce6ac2917d04c400fa16caa092528. Remote URL remains mutable after publication.",
+            "line": "response if ${url} ~= /^https?:\\/\\/interface\\d?\\.music\\.163\\.com\\/eapi\\/(?:homepage\\/block\\/page|link\\/page\\/rcmd\\/(?:block\\/resource\\/multi\\/refresh|resource\\/show))/i then script(\"https://kelee.one/Resource/JavaScript/NeteaseCloudMusic/NeteaseCloudMusic_remove_ads.js\", {${PRGG}, ${PRRK}, ${PRDRD}, ${PRSCVPT}, ${PRST}, ${PRRR}, ${HMPR}, ${PRMST}, ${PRCN}}) with tag=\"推荐、home、主页\", timeout=20, requires_body=true, binary_body_mode=true"
+        },
+        {
+            "file": "NeteaseCloudMusic_remove_ads.lpx",
+            "kind": "script-object-adapted",
+            "message": "Used reviewed json String decoder for typed Object parameters; source SHA-256=20c13c7c598b8e59058493e2143d5c62d27ce6ac2917d04c400fa16caa092528. Remote URL remains mutable after publication.",
+            "line": "response if ${url} ~= /^https?:\\/\\/interface\\d?\\.music\\.163\\.com\\/eapi\\/link\\/home\\/framework\\/tab/i then script(\"https://kelee.one/Resource/JavaScript/NeteaseCloudMusic/NeteaseCloudMusic_remove_ads.js\", {${MY}, ${DT}, ${FX}}) with tag=\"底部选项卡\", timeout=20, requires_body=true, binary_body_mode=true"
+        },
+        {
+            "file": "NeteaseNews_remove_ads.lpx",
+            "kind": "script-http-name-shared",
+            "message": "Preserved repeated explicit HTTP Script names and source order. Surge documents line-based first-match selection, not a global name-uniqueness rule; repeated-name runtime behavior has not been device-tested. Names are observable via $script.name.",
+            "line": "移除网易新闻广告"
+        },
+        {
             "file": "NodeLinkCheck.lpx",
             "kind": "generic-script-adapted",
             "message": "Added a Surge Policy module argument and passed it to NodeLinkCheck as $argument.policy; default is PROXY.",
-            "line": "generic script-path=https://kelee.one/Resource/JavaScript/NodeLinkCheck/NodeLinkCheck.js, tag=代理链路检测,img-url=link.circle.system"
+            "line": "generic then script(\"https://kelee.one/Resource/JavaScript/NodeLinkCheck/NodeLinkCheck.js\") with tag=\"代理链路检测\", img_url=\"link.circle.system\""
+        },
+        {
+            "file": "NodeLinkCheck.lpx",
+            "kind": "script-property-corrected",
+            "message": "Dropped Script V2 img_url display metadata.",
+            "line": "generic then script(\"https://kelee.one/Resource/JavaScript/NodeLinkCheck/NodeLinkCheck.js\") with tag=\"代理链路检测\", img_url=\"link.circle.system\""
         },
         {
             "file": "Node_detection_tool.lpx",
             "kind": "module-excluded",
-            "message": "Module was excluded from Surge output because generic script compatibility is not verified: https://kelee.one/Resource/JavaScript/Node_detection_tool/NetworkEntryAndExitQueries.js, https://kelee.one/Resource/JavaScript/Node_detection_tool/LocationDetection.js, https://kelee.one/Resource/JavaScript/Node_detection_tool/NodeUnlockDetection.js. Loon generic scripts may depend on selected-node context that Surge does not provide.",
-            "line": "generic script-path=https://kelee.one/Resource/JavaScript/Node_detection_tool/NetworkEntryAndExitQueries.js, timeout=10, tag=入口落地查询,img-url=globe.asia.australia.system"
+            "message": "Module was excluded from Surge output: Script V2 generic runtime context and triggers are not verified.",
+            "line": "generic then script(\"https://kelee.one/Resource/JavaScript/Node_detection_tool/NetworkEntryAndExitQueries.js\") with tag=\"入口落地查询\", img_url=\"globe.asia.australia.system\", timeout=10"
+        },
+        {
+            "file": "PangguaiLife_remove_ads.lpx",
+            "kind": "source-repair-applied",
+            "reason": "reviewed-exact-source-repair",
+            "message": "Restore verified empty object/array replacement types through guarded JQ without coercing arbitrary strings. Applied only to the pinned source version; raw upstream bytes are retained.",
+            "line": "response if ${url} ~= /^https:\\/\\/userapi\\.qiekj\\.com\\/local-life\\/tab-order$/i then response.json.replace(\"data\", \"[]\")",
+            "line_number": "18",
+            "source_url": "https://kelee.one/Tool/Loon/Lpx/PangguaiLife_remove_ads.lpx",
+            "source_sha256": "3a9ccc82e301155d9add5e0e46ae19cc50f464d473a7e1bf7d3ce677988da2af",
+            "repaired_sha256": "80084534dbf4fee9ff7a4cb5fc310d97e370799d8250a4ed4ee9ced6417a292b",
+            "baseline_sha256": "72688706325ed2901ecda13a762c07dc8ff0c00c3e7574049347f31a5a4b658f",
+            "baseline_revision": "a991b1d3a6b9af719dedc1be8a2c767e8f4228f0",
+            "original_line_sha256": "ea147d10e4c736221978756af6041ec0bdfbd16472462d01141b6900deaea460",
+            "replacement_line_sha256": "799fcb4183faa45893e15c01e5b15be3de94d375120e0ecde2c256bb9d391fae"
+        },
+        {
+            "file": "PangguaiLife_remove_ads.lpx",
+            "kind": "source-repair-applied",
+            "reason": "reviewed-exact-source-repair",
+            "message": "Restore verified empty object/array replacement types through guarded JQ without coercing arbitrary strings. Applied only to the pinned source version; raw upstream bytes are retained.",
+            "line": "response if ${url} ~= /^https:\\/\\/userapi\\.qiekj\\.com\\/integralGoods\\/queryIntegralGoodsCategoryList$/i then response.json.replace(\"data\", \"[]\")",
+            "line_number": "19",
+            "source_url": "https://kelee.one/Tool/Loon/Lpx/PangguaiLife_remove_ads.lpx",
+            "source_sha256": "3a9ccc82e301155d9add5e0e46ae19cc50f464d473a7e1bf7d3ce677988da2af",
+            "repaired_sha256": "80084534dbf4fee9ff7a4cb5fc310d97e370799d8250a4ed4ee9ced6417a292b",
+            "baseline_sha256": "72688706325ed2901ecda13a762c07dc8ff0c00c3e7574049347f31a5a4b658f",
+            "baseline_revision": "a991b1d3a6b9af719dedc1be8a2c767e8f4228f0",
+            "original_line_sha256": "2195dc3339e8db8a5a86bb2325297e1182fbfd2ddf57960342f1d5bee08eb9a3",
+            "replacement_line_sha256": "fbf9a7c317c3c0d735c39db054f05086b34b1e828b4009f5fddae9f08aef7b54"
         },
         {
             "file": "Prevent_DNS_Leaks.lpx",
@@ -68,10 +275,118 @@
             "line": "DOMAIN-SUFFIX, dnsleaktest.com, PROXY"
         },
         {
+            "file": "PuPuMall_remove_ads.lpx",
+            "kind": "script-http-name-shared",
+            "message": "Preserved repeated explicit HTTP Script names and source order. Surge documents line-based first-match selection, not a global name-uniqueness rule; repeated-name runtime behavior has not been device-tested. Names are observable via $script.name.",
+            "line": "移除朴朴超市广告"
+        },
+        {
+            "file": "QiDian_remove_ads.lpx",
+            "kind": "source-repair-applied",
+            "reason": "reviewed-exact-source-repair",
+            "message": "Restore verified empty object/array replacement types through guarded JQ without coercing arbitrary strings. Applied only to the pinned source version; raw upstream bytes are retained.",
+            "line": "response if ${url} ~= /^https:\\/\\/magev6\\.if\\.qidian\\.com\\/argus\\/api\\/v2\\/dailyrecommend\\/getdailyrecommend\\?/i then response.json.replace(\"Data.Items\", \"[]\")",
+            "line_number": "28",
+            "source_url": "https://kelee.one/Tool/Loon/Lpx/QiDian_remove_ads.lpx",
+            "source_sha256": "73c6e2839aeb27619a9f4fe28302b5bf710d7e7ddb34643775074590339d3c57",
+            "repaired_sha256": "3aa2fb5c6fef46bccfeedb9cf221607744c0ef7edaeaf99043215e62e7be2fb7",
+            "baseline_sha256": "1f78f635f43d1af35b6977e329b2eb26d7e4c05b9c5433717af39811b94ff3ef",
+            "baseline_revision": "a991b1d3a6b9af719dedc1be8a2c767e8f4228f0",
+            "original_line_sha256": "6e0fb10213784478b6693781924d8714a03212995514f1cd495e80320810b405",
+            "replacement_line_sha256": "70b8e3ca581779ab8b4cac513c90b6562047b52a45513231be13792fa49a345d"
+        },
+        {
+            "file": "RedPaper_remove_ads.lpx",
+            "kind": "source-repair-applied",
+            "reason": "reviewed-exact-source-repair",
+            "message": "Restore verified empty object/array replacement types through guarded JQ without coercing arbitrary strings. Applied only to the pinned source version; raw upstream bytes are retained.",
+            "line": "response if ${url} ~= /^https:\\/\\/edith\\.xiaohongshu\\.com\\/api\\/sns\\/v1\\/search\\/banner_list$/i then response.json.replace(\"data\", \"{}\")",
+            "line_number": "25",
+            "source_url": "https://kelee.one/Tool/Loon/Lpx/RedPaper_remove_ads.lpx",
+            "source_sha256": "b782ea4f811702a80f853eae8bd3a3f7a33c8a3af833f5c54fba3d75a524f646",
+            "repaired_sha256": "da385bb13622ae145ae66ff53a809ef16f6fe60eac3f544d399d77bdd62092fa",
+            "baseline_sha256": "54f8cbdb77c5064e3c93c4bbc7cd525ce42fceb055b41a5ea41727477b70d1da",
+            "baseline_revision": "a991b1d3a6b9af719dedc1be8a2c767e8f4228f0",
+            "original_line_sha256": "f342ec49bd3d9900af4a10aefc7302d908beb2d9ac5b9f877d7cf14f27415194",
+            "replacement_line_sha256": "8ab0aa74850fa5cd9ab5ca87204bf98af69dfadef5ce51ee3d140d1c8442e1c8"
+        },
+        {
+            "file": "RedPaper_remove_ads.lpx",
+            "kind": "source-repair-applied",
+            "reason": "reviewed-exact-source-repair",
+            "message": "Restore verified empty object/array replacement types through guarded JQ without coercing arbitrary strings. Applied only to the pinned source version; raw upstream bytes are retained.",
+            "line": "response if ${url} ~= /^https:\\/\\/edith\\.xiaohongshu\\.com\\/api\\/sns\\/v1\\/search\\/hot_list$/i then response.json.replace(\"data.items\", \"[]\")",
+            "line_number": "26",
+            "source_url": "https://kelee.one/Tool/Loon/Lpx/RedPaper_remove_ads.lpx",
+            "source_sha256": "b782ea4f811702a80f853eae8bd3a3f7a33c8a3af833f5c54fba3d75a524f646",
+            "repaired_sha256": "da385bb13622ae145ae66ff53a809ef16f6fe60eac3f544d399d77bdd62092fa",
+            "baseline_sha256": "54f8cbdb77c5064e3c93c4bbc7cd525ce42fceb055b41a5ea41727477b70d1da",
+            "baseline_revision": "a991b1d3a6b9af719dedc1be8a2c767e8f4228f0",
+            "original_line_sha256": "02fea0e9e520963c06d72accc417586f022bbea1ae2d00195228a75e0e24d9f9",
+            "replacement_line_sha256": "291514cbb5a2ca387fa0b32e63338eeebb838ed835f30664b8e7af898ae30029"
+        },
+        {
+            "file": "RedPaper_remove_ads.lpx",
+            "kind": "source-repair-applied",
+            "reason": "reviewed-exact-source-repair",
+            "message": "Restore verified empty object/array replacement types through guarded JQ without coercing arbitrary strings. Applied only to the pinned source version; raw upstream bytes are retained.",
+            "line": "response if ${url} ~= /^https:\\/\\/edith\\.xiaohongshu\\.com\\/api\\/sns\\/v4\\/search\\/hint/i then response.json.replace(\"data.hint_words\", \"[]\")",
+            "line_number": "27",
+            "source_url": "https://kelee.one/Tool/Loon/Lpx/RedPaper_remove_ads.lpx",
+            "source_sha256": "b782ea4f811702a80f853eae8bd3a3f7a33c8a3af833f5c54fba3d75a524f646",
+            "repaired_sha256": "da385bb13622ae145ae66ff53a809ef16f6fe60eac3f544d399d77bdd62092fa",
+            "baseline_sha256": "54f8cbdb77c5064e3c93c4bbc7cd525ce42fceb055b41a5ea41727477b70d1da",
+            "baseline_revision": "a991b1d3a6b9af719dedc1be8a2c767e8f4228f0",
+            "original_line_sha256": "fff50b583a9991f05ec5475a4f4a18ce57ec037a9b4e781f221d57f1f9ad24aa",
+            "replacement_line_sha256": "3656a082287baca7e2b406305ffd06e295546886607140962ff9e496444671f9"
+        },
+        {
+            "file": "RedPaper_remove_ads.lpx",
+            "kind": "source-repair-applied",
+            "reason": "reviewed-exact-source-repair",
+            "message": "Restore verified empty object/array replacement types through guarded JQ without coercing arbitrary strings. Applied only to the pinned source version; raw upstream bytes are retained.",
+            "line": "response if ${url} ~= /^https:\\/\\/edith\\.xiaohongshu\\.com\\/api\\/sns\\/v4\\/search\\/trending\\?/i then response.json.replace([\"data.queries\", \"data.hint_word\"], [\"[]\", \"{}\"])",
+            "line_number": "28",
+            "source_url": "https://kelee.one/Tool/Loon/Lpx/RedPaper_remove_ads.lpx",
+            "source_sha256": "b782ea4f811702a80f853eae8bd3a3f7a33c8a3af833f5c54fba3d75a524f646",
+            "repaired_sha256": "da385bb13622ae145ae66ff53a809ef16f6fe60eac3f544d399d77bdd62092fa",
+            "baseline_sha256": "54f8cbdb77c5064e3c93c4bbc7cd525ce42fceb055b41a5ea41727477b70d1da",
+            "baseline_revision": "a991b1d3a6b9af719dedc1be8a2c767e8f4228f0",
+            "original_line_sha256": "3cebc1e4327d014b473d7a6a25ecc2c2e0a763b88d15073f188fcfecd91daf09",
+            "replacement_line_sha256": "022eed26dfd9620eaee14a4e64671aa53fab26d25a09e16be15ef3b8d55929b6"
+        },
+        {
+            "file": "RedPaper_remove_ads.lpx",
+            "kind": "script-http-name-shared",
+            "message": "Preserved repeated explicit HTTP Script names and source order. Surge documents line-based first-match selection, not a global name-uniqueness rule; repeated-name runtime behavior has not been device-tested. Names are observable via $script.name.",
+            "line": "移除信息流广告"
+        },
+        {
+            "file": "SF-Express_remove_ads.lpx",
+            "kind": "source-repair-applied",
+            "reason": "reviewed-exact-source-repair",
+            "message": "Restore the exact verified complete baseline JSON body: every decoded current byte is an unchanged prefix of that body. Applied only to the pinned source version; raw upstream bytes are retained.",
+            "line": "response if ${url} ~= /^https:\\/\\/ucmp(-static)?\\.sf-express\\.com\\/proxy\\/ccspBase\\/module-config\\/(login\\/)?query\\?/i then response.body.mock(\"json\", \"{\\\"version\\\":\\\"2.0\\\",\\\"success\\\":true,\\\"obj\\\":[{\\\"positionName\\\":\\\"APP2025\\\",\\\"positionChannel\\\":\\\"app\\\",\\\"sceneList\\\":[{\\\"urlType\\\":\\\"webview\\\",\\\"sceneCode\\\":\\\"ddcb36295d5d2939ba4bbe2e5e02a4d8\\\",\\\"extendField1\\\":\\\"{\\\\\\\"boundApp\\\\\\\":\\\\\\\"Android,iOS\\\\\\\"}\\\",\\\"id\\\":29130,\\\"extendFieldOneDTO\\\":{\\\"boundApp\\\":\\\"Android,iOS\\\"},\\\"seq\\\":0,\\\"sceneName\\\":\\\"寄快递\\\",\\\"updateTime\\\":\\\"2026-02-06 18:55:15\\\",\\\"url\\\":\\\"{ \\\\\\\"needLogin\\\\\\\": true, \\\\\\\"classify\\\\\\\": \\\\\\\"MY_SERVICE\\\\\\\", \\\\\\\"params\\\\\\\": { \\\\\\\"jumpName\\\\\\\": \\\\\\\"快速寄件\\\\\", 200)",
+            "line_number": "18",
+            "source_url": "https://kelee.one/Tool/Loon/Lpx/SF-Express_remove_ads.lpx",
+            "source_sha256": "fdc1c6a5ff266785c1c2bf38ecbf7600f2fbe142f966400b6c8468b9a307262d",
+            "repaired_sha256": "9dc49e1a9413dd714bea7d5c6801e01c1a40ffe44b9766f6562c26f9d5e71c03",
+            "baseline_sha256": "82d52eead6393a69c9d64950628d932e098717e744d1b9c3cddb33fb93b89444",
+            "baseline_revision": "a991b1d3a6b9af719dedc1be8a2c767e8f4228f0",
+            "original_line_sha256": "e6653a7dbfcfd1025389f1531f967fb5c2fed93842e23c2fe980e0813fec6c5e",
+            "replacement_line_sha256": "1667810b395862a3b21a681ce489b1f5b034d248670888e786e770516f824aef"
+        },
+        {
             "file": "Script-Hub.lpx",
             "kind": "module-excluded",
             "message": "Module was excluded from Surge output because module rules may only use DIRECT, REJECT, or REJECT-TINYGIF; found: PROXY.",
             "line": "DOMAIN, scripthub.vercel.app, PROXY"
+        },
+        {
+            "file": "Spotify_remove_ads.lpx",
+            "kind": "script-object-adapted",
+            "message": "Used reviewed json String decoder for typed Object parameters; source SHA-256=198cb5869d9710c56ed1945156c8f6227fdf9d19da38ee1c8870f4d72f26c6c8. Remote URL remains mutable after publication.",
+            "line": "response if ${url} ~= /^https:\\/\\/(?:\\w+-spclient|spclient\\.wg)\\.spotify\\.com(?::443)?\\/(?:bootstrap|user-customization-service)/i then script(\"https://kelee.one/Resource/JavaScript/Spotify/Spotify_remove_ads.js\", {${tab}, ${useractivity}}) with tag=\"Protobuf处理\", timeout=5, requires_body=true, binary_body_mode=true"
         },
         {
             "file": "Sub-Store.lpx",
@@ -80,10 +395,22 @@
             "line": "DOMAIN, sub-store.vercel.app, PROXY"
         },
         {
+            "file": "Taobao_remove_ads.lpx",
+            "kind": "script-http-name-shared",
+            "message": "Preserved repeated explicit HTTP Script names and source order. Surge documents line-based first-match selection, not a global name-uniqueness rule; repeated-name runtime behavior has not been device-tested. Names are observable via $script.name.",
+            "line": "移除淘宝开屏广告"
+        },
+        {
             "file": "TestFlightRegionUnlock.lpx",
             "kind": "module-excluded",
             "message": "Module was excluded from Surge output because module rules may only use DIRECT, REJECT, or REJECT-TINYGIF; found: PROXY.",
             "line": "DOMAIN, testflight.apple.com, PROXY"
+        },
+        {
+            "file": "Tieba_remove_ads.lpx",
+            "kind": "module-excluded",
+            "message": "Module was excluded from Surge output: Script V2 String branch coerces quoted select strings to Boolean, changing false-string truthiness.",
+            "line": "response if ${url} ~= /^https?:\\/\\/tieba(?:c)?\\.baidu\\.com\\/c\\/(f\\/excellent\\/personalized|f\\/frs\\/page|b\\/ad\\/adBid|f\\/ad\\/getFeedAd|f\\/pb\\/page|f\\/frs\\/generalTabList)\\?cmd=\\d+&format=protobuf/i then script(\"https://kelee.one/Resource/JavaScript/Tieba/tieba-proto.js\", {${per_filter_video_thread}}) with tag=\"ProtoBuf处理\", timeout=10, requires_body=true, binary_body_mode=true"
         },
         {
             "file": "TubeMax_remove_ads.lpx",
@@ -92,28 +419,106 @@
             "line": "DOMAIN, app.tubemaxapp.com, PROXY"
         },
         {
+            "file": "VVebo_repair.lpx",
+            "kind": "script-http-name-shared",
+            "message": "Preserved repeated explicit HTTP Script names and source order. Surge documents line-based first-match selection, not a global name-uniqueness rule; repeated-name runtime behavior has not been device-tested. Names are observable via $script.name.",
+            "line": "修复时间线"
+        },
+        {
             "file": "WARP_Node_Query.lpx",
             "kind": "generic-script-adapted",
             "message": "Added a Surge information Panel linked to the verified WARP generic script.",
-            "line": "generic script-path=https://raw.githubusercontent.com/VirgilClyne/Cloudflare/main/js/1.1.1.1.panel.js, timeout=10, tag=WARP · INFO,img-url=icloud.circle.system"
+            "line": "generic then script(\"https://raw.githubusercontent.com/VirgilClyne/Cloudflare/main/js/1.1.1.1.panel.js\") with tag=\"WARP · INFO\", img_url=\"icloud.circle.system\", timeout=10"
+        },
+        {
+            "file": "WARP_Node_Query.lpx",
+            "kind": "script-property-corrected",
+            "message": "Dropped Script V2 img_url display metadata.",
+            "line": "generic then script(\"https://raw.githubusercontent.com/VirgilClyne/Cloudflare/main/js/1.1.1.1.panel.js\") with tag=\"WARP · INFO\", img_url=\"icloud.circle.system\", timeout=10"
         },
         {
             "file": "WPS_checkin.lpx",
-            "kind": "script-enable-toggle-emitted",
-            "message": "Loon enable option was emitted as a Surge module line-prefix toggle.",
-            "line": "http-request ^https:\\/\\/moapi\\.wps\\.cn\\/app\\/ios\\/v1\\/app$ script-path=https://kelee.one/Resource/JavaScript/WPS/WPS_checkin.js, requires-body=true, tag=捕获Cookie, enable={CaptureCookie}"
+            "kind": "module-excluded",
+            "message": "Module was excluded from Surge output: Script V2 raw query parser cannot losslessly carry unrestricted input strings containing '&' or '='.",
+            "line": "cron ${CRONEXP} then script(\"https://kelee.one/Resource/JavaScript/WPS/WPS_checkin.js\", {${AK}, ${SK}, ${MAX_RETRIES}}) with tag=\"WPS每日签到\", timeout=120"
         },
         {
-            "file": "WPS_checkin.lpx",
-            "kind": "argument-unused-dropped",
-            "message": "Declared Loon argument is not referenced by any converted module line and was removed.",
-            "line": "DAY=input, \"1\", tag=兑换天数, desc=每日签到时自动兑换的天数，可不做更改。"
+            "file": "Weibo_remove_ads.lpx",
+            "kind": "script-http-name-shared",
+            "message": "Preserved repeated explicit HTTP Script names and source order. Surge documents line-based first-match selection, not a global name-uniqueness rule; repeated-name runtime behavior has not been device-tested. Names are observable via $script.name.",
+            "line": "移除信息流广告, 移除评论区广告"
+        },
+        {
+            "file": "YouTubeSubtitlesTranslation.lpx",
+            "kind": "script-object-adapted",
+            "message": "Used reviewed query-normalized String decoder for typed Object parameters; source SHA-256=069cb5f3158c7777a8c0dbac926d3ce0ca605587d3123c386dc65a15d51fabc8. Remote URL remains mutable after publication.",
+            "line": "request if ${url} ~= /^https?:\\/\\/(www|m|tv)\\.youtube\\.com\\/youtubei\\/v1\\/player\\?(.*)/i then script(\"https://kelee.one/Resource/JavaScript/YouTube/YouTube_Subtitles_Translate/YouTube_Subtitles_request.js\", {${Type}, ${AutoCC}, ${ShowOnly}, ${Position}}) with tag=\"JSON·YouTube播放器请求\", requires_body=true"
+        },
+        {
+            "file": "YouTubeSubtitlesTranslation.lpx",
+            "kind": "script-object-adapted",
+            "message": "Used reviewed query-normalized String decoder for typed Object parameters; source SHA-256=624bec4a6b3162971a458e2ccb097efd20a906016b82293c341d344152edc09c. Remote URL remains mutable after publication.",
+            "line": "response if ${url} ~= /^https?:\\/\\/(www|m|tv)\\.youtube\\.com\\/youtubei\\/v1\\/player\\?(.*)/i then script(\"https://kelee.one/Resource/JavaScript/YouTube/YouTube_Subtitles_Translate/YouTube_Subtitles_response.js\", {${Type}, ${AutoCC}, ${ShowOnly}, ${Position}}) with tag=\"JSON·YouTube播放器响应\", requires_body=true"
+        },
+        {
+            "file": "YouTubeSubtitlesTranslation.lpx",
+            "kind": "script-object-adapted",
+            "message": "Used reviewed query-normalized String decoder for typed Object parameters; source SHA-256=069cb5f3158c7777a8c0dbac926d3ce0ca605587d3123c386dc65a15d51fabc8. Remote URL remains mutable after publication.",
+            "line": "request if ${url} ~= /^https?:\\/\\/youtubei\\.googleapis\\.com\\/youtubei\\/v1\\/player\\?(.*)/i then script(\"https://kelee.one/Resource/JavaScript/YouTube/YouTube_Subtitles_Translate/YouTube_Subtitles_request.js\", {${Type}, ${AutoCC}, ${ShowOnly}, ${Position}}) with tag=\"Proto·YouTube播放器请求\", requires_body=true, binary_body_mode=true"
+        },
+        {
+            "file": "YouTubeSubtitlesTranslation.lpx",
+            "kind": "script-object-adapted",
+            "message": "Used reviewed query-normalized String decoder for typed Object parameters; source SHA-256=624bec4a6b3162971a458e2ccb097efd20a906016b82293c341d344152edc09c. Remote URL remains mutable after publication.",
+            "line": "response if ${url} ~= /^https?:\\/\\/youtubei\\.googleapis\\.com\\/youtubei\\/v1\\/player\\?(.*)/i then script(\"https://kelee.one/Resource/JavaScript/YouTube/YouTube_Subtitles_Translate/YouTube_Subtitles_response.js\", {${Type}, ${AutoCC}, ${ShowOnly}, ${Position}}) with tag=\"Proto·YouTube播放器响应.proto\", requires_body=true, binary_body_mode=true"
+        },
+        {
+            "file": "YouTubeSubtitlesTranslation.lpx",
+            "kind": "script-object-adapted",
+            "message": "Used reviewed query-normalized String decoder for typed Object parameters; source SHA-256=624bec4a6b3162971a458e2ccb097efd20a906016b82293c341d344152edc09c. Remote URL remains mutable after publication.",
+            "line": "response if ${url} ~= /^https?:\\/\\/youtubei\\.googleapis\\.com\\/youtubei\\/v1\\/get_watch\\?(.*)/i then script(\"https://kelee.one/Resource/JavaScript/YouTube/YouTube_Subtitles_Translate/YouTube_Subtitles_response.js\", {${Type}, ${AutoCC}, ${ShowOnly}, ${Position}}) with tag=\"Proto·GetWatch响应\", requires_body=true, binary_body_mode=true"
+        },
+        {
+            "file": "YouTubeSubtitlesTranslation.lpx",
+            "kind": "script-object-adapted",
+            "message": "Used reviewed query-normalized String decoder for typed Object parameters; source SHA-256=069cb5f3158c7777a8c0dbac926d3ce0ca605587d3123c386dc65a15d51fabc8. Remote URL remains mutable after publication.",
+            "line": "request if ${url} ~= /^https?:\\/\\/(www|m)\\.youtube\\.com\\/api\\/timedtext\\?(.*)/i then script(\"https://kelee.one/Resource/JavaScript/YouTube/YouTube_Subtitles_Translate/YouTube_Subtitles_request.js\", {${Type}, ${AutoCC}, ${ShowOnly}, ${Position}}) with tag=\"YouTube定时文本请求\""
+        },
+        {
+            "file": "YouTubeSubtitlesTranslation.lpx",
+            "kind": "script-object-adapted",
+            "message": "Used reviewed query-normalized String decoder for typed Object parameters; source SHA-256=069cb5f3158c7777a8c0dbac926d3ce0ca605587d3123c386dc65a15d51fabc8. Remote URL remains mutable after publication.",
+            "line": "request if ${url} ~= /^https?:\\/\\/music\\.youtube\\.com\\/youtubei\\/v1\\/browse\\?(.*)/i then script(\"https://kelee.one/Resource/JavaScript/YouTube/YouTube_Subtitles_Translate/YouTube_Subtitles_request.js\", {${Type}, ${AutoCC}, ${ShowOnly}, ${Position}}) with tag=\"JSON·YouTube Music浏览请求\", requires_body=true"
+        },
+        {
+            "file": "YouTubeSubtitlesTranslation.lpx",
+            "kind": "script-object-adapted",
+            "message": "Used reviewed query-normalized String decoder for typed Object parameters; source SHA-256=069cb5f3158c7777a8c0dbac926d3ce0ca605587d3123c386dc65a15d51fabc8. Remote URL remains mutable after publication.",
+            "line": "request if ${url} ~= /^https?:\\/\\/youtubei\\.googleapis\\.com\\/youtubei\\/v1\\/browse\\?(.*)/i then script(\"https://kelee.one/Resource/JavaScript/YouTube/YouTube_Subtitles_Translate/YouTube_Subtitles_request.js\", {${Type}, ${AutoCC}, ${ShowOnly}, ${Position}}) with tag=\"Proto·YouTube Music浏览请求\", requires_body=true, binary_body_mode=true"
+        },
+        {
+            "file": "YouTube_remove_ads.lpx",
+            "kind": "script-object-adapted",
+            "message": "Used reviewed json String decoder for typed Object parameters; source SHA-256=b926d339069a8f54e84bd5d29e8c8364ee9ea72bb170197e281b04eda49e3568. Remote URL remains mutable after publication.",
+            "line": "response if ${url} ~= /^https:\\/\\/youtubei\\.googleapis\\.com\\/(youtubei\\/v1\\/(browse|next|player|search|reel\\/reel_watch_sequence|guide|account\\/get_setting|get_watch|log_event|config))(\\?(.*))?$/i then script(\"https://kelee.one/Resource/JavaScript/YouTube/YouTube_remove_ads/YouTube_remove_ads_response.js\", {${blockUpload}, ${blockShorts}, ${blockImmersive}, ${captionLang}, ${debug}}) with tag=\"YouTube去广告\", requires_body=true, binary_body_mode=true"
+        },
+        {
+            "file": "YouTube_remove_ads.lpx",
+            "kind": "script-object-adapted",
+            "message": "Used reviewed json String decoder for typed Object parameters; source SHA-256=af0646890f9847aa4576181b0637e31b86a3e2f6dd4d2041a56ffa971aacc10b. Remote URL remains mutable after publication.",
+            "line": "request if ${url} ~= /^https?:\\/\\/[\\w-]+\\.googlevideo\\.com\\/initplayback.+&ack.*/i then script(\"https://kelee.one/Resource/JavaScript/YouTube/YouTube_remove_ads/YouTube_remove_ads_request.js\", {${captionLang}}) with tag=\"请求初始化\", requires_body=true, binary_body_mode=true"
+        },
+        {
+            "file": "YouTube_remove_ads.lpx",
+            "kind": "script-object-adapted",
+            "message": "Used reviewed json String decoder for typed Object parameters; source SHA-256=af0646890f9847aa4576181b0637e31b86a3e2f6dd4d2041a56ffa971aacc10b. Remote URL remains mutable after publication.",
+            "line": "request if ${url} ~= /^https:\\/\\/youtubei\\.googleapis\\.com\\/youtubei\\/v1\\/log_event/i then script(\"https://kelee.one/Resource/JavaScript/YouTube/YouTube_remove_ads/YouTube_remove_ads_request.js\", {${blockUpload}, ${blockShorts}, ${blockImmersive}, ${captionLang}, ${debug}}) with tag=\"请求日志事件\", requires_body=true, binary_body_mode=true"
         },
         {
             "file": "iQiYi_Video_remove_ads.lpx",
             "kind": "rewrite-empty-skipped",
             "message": "Empty JQ expression was skipped because Surge requires a non-empty JQ program.",
-            "line": "^https:\\/\\/comment-card\\.iqiyi\\.com\\/views_comment\\/3\\.0\\/long_video_comments\\? response-body-json-jq ''"
+            "line": "response if ${url} ~= /^https:\\/\\/comment-card\\.iqiyi\\.com\\/views_comment\\/3\\.0\\/long_video_comments\\?/i then response.json.jq(\"\")"
         }
     ]
 }

@@ -5,22 +5,22 @@
 #!category=iKeLee
 #!openUrl=https://apps.apple.com/app/id353115739
 #!tag=去广告
-#!loon_version=3.4.0(962)
+#!loon_version=3.5.1(998)
 #!homepage=https://hub.kelee.one
-#!date=2026-06-01 17:11:35
+#!date=2026-10-02 13:57:49
 #!requirement=CORE_VERSION>=6008000
 
 [Rule]
 DOMAIN,ad-sdk-config.youdao.com,REJECT,extended-matching,pre-matching
 
 [Body Rewrite]
-http-response-jq ^https:\/\/dict\.youdao\.com\/homepage\/toolbar\/get\/ 'delpaths([["data","vipTag"]])'
+http-response-jq (?i:^https:\/\/dict\.youdao\.com\/homepage\/toolbar\/get\/) 'delpaths([["data","vipTag"]])'
 
 [Map Local]
-^https:\/\/dict\.youdao\.com\/vip\/activity\/startup\/ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
-^https:\/\/dict\.youdao\.com\/vip\/activity\/retention\/configs\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
-^https:\/\/dict\.youdao\.com\/vip\/activity\/retention\/match\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
-^https:\/\/dict\.youdao\.com\/vip\/user\/paid\/guide\? data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+(?i:^https:\/\/dict\.youdao\.com\/vip\/activity\/startup\/) data-type=base64 data="e30=" status-code=200 header="Content-Type:application/json"
+(?i:^https:\/\/dict\.youdao\.com\/vip\/activity\/retention\/configs\?) data-type=base64 data="e30=" status-code=200 header="Content-Type:application/json"
+(?i:^https:\/\/dict\.youdao\.com\/vip\/activity\/retention\/match\?) data-type=base64 data="e30=" status-code=200 header="Content-Type:application/json"
+(?i:^https:\/\/dict\.youdao\.com\/vip\/user\/paid\/guide\?) data-type=base64 data="e30=" status-code=200 header="Content-Type:application/json"
 
 [MITM]
 hostname = %APPEND% dict.youdao.com

@@ -5,16 +5,16 @@
 #!category=iKeLee
 #!openUrl=https://apps.apple.com/app/id588673713
 #!tag=去广告
-#!loon_version=3.4.0(962)
+#!loon_version=3.5.1(998)
 #!homepage=https://hub.kelee.one
-#!date=2026-06-01 17:11:35
+#!date=2026-10-02 13:57:49
 #!requirement=CORE_VERSION>=6008000
 
 [Rule]
 IP-CIDR,111.206.98.63/32,REJECT,no-resolve,pre-matching
 
 [Body Rewrite]
-http-response-jq ^http:\/\/wapi\.kuwo\.cn\/openapi\/v\d\/tingshu\/index\/radio 'walk(if type == "object" and .type == "stripAdvert" then del(.child) else . end)'
+http-response-jq (?i:^http:\/\/wapi\.kuwo\.cn\/openapi\/v\d\/tingshu\/index\/radio) 'walk(if type == "object" and .type == "stripAdvert" then del(.child) else . end)'
 
 [Map Local]
 ^http:\/\/rich\.kuwo\.cn\/AdService\/ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
@@ -26,9 +26,9 @@ http-response-jq ^http:\/\/wapi\.kuwo\.cn\/openapi\/v\d\/tingshu\/index\/radio '
 ^http:\/\/wapi\.kuwo\.cn\/openapi\/v\d\/app\/newMenuList\/menuListInfo data-type=text data="{}" status-code=200 header="Content-Type:application/json"
 ^http:\/\/vip\d\.kuwo\.cn\/vip\/v\d\/sysinfo\?op=getRePayAndDoPayBox data-type=text data="{}" status-code=200 header="Content-Type:application/json"
 ^http:\/\/wapi\.kuwo\.cn\/openapi\/v\d\/album\/adBar\/ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
-^https:\/\/vip\d\.kuwo\.cn\/commercia\/vipconf\/projectPage\/getPageContent data-type=text data="{}" status-code=200 header="Content-Type:application/json"
-^https:\/\/tingshu\.kuwo\.cn\/v2\/api\/pay\/user\/info data-type=text data="{}" status-code=200 header="Content-Type:application/json"
-^https:\/\/appi\.kuwo\.cn\/kuwopay\/personal\/cells data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+(?i:^https:\/\/vip\d\.kuwo\.cn\/commercia\/vipconf\/projectPage\/getPageContent) data-type=base64 data="e30=" status-code=200 header="Content-Type:application/json"
+(?i:^https:\/\/tingshu\.kuwo\.cn\/v2\/api\/pay\/user\/info) data-type=base64 data="e30=" status-code=200 header="Content-Type:application/json"
+(?i:^https:\/\/appi\.kuwo\.cn\/kuwopay\/personal\/cells) data-type=base64 data="e30=" status-code=200 header="Content-Type:application/json"
 
 [MITM]
 hostname = %APPEND% appi.kuwo.cn, mc.tencentmusic.com, vip*.kuwo.cn, tingshu.kuwo.cn

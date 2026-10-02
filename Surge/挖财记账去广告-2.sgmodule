@@ -5,18 +5,16 @@
 #!category=iKeLee
 #!openUrl=https://apps.apple.com/app/id1544045905
 #!tag=去广告
-#!loon_version=3.4.0(962)
+#!loon_version=3.5.1(998)
 #!homepage=https://hub.kelee.one
-#!date=2026-06-30 22:54:46
+#!date=2026-10-02 13:57:49
 #!requirement=CORE_VERSION>=20
 
-[URL Rewrite]
-^https:\/\/jz\.wacaijizhang\.com\/activity\/ _ reject
-
 [Map Local]
-^https:\/\/jz\.wacaijizhang\.com\/sensor\/config\/iOS\.conf\? data-type=base64 data="eyJ2IjoidjIiLCJjb25maWdzIjp7ImRpc2FibGVTREsiOnRydWUsImRpc2FibGVEZWJ1Z01vZGUiOnRydWUsInN1cHBvcnRUcmFuc3BvcnRFbmNyeXB0IjpmYWxzZX19" status-code=200 header="Content-Type:application/json"
-^https:\/\/jz\.wacaijizhang\.com\/api\/banners\/ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
-^https:\/\/jz\.wacaijizhang\.com\/api\/resource\/universal\/fetch$ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+(?i:^https:\/\/jz\.wacaijizhang\.com\/sensor\/config\/iOS\.conf\?) data-type=base64 data="eyJ2IjoidjIiLCJjb25maWdzIjp7ImRpc2FibGVTREsiOnRydWUsImRpc2FibGVEZWJ1Z01vZGUiOnRydWUsInN1cHBvcnRUcmFuc3BvcnRFbmNyeXB0IjpmYWxzZX19" status-code=200 header="Content-Type:application/json"
+(?i:^https:\/\/jz\.wacaijizhang\.com\/api\/banners\/) data-type=base64 data="e30=" status-code=200 header="Content-Type:application/json"
+(?i:^https:\/\/jz\.wacaijizhang\.com\/api\/resource\/universal\/fetch$) data-type=base64 data="e30=" status-code=200 header="Content-Type:application/json"
+(?i:^https:\/\/jz\.wacaijizhang\.com\/activity\/) data-type=text data="" status-code=404
 
 [MITM]
 hostname = %APPEND% jz.wacaijizhang.com

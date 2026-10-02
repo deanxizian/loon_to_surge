@@ -5,25 +5,25 @@
 #!category=iKeLee
 #!openUrl=https://apps.apple.com/app/id1503129125
 #!tag=去广告
-#!loon_version=3.4.0(962)
+#!loon_version=3.5.1(998)
 #!homepage=https://hub.kelee.one
-#!date=2026-06-01 17:11:35
+#!date=2026-10-02 13:57:49
 #!requirement=CORE_VERSION>=6008000
 
 [Body Rewrite]
-http-response-jq ^https:\/\/app\.huashi6\.com\/app\/common\/config$ 'if (try (getpath(["data"]) | has("disableAd")) catch false) then (setpath(["data","disableAd"]; true)) else . end'
-http-response-jq ^https:\/\/app\.huashi6\.com\/app\/common\/config$ 'if (try (getpath(["data"]) | has("showTopFloatAdvanceTips")) catch false) then (setpath(["data","showTopFloatAdvanceTips"]; false)) else . end'
-http-response-jq ^https:\/\/app\.huashi6\.com\/app\/common\/config$ 'delpaths([["data","adsConfigIOS"]])'
-http-response-jq ^https:\/\/app\.huashi6\.com\/app\/common\/config$ 'delpaths([["data","adsConfigAndroid"]])'
-http-response-jq ^https:\/\/app\.huashi6\.com\/app\/common\/config$ 'delpaths([["data","url","tabMarket"]])'
-http-response-jq ^https:\/\/app\.huashi6\.com\/app\/common\/layouts$ '.data |= {CZ_MINE_MENUS: .CZ_MINE_MENUS}'
-http-response-jq ^https:\/\/app\.huashi6\.com\/app\/common\/themeConfig$ '.data.tabbars |= map(select(.title != "商城"))'
+http-response-jq (?i:^https:\/\/app\.huashi6\.com\/app\/common\/config$) 'if (try (getpath(["data"]) | has("disableAd")) catch false) then (setpath(["data","disableAd"]; true)) else . end'
+http-response-jq (?i:^https:\/\/app\.huashi6\.com\/app\/common\/config$) 'if (try (getpath(["data"]) | has("showTopFloatAdvanceTips")) catch false) then (setpath(["data","showTopFloatAdvanceTips"]; false)) else . end'
+http-response-jq (?i:^https:\/\/app\.huashi6\.com\/app\/common\/config$) 'delpaths([["data","adsConfigIOS"]])'
+http-response-jq (?i:^https:\/\/app\.huashi6\.com\/app\/common\/config$) 'delpaths([["data","adsConfigAndroid"]])'
+http-response-jq (?i:^https:\/\/app\.huashi6\.com\/app\/common\/config$) 'delpaths([["data","url","tabMarket"]])'
+http-response-jq (?i:^https:\/\/app\.huashi6\.com\/app\/common\/layouts$) '.data |= {CZ_MINE_MENUS: .CZ_MINE_MENUS}'
+http-response-jq (?i:^https:\/\/app\.huashi6\.com\/app\/common\/themeConfig$) '.data.tabbars |= map(select(.title != "商城"))'
 
 [Map Local]
-^https:\/\/app\.huashi6\.com\/app\/index\/ad\/ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
-^https:\/\/app\.huashi6\.com\/app\/works\/relative$ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
-^https:\/\/app\.huashi6\.com\/app\/index\/follow\/all_random\/list$ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
-^https:\/\/app\.huashi6\.com\/app\/index\/csyxh\/icon$ data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+(?i:^https:\/\/app\.huashi6\.com\/app\/index\/ad\/) data-type=base64 data="e30=" status-code=200 header="Content-Type:application/json"
+(?i:^https:\/\/app\.huashi6\.com\/app\/works\/relative$) data-type=base64 data="e30=" status-code=200 header="Content-Type:application/json"
+(?i:^https:\/\/app\.huashi6\.com\/app\/index\/follow\/all_random\/list$) data-type=base64 data="e30=" status-code=200 header="Content-Type:application/json"
+(?i:^https:\/\/app\.huashi6\.com\/app\/index\/csyxh\/icon$) data-type=base64 data="e30=" status-code=200 header="Content-Type:application/json"
 
 [MITM]
 hostname = %APPEND% app.huashi6.com

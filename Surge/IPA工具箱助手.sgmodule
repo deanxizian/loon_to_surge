@@ -6,13 +6,13 @@
 #!openUrl=https://apps.apple.com/app/id6479691128
 #!tag=功能增强
 #!system_version=18
-#!loon_version=3.4.0(962)
+#!loon_version=3.5.1(998)
 #!homepage=https://hub.kelee.one
-#!date=2026-06-14 20:11:24
+#!date=2026-10-02 13:57:49
 
 [Script]
-App Store API = type=http-request, pattern=^https:\/\/apple-api\.com, script-path=https://kelee.one/Resource/JavaScript/IPATool/AppStoreAPI.js, requires-body=true, timeout=10
-安装器 = type=http-request, pattern=^https:\/\/xiaobai\.app, script-path=https://kelee.one/Resource/JavaScript/IPATool/Installer.js, timeout=10
+App Store API = type=http-request, pattern=(?i:^https:\/\/apple-api\.com), script-path=https://kelee.one/Resource/JavaScript/IPATool/AppStoreAPI.js, timeout=20, requires-body=true
+安装器 = type=http-request, pattern=(?i:^https:\/\/xiaobai\.app), script-path=https://kelee.one/Resource/JavaScript/IPATool/Installer.js, timeout=20
 
 [MITM]
 hostname = %APPEND% apple-api.com, xiaobai.app
