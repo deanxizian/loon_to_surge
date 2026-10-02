@@ -87,7 +87,7 @@ cron "0 8 * * *" then script("https://example.com/a.js", `{"key":"value"}`)
         self.assertIn('argument="{\\"key\\":\\"value\\"}"', output)
         self.assertNotIn('{{{', output)
 
-    def test_known_unsupported_features_exclude_before_other_conversion(self) -> None:
+    def test_unsupported_script_does_not_hide_local_fatal_diagnostics(self) -> None:
         cases = (
             'generic then script("https://example.com/a.js")',
             'network-changed then script("https://example.com/a.js")',
@@ -104,8 +104,8 @@ cron "0 8 * * *" then script("https://example.com/a.js", `{"key":"value"}`)
             with self.subTest(line=line):
                 output, report = self.convert('[General]\nfuture=value\n[Script]\n' + line)
                 self.assertIsNone(output)
-                self.assertEqual([item['kind'] for item in report], ['module-excluded'])
-                self.assertEqual(report[0]['line'], line)
+                self.assertEqual([item['kind'] for item in report], ['general-pass-through'])
+                self.assertEqual(report[0]['line'], 'future=value')
 
     def test_invalid_v2_remains_fatal_instead_of_becoming_an_exclusion(self) -> None:
         cases = (

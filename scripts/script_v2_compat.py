@@ -14,10 +14,16 @@ import json
 import re
 
 try:
-    from loon_rewrite_v2 import RewriteV2Error, V2String, V2Variable, parse_v2_value
+    from loon_rewrite_v2 import (
+        RewriteV2Error, V2Array, V2String, V2Variable, is_rewrite_v2_line,
+        parse_rewrite_v2_line, parse_v2_value, split_v2_top_level,
+    )
     from loon_script_v2 import V2ArgumentObject, V2Script, is_script_v2_line, parse_script_v2_line
 except ModuleNotFoundError:
-    from scripts.loon_rewrite_v2 import RewriteV2Error, V2String, V2Variable, parse_v2_value
+    from scripts.loon_rewrite_v2 import (
+        RewriteV2Error, V2Array, V2String, V2Variable, is_rewrite_v2_line,
+        parse_rewrite_v2_line, parse_v2_value, split_v2_top_level,
+    )
     from scripts.loon_script_v2 import V2ArgumentObject, V2Script, is_script_v2_line, parse_script_v2_line
 
 
@@ -169,7 +175,55 @@ def _value_names(value: object) -> set[str]:
         return {part.name for part in value.parts if isinstance(part, V2Variable)}
     if isinstance(value, V2ArgumentObject):
         return {part.name for part in value.variables}
+    if isinstance(value, V2Array):
+        return set().union(*(_value_names(item) for item in value.items))
     return set()
+
+
+def _condition_names(text: str) -> set[str]:
+    """Read operands from V2 comparisons/groups using the existing value parser.
+
+    Raw strings and Regex values never interpolate; double-quoted strings use
+    the parser's escape-aware V2String.parts. This is reference collection only,
+    not permission to convert conditions unsupported by the main converter.
+    """
+    condition = text.strip()
+    if not condition:
+        return set()
+    while condition.startswith("(") and condition.endswith(")"):
+        inner = condition[1:-1].strip()
+        try:
+            # Balanced interior proves these parentheses enclose the whole
+            # expression. The tokenizer already handles quoted/raw/Regex text.
+            split_v2_top_level(inner, "||")
+        except RewriteV2Error:
+            break
+        condition = inner
+    for operator in ("||", "&&"):
+        pieces = split_v2_top_level(condition, operator)
+        if len(pieces) > 1:
+            if not all(pieces):
+                raise RewriteV2Error("Empty logical condition")
+            return set().union(*(_condition_names(piece) for piece in pieces))
+    for operator in ("==", "~="):
+        pieces = split_v2_top_level(condition, operator)
+        if len(pieces) > 1:
+            if len(pieces) != 2 or not all(pieces):
+                raise RewriteV2Error("Invalid comparison condition")
+            left, right = pieces
+            if operator == "~=":
+                capture = split_v2_top_level(right, "as", word=True)
+                if len(capture) > 2 or len(capture) == 2 and not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", capture[1]):
+                    raise RewriteV2Error("Invalid condition capture")
+                right = capture[0]
+            return _value_names(parse_v2_value(left)) | _value_names(parse_v2_value(right))
+    return _value_names(parse_v2_value(condition))
+
+
+def _legacy_names(text: str) -> set[str]:
+    # Legacy grammar has different interpolation rules; retain the prior
+    # conservative behavior, also used for malformed/unknown V2 syntax.
+    return set(re.findall(r"\$?\{([A-Za-z_][A-Za-z0-9_.-]*)\}", text))
 
 
 def build_script_v2_context(argument_lines: Iterable[str], script_lines: Iterable[str],
@@ -193,27 +247,39 @@ def build_script_v2_context(argument_lines: Iterable[str], script_lines: Iterabl
         except (RewriteV2Error, UnverifiedScriptArgument) as exc:
             errors[name] = str(exc)
     non_enable: set[str] = set()
-    # Legacy usage is deliberately conservative, including legacy enable; mixing
-    # typed V2 toggles with an untyped legacy reference needs separate review.
-    scan_lines = list(other_section_lines)
+    for line in other_section_lines:
+        if not is_rewrite_v2_line(line):
+            non_enable.update(_legacy_names(line))
+            continue
+        try:
+            rewrite = parse_rewrite_v2_line(line)
+            non_enable.update(_condition_names(rewrite.condition))
+            for action in rewrite.actions:
+                for argument in action.arguments:
+                    non_enable.update(_value_names(argument))
+        except RewriteV2Error:
+            # The main parser owns fatal diagnostics. Unknown/malformed syntax
+            # must not grant permission to repurpose a potentially shared value.
+            non_enable.update(_legacy_names(line))
     for line in script_lines:
         if not is_script_v2_line(line):
-            scan_lines.append(line)
+            non_enable.update(_legacy_names(line))
             continue
         try:
             script = parse_script_v2_line(line)
         except RewriteV2Error:
-            scan_lines.append(line)
-            continue  # The main parser is responsible for fatal diagnostics.
+            non_enable.update(_legacy_names(line))
+            continue
         non_enable.update(_value_names(script.schedule))
         non_enable.update(_value_names(script.argument))
         non_enable.update(_value_names(script.path))
         for key, value in script.properties.items():
             if key != "enable":
                 non_enable.update(_value_names(value))
-        scan_lines.append(script.condition or "")
-    for line in scan_lines:
-        non_enable.update(re.findall(r"\$?\{([A-Za-z_][A-Za-z0-9_.-]*)\}", line))
+        try:
+            non_enable.update(_condition_names(script.condition or ""))
+        except RewriteV2Error:
+            non_enable.update(_legacy_names(script.condition or ""))
     return ScriptV2Context(declarations, frozenset(non_enable), errors)
 
 
@@ -295,6 +361,15 @@ class AdaptedScriptV2:
         """Apply a locally validated plan only after its remote source was verified."""
         if self.argument_override is not None and not self.source_verified:
             raise ScriptSourceVerificationError("Object adapter source must be verified before rendering")
+        return self.preview_parts(parts)
+
+    def preview_parts(self, parts: list[str]) -> list[str]:
+        """Build an unverified, in-memory candidate for local validation only.
+
+        A preview is not publishable and does not verify any remote source.
+        Before writing, verify_script_v2_source must succeed and apply_parts
+        must reproduce this candidate with its verified-source guard intact.
+        """
         output = list(parts)
         if self.argument_override is not None:
             output = [part for part in output if not part.startswith("argument=")]
@@ -310,7 +385,7 @@ def plan_script_v2(script: V2Script, context: ScriptV2Context) -> AdaptedScriptV
     Pass every plan's script through prepare_script_v2 before verifying any
     Object source. After local validation, call verify_script_v2_source and then
     apply_parts. Emit enable_prefix and merge toggle_defaults as before. A plan
-    alone is not a verified adapter and cannot render its Object argument.
+    alone is not a verified adapter; preview_parts is for in-memory checks only.
     """
     argument_override = cron_override = enable_prefix = None
     toggle_defaults: tuple[tuple[str, str], ...] = ()

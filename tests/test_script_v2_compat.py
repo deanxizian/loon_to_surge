@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+import base64
+import contextlib
+import io
+import os
 from dataclasses import replace
 import hashlib
 import itertools
@@ -15,7 +19,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'scripts'))
 import script_v2_compat as compat
 from loon_script_v2 import parse_script_v2_line
 from loon_rewrite_v2 import V2String, V2Variable
-from convert_kelee_to_surge import convert_file, prepare_script_v2, UnverifiedScriptV2, WARP_PANEL_SCRIPT_PATH
+from convert_kelee_to_surge import convert_file, convert_kelee_to_surge, prepare_script_v2, UnverifiedScriptV2, WARP_PANEL_SCRIPT_PATH
+from validate_surge_modules import validate_surge_modules
 
 
 SPOTIFY = compat.BASE + 'Spotify/Spotify_remove_ads.js'
@@ -204,6 +209,118 @@ class ScriptV2CompatibilityTest(unittest.TestCase):
                 context = self.context(['Enabled=switch, false, true'], [line], [other])
                 compat.adapt_script_v2(parse_script_v2_line(line), context)
 
+    def test_v2_action_literals_do_not_share_enable_argument(self):
+        # Official Rewrite V2: raw strings and Regex never interpolate; \${
+        # is literal in double-quoted Strings. These are parsed-value tests.
+        enable = 'cron "0 8 * * *" then script("https://example.com/a.js") with enable=${Enabled}'
+        actions = [
+            'response.body.mock("text", `literal ${Enabled}`)',
+            r'response.body.mock("text", "literal \${Enabled}")',
+            'response.body.mock("text", `literal `` ${Enabled}`)',
+            'response.body.mock("text", "literal {Enabled}")',
+            r'response.body.replace(/\$\{Enabled\}/, "safe")',
+            r'response.header.set(["X-A", "X-B"], [`${Enabled}`, "\${Enabled}"])',
+            r'response.header.set("X-A", `${Enabled}`) | response.header.set("X-B", "\${Enabled}")',
+        ]
+        for action in actions:
+            with self.subTest(action=action):
+                rewrite = 'response if ${url} ~= /ads/ then ' + action
+                context = self.context(['Enabled=switch, false, true'], [enable], [rewrite])
+                self.assertNotIn('Enabled', context.non_enable_names)
+                self.assertEqual(compat.plan_script_v2(parse_script_v2_line(enable), context).enable_prefix, '{{{Enabled}}}')
+
+    def test_v2_condition_literals_do_not_share_enable_argument(self):
+        enable = 'cron "0 8 * * *" then script("https://example.com/a.js") with enable=${Enabled}'
+        conditions = [
+            '${url} == `literal ${Enabled}`',
+            r'${url} == "literal \${Enabled}"',
+            '${url} ~= /${Enabled}/',
+            r"(${request.header['X-Test']} == `literal ${Enabled}` || ${url} ~= /\$\{Enabled\}/) && ${response.status} == 200",
+            r'(( ${url} == "escaped quote \" and \${Enabled}" ))',
+            '${url} ~= /literal as ${Enabled}/ as match',
+        ]
+        for condition in conditions:
+            with self.subTest(condition=condition):
+                rewrite = 'response if ' + condition + ' then response.header.set("X-Test", "safe")'
+                other_script = 'response if ' + condition + ' then script("https://example.com/b.js")'
+                for scripts, other in [([enable], [rewrite]), ([enable, other_script], [])]:
+                    context = self.context(['Enabled=switch, false, true'], scripts, other)
+                    self.assertNotIn('Enabled', context.non_enable_names)
+
+    def test_real_v2_references_remain_shared_through_arrays_templates_and_conditions(self):
+        enable = 'cron "0 8 * * *" then script("https://example.com/a.js") with enable=${Enabled}'
+        rewrites = [
+            'response if ${url} ~= /ads/ then response.json.replace("enabled", ${Enabled})',
+            'response if ${url} ~= /ads/ then response.header.set("X-Test", "value=${Enabled}")',
+            r'response if ${url} ~= /ads/ then response.header.set("X-Test", "backslash \\${Enabled}")',
+            'response if ${url} ~= /ads/ then response.header.set(["X-A", "X-B"], ["safe", "${Enabled}"])',
+            'response if ${url} ~= /ads/ then response.json.replace(["a"], [[${Enabled}]])',
+            'response if ${Enabled} == true then response.header.set("X-Test", "safe")',
+            'response if (${url} == "${Enabled}" || ${response.status} == 200) then response.header.set("X-Test", "safe")',
+            'response if ${url} ~= ${Enabled} then response.header.set("X-Test", "safe")',
+            'response if ${url} ~= /ads/ then response.header.set("X-A", `${Enabled}`) | response.header.set("X-B", "${Enabled}")',
+        ]
+        for rewrite in rewrites:
+            with self.subTest(rewrite=rewrite), self.assertRaisesRegex(compat.UnverifiedScriptArgument, 'shared'):
+                context = self.context(['Enabled=switch, false, true'], [enable], [rewrite])
+                self.assertIn('Enabled', context.non_enable_names)
+                compat.plan_script_v2(parse_script_v2_line(enable), context)
+
+    def test_legacy_reference_collection_retains_conservative_behavior(self):
+        enable = 'cron "0 8 * * *" then script("https://example.com/a.js") with enable=${Enabled}'
+        for line in ['hostname={Enabled}', 'hostname=`${Enabled}`', r'legacy "\${Enabled}"',
+                     'http-response ^https://example.com script-path=https://example.com/b.js, argument="{Enabled}"']:
+            with self.subTest(line=line):
+                context = self.context(['Enabled=switch, false, true'], [enable], [line])
+                self.assertIn('Enabled', context.non_enable_names)
+
+    def test_raw_mock_minimal_reproduction_keeps_literal_and_enable_toggle(self):
+        for literal in ['`literal ${Enabled}`', r'"literal \${Enabled}"']:
+            with self.subTest(literal=literal), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                path = root / 'Literal.lpx'
+                path.write_text('#!name=Literal\n[Argument]\nEnabled=switch, false, true\n[Rewrite]\n' +
+                                'response if ${url} ~= /ads/ then response.body.mock("text", ' + literal + ')\n' +
+                                '[Script]\ncron "0 8 * * *" then script("https://example.com/a.js") with enable=${Enabled}\n')
+                loader = Mock(side_effect=AssertionError('must not fetch'))
+                report = []
+                result = convert_file(path, root, report, {}, script_source_loader=loader)
+                self.assertIsNotNone(result, report)
+                output = (root / result['output']).read_text()
+                self.assertIn('#!arguments=Enabled:#', output)
+                self.assertIn('{{{Enabled}}}cron 1 =', output)
+                self.assertIn(base64.b64encode(b'literal ${Enabled}').decode(), output)
+                self.assertNotIn('module-excluded', [item['kind'] for item in report])
+                loader.assert_not_called()
+
+    def test_literal_reference_regression_passes_full_staged_and_independent_validation(self):
+        for literal in ['`literal ${Enabled}`', r'"literal \${Enabled}"']:
+            for action in ['response.body.mock("text", VALUE)',
+                           'response.body.replace(/ad/, VALUE)',
+                           'response.header.set("X-Test", VALUE)']:
+                with self.subTest(literal=literal, action=action), tempfile.TemporaryDirectory() as tmp, contextlib.redirect_stdout(io.StringIO()):
+                    root = Path(tmp)
+                    (root / 'Loon').mkdir()
+                    (root / 'Loon' / 'Literal.lpx').write_text(
+                        '#!name=Literal\n[Argument]\nEnabled=switch, false, true\n[Rewrite]\n' +
+                        'response if ${url} ~= /rewrite-only/ then ' + action.replace('VALUE', literal) + '\n' +
+                        '[Script]\ncron "0 8 * * *" then script("https://example.com/a.js") with enable=${Enabled}\n')
+                    previous = Path.cwd()
+                    try:
+                        os.chdir(root)
+                        with patch('convert_kelee_to_surge.fetch_script_source', side_effect=AssertionError('must not fetch')) as loader:
+                            convert_kelee_to_surge('Loon', 'Surge', 'Surge/convert-report.json')
+                            summary = validate_surge_modules('Loon', 'Surge', 'Surge/convert-report.json')
+                        self.assertEqual(summary['modules'], 1)
+                        loader.assert_not_called()
+                        output = (root / 'Surge' / 'Literal.sgmodule').read_text()
+                        self.assertIn('#!arguments=Enabled:#', output)
+                        self.assertIn('{{{Enabled}}}cron 1 =', output)
+                        expected = base64.b64encode(b'literal ${Enabled}').decode() if '.mock(' in action else 'literal ${Enabled}'
+                        self.assertIn(expected, output)
+                    finally:
+                        os.chdir(previous)
+
     def test_dynamic_enable_can_be_shared_between_only_enable_properties(self):
         lines = [f'cron "0 {hour} * * *" then script("https://example.com/a.js") with enable=${{Enabled}}' for hour in [8, 9]]
         context = self.context(['Enabled=switch, false, true'], lines)
@@ -313,6 +430,26 @@ class ScriptV2CompatibilityTest(unittest.TestCase):
             plan.apply_parts(parts)
         with self.assertRaises(compat.ScriptSourceVerificationError):
             compat.verify_script_v2_source(plan)
+
+    def test_unverified_preview_is_read_only_and_matches_verified_render(self):
+        script = parse_script_v2_line(self.line(variables=['tab']))
+        context = self.context(['tab=switch, false, true'])
+        adapters = dict(compat.VERIFIED_OBJECT_ADAPTERS)
+        adapters[SPOTIFY] = replace(adapters[SPOTIFY], sha256=hashlib.sha256(PROBE_BYTES).hexdigest())
+        with patch.object(compat, 'VERIFIED_OBJECT_ADAPTERS', adapters):
+            plan = compat.plan_script_v2(script, context)
+            _, parts = prepare_script_v2(plan.script)
+            original = list(parts)
+            preview = plan.preview_parts(parts)
+            self.assertEqual(parts, original)
+            self.assertFalse(plan.source_verified)
+            self.assertTrue(any(part.startswith('argument=') for part in preview))
+            with self.assertRaisesRegex(compat.ScriptSourceVerificationError, 'before rendering'):
+                plan.apply_parts(parts)
+            verified = compat.verify_script_v2_source(plan, source_loader=lambda _: PROBE_BYTES)
+            self.assertTrue(verified.source_verified)
+            self.assertFalse(plan.source_verified)
+            self.assertEqual(verified.apply_parts(parts), preview)
 
     def convert_with_loader(self, script_lines, loader, declarations=None):
         declarations = declarations if declarations is not None else ['tab=switch, false, true']

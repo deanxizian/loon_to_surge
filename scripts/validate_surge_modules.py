@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import base64
 from collections import Counter
+from dataclasses import replace
 import json
 from pathlib import Path
 import re
@@ -18,6 +19,16 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from surge_syntax import tokenize_surge_line  # noqa: E402
 from source_quality import inspect_source_quality, validate_generated_json_mock  # noqa: E402
 from source_repairs import apply_reviewed_source_repairs  # noqa: E402
+import convert_kelee_to_surge as rewrite_converter  # noqa: E402
+from loon_rewrite_v2 import (  # noqa: E402
+    V2Array,
+    V2Regex,
+    V2String,
+    V2Value,
+    is_rewrite_v2_line,
+    parse_rewrite_v2_line,
+    parse_url_only_condition,
+)
 
 from convert_kelee_to_surge import (  # noqa: E402
     BASE_MODULE_FEATURE_REQUIREMENT,
@@ -73,6 +84,101 @@ SCRIPT_TYPE_OPTIONS = {
     "http-request": {"ability", "binary-body-mode", "max-size", "pattern", "requires-body"},
     "http-response": {"ability", "binary-body-mode", "max-size", "pattern", "requires-body"},
 }
+BARE_LOON_PLACEHOLDER = re.compile(r"(?<!\{)\{[A-Za-z_][A-Za-z0-9_.-]*\}(?!\})")
+SURGE_ARGUMENT_PLACEHOLDER = re.compile(r"\{\{\{[A-Za-z_][A-Za-z0-9_]*\}\}\}")
+LITERAL_PLACEHOLDER = re.compile(SURGE_ARGUMENT_PLACEHOLDER.pattern + "|" + BARE_LOON_PLACEHOLDER.pattern)
+
+
+def literal_rewrite_placeholder_spans(
+    source_sections: dict[str, list[str]],
+) -> dict[tuple[str, str], list[set[tuple[int, int]]]]:
+    """Prove literal spans against the source AST and their exact output line.
+
+    Replace only literal String/Regex fragments with unique markers, then pass
+    that AST through the existing local emitters. Real V2Variable nodes are
+    never masked. Only markers surviving unchanged into an exact output line
+    authorize residual-looking text there; this is not a name-level exemption.
+    Literal target macros retain their spans for explicit rejection instead.
+    Replaying local emitters does not fetch jq_file resources or Script bodies.
+    """
+    source_text = "\n".join(line for lines in source_sections.values() for line in lines)
+    argument_names = set(rewrite_converter.collect_argument_defaults(rewrite_converter.section_lines(source_sections, "Argument")))
+    normalized_names = " ".join(rewrite_converter.surge_argument_name(name) for name in argument_names)
+    marker_prefix = "SURGE_LITERAL_PROVENANCE_"
+    while marker_prefix in source_text or marker_prefix in normalized_names:
+        marker_prefix += "X"
+    marker_pattern = re.compile(re.escape(marker_prefix) + r"\d+_END")
+    proven: dict[tuple[str, str], list[set[tuple[int, int]]]] = {}
+
+    for line in rewrite_converter.section_lines(source_sections, "Rewrite"):
+        if not is_rewrite_v2_line(line) or not LITERAL_PLACEHOLDER.search(line):
+            continue
+        markers: dict[str, str] = {}
+
+        def mask_text(text: str) -> str:
+            def mark(match: re.Match[str]) -> str:
+                marker = f"{marker_prefix}{len(markers)}_END"
+                markers[marker] = match.group()
+                return marker
+            return LITERAL_PLACEHOLDER.sub(mark, text)
+
+        def mask_value(value: V2Value) -> V2Value:
+            if isinstance(value, V2String):
+                return replace(value, parts=tuple(mask_text(part) if isinstance(part, str) else part for part in value.parts))
+            if isinstance(value, V2Regex):
+                return replace(value, pattern=mask_text(value.pattern))
+            if isinstance(value, V2Array):
+                return replace(value, items=tuple(mask_value(item) for item in value.items))
+            return value
+
+        try:
+            rewrite = parse_rewrite_v2_line(line)
+            condition = parse_url_only_condition(rewrite.condition)
+            condition = replace(condition, regex=replace(condition.regex, pattern=mask_text(condition.regex.pattern)))
+            pattern = rewrite_converter.v2_url_pattern(condition)
+            converted: list[tuple[str, str]] = []
+            for original in rewrite.actions:
+                # Remote text has no local literal provenance. Skip just this
+                # Action so adjacent local JSON Actions can still prove theirs.
+                if original.name.endswith(".jq_file"):
+                    continue
+                action = replace(original, arguments=tuple(mask_value(value) for value in original.arguments))
+                converters = (
+                    lambda: rewrite_converter.convert_v2_url_action(action, rewrite.phase, pattern, condition, argument_names),
+                    lambda: rewrite_converter.convert_v2_reject_action(action, rewrite.phase, pattern),
+                    lambda: rewrite_converter.convert_v2_header_action(action, rewrite.phase, pattern, condition, argument_names),
+                    lambda: rewrite_converter.convert_v2_body_action(action, rewrite.phase, pattern, condition, argument_names),
+                    lambda: rewrite_converter.convert_v2_json_action(action, rewrite.phase, pattern, [], "", line),
+                    lambda: rewrite_converter.convert_v2_mock_action(action, rewrite.phase, pattern),
+                )
+                for converter in converters:
+                    action_lines = converter()
+                    if action_lines is not None:
+                        converted.extend(action_lines)
+                        break
+                else:
+                    raise ValueError("No local Rewrite V2 emitter")
+        except ValueError:
+            # Unsupported or malformed source cannot establish an exemption.
+            continue
+
+        for section, masked in converted:
+            restored: list[str] = []
+            spans: set[tuple[int, int]] = set()
+            previous = 0
+            length = 0
+            for match in marker_pattern.finditer(masked):
+                before = masked[previous:match.start()]
+                literal = markers[match.group()]
+                restored.extend((before, literal))
+                length += len(before)
+                spans.add((length, length + len(literal)))
+                length += len(literal)
+                previous = match.end()
+            if spans:
+                restored.append(masked[previous:])
+                proven.setdefault((section, "".join(restored)), []).append(spans)
+    return proven
 
 
 class SurgeValidationError(RuntimeError):
@@ -544,6 +650,7 @@ def validate_surge_modules(
 
     # Recheck source payload integrity independently of the converter's report.
     # A stale or tampered report must not make known source defects publishable.
+    parsed_sources: dict[str, dict[str, list[str]]] = {}
     for source in loon_files:
         try:
             source_text, expected_repairs = apply_reviewed_source_repairs(source.name, source.read_bytes().decode("utf-8"))
@@ -555,6 +662,7 @@ def validate_surge_modules(
             if actual_repairs != expected_applied:
                 errors.append(f"{source.name}: source repair provenance does not match pinned raw source")
             _, source_sections = parse_lpx_text(source_text)
+            parsed_sources[source.name] = source_sections
             for item in inspect_source_quality(source.name, source_sections):
                 if item["kind"] == "source-quality":
                     errors.append(f"{source.name}: source quality: {item['message']}")
@@ -698,11 +806,28 @@ def validate_surge_modules(
                 f"{path.name}: manifest sections {manifest_item.get('sections')!r} do not match actual sections {order!r}"
             )
 
+        literal_lines = literal_rewrite_placeholder_spans(
+            parsed_sources.get((manifest_item or {}).get("source", ""), {})
+        )
+        literal_spans_by_number: dict[int, set[tuple[int, int]]] = {}
+        for section, lines in sections.items():
+            for number, line in lines:
+                candidates = literal_lines.get((section, line), [])
+                if candidates:
+                    # Consume one source occurrence: copying a valid literal line
+                    # into unrelated or additional output does not prove it.
+                    literal_spans_by_number[number] = candidates.pop(0)
+                    for start, end in sorted(literal_spans_by_number[number]):
+                        if SURGE_ARGUMENT_PLACEHOLDER.fullmatch(line[start:end]):
+                            errors.append(
+                                f"{path.name}:{number}: literal source text would be expanded as a Surge module argument: {line[start:end]}"
+                            )
+
         forbidden = {
             "Loon Rewrite V2": r"^(?:request|response)\s+if\s+.+\s+then\s+",
             "Loon enable": r"\benable\s*=",
             "Loon enabled?": r"\benabled\?\s*=",
-            "bare Loon argument placeholder": r"(?<!\{)\{[A-Za-z_][A-Za-z0-9_.-]*\}(?!\})",
+            "bare Loon argument placeholder": BARE_LOON_PLACEHOLDER,
             "Loon mock option": r"\b(?:data-path|mock-data-is-base64)=",
         }
         script_line_numbers = {number for number, _ in sections.get("Script", [])}
@@ -712,7 +837,11 @@ def validate_surge_modules(
                 # above; URL query parameters and regex/argument text are literal values.
                 if number in script_line_numbers and label in {"Loon enable", "Loon enabled?", "Loon mock option"}:
                     continue
-                if re.search(pattern, line):
+                matches = list(re.finditer(pattern, line.strip()))
+                if label == "bare Loon argument placeholder":
+                    proven_spans = literal_spans_by_number.get(number, set())
+                    matches = [match for match in matches if match.span() not in proven_spans]
+                if matches:
                     errors.append(f"{path.name}:{number}: residual {label}: {line}")
 
         replacement_text = "\n".join(

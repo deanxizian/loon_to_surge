@@ -93,6 +93,10 @@ class UnverifiedScriptV2(ValueError):
     """Valid Script V2 functionality that cannot yet be preserved in Surge."""
 
 
+class UnverifiedRewriteV2Literal(RewriteV2Error):
+    """A source literal would become an active Surge module substitution."""
+
+
 WINDOWS_INVALID_FILENAME_CHARS = set('<>:"/\\|?*')
 SECTION_ORDER = (
     "General",
@@ -545,13 +549,14 @@ def normalize_jq_program(expression: str, report: list[dict[str, str]], file: st
     return expression
 
 
-def convert_jq_expression(text: str, report: list[dict[str, str]], file: str, line: str) -> str | None:
+def convert_jq_expression(text: str, report: list[dict[str, str]], file: str, line: str,
+                          jq_loader: Callable[[str], str] | None = None) -> str | None:
     stripped = text.strip()
     match = re.fullmatch(r'jq-path=(["\']?)(.+?)\1', stripped)
     if match:
         url = match.group(2)
         try:
-            expression = fetch_jq_path(url)
+            expression = (jq_loader or fetch_jq_path)(url)
         except Exception as exc:
             add_report(report, file, "jq-path-inline-failed", f"Unable to inline jq-path {url}: {exc}", line)
             return text
@@ -1108,6 +1113,19 @@ def v2_constant_string(value: V2Value, description: str) -> str:
     return "".join(part for part in value.parts if isinstance(part, str))
 
 
+def v2_literal_surge_macros(value: V2Value) -> set[str]:
+    if isinstance(value, V2String):
+        literals = [part for part in value.parts if isinstance(part, str)]
+    elif isinstance(value, V2Regex):
+        literals = [value.pattern]
+    elif isinstance(value, V2Array):
+        return set().union(*(v2_literal_surge_macros(item) for item in value.items))
+    else:
+        return set()
+    return {match.group(0) for literal in literals
+            for match in re.finditer(r"\{\{\{[A-Za-z_][A-Za-z0-9_]*\}\}\}", literal)}
+
+
 def v2_regex_capture_group_count(pattern: str) -> int:
     count = 0
     in_character_class = False
@@ -1434,6 +1452,7 @@ def convert_v2_body_action(
 
 def convert_v2_json_action(
     action: V2Action, phase: str, pattern: str, report: list[dict[str, str]], file: str, line: str,
+    jq_loader: Callable[[str], str] | None = None,
 ) -> list[tuple[str, str]] | None:
     matched = re.fullmatch(r"(request|response)\.json\.(add|delete|replace|jq|jq_file)", action.name)
     if not matched:
@@ -1474,7 +1493,7 @@ def convert_v2_json_action(
         if not re.match(r"^https?://", source):
             raise RewriteV2Error("Relative jq_file resources are not downloaded with standalone Kelee .lpx files")
         try:
-            source = fetch_jq_path(source)
+            source = (jq_loader or fetch_jq_path)(source)
         except Exception as exc:  # noqa: BLE001 - turn remote resource failures into a fatal conversion report.
             raise RewriteV2Error(f"Unable to inline jq_file {source}: {exc}") from exc
     normalized = normalize_jq_program(source, report, file, line)
@@ -1553,10 +1572,17 @@ def convert_rewrite_v2_line(
     report: list[dict[str, str]],
     file: str,
     argument_names: set[str],
+    jq_loader: Callable[[str], str] | None = None,
 ) -> str | None:
     try:
         rewrite = parse_rewrite_v2_line(line)
         condition = parse_url_only_condition(rewrite.condition)
+        if any(action.name.endswith(".jq_file") for action in rewrite.actions) and re.search(
+            r"(?<!\{)\{[A-Za-z_][A-Za-z0-9_.-]*\}(?!\})", condition.regex.pattern
+        ):
+            raise UnverifiedRewriteV2Literal(
+                "literal placeholder-like URL patterns with remote JQ lack verified local output provenance"
+            )
         if condition.capture_name and condition.capture_name in argument_names:
             raise RewriteV2Error(
                 f"URL capture name {condition.capture_name!r} conflicts with a declared plugin argument"
@@ -1572,7 +1598,7 @@ def convert_rewrite_v2_line(
                 lambda: convert_v2_reject_action(action, rewrite.phase, pattern),
                 lambda: convert_v2_header_action(action, rewrite.phase, pattern, condition, argument_names),
                 lambda: convert_v2_body_action(action, rewrite.phase, pattern, condition, argument_names),
-                lambda: convert_v2_json_action(action, rewrite.phase, pattern, report, file, line),
+                lambda: convert_v2_json_action(action, rewrite.phase, pattern, report, file, line, jq_loader),
                 lambda: convert_v2_mock_action(action, rewrite.phase, pattern),
             )
             for converter in converters:
@@ -1593,9 +1619,17 @@ def convert_rewrite_v2_line(
         if len(rewrite.actions) > 1 and target_sections & {"URL Rewrite", "Map Local"}:
             raise RewriteV2Error("Multiple terminal URL or mock Actions cannot be represented as one Surge operation")
 
+        literal_macros = v2_literal_surge_macros(condition.regex)
+        for action in rewrite.actions:
+            for argument in action.arguments:
+                literal_macros.update(v2_literal_surge_macros(argument))
+        if any(macro in converted_line for macro in literal_macros for _, converted_line in converted):
+            raise UnverifiedRewriteV2Literal(
+                "literal Surge module placeholders would be interpolated instead of preserved"
+            )
         for section, converted_line in converted:
             sections[section].append(converted_line)
-    except UnverifiedRewriteV2RegexFlags as exc:
+    except (UnverifiedRewriteV2RegexFlags, UnverifiedRewriteV2Literal) as exc:
         return str(exc)
     except RewriteV2Error as exc:
         add_report(report, file, "unsupported-rewrite", f"Rewrite V2: {exc}", line)
@@ -1608,9 +1642,10 @@ def convert_rewrite_line(
     report: list[dict[str, str]],
     file: str,
     argument_names: set[str] | None = None,
+    jq_loader: Callable[[str], str] | None = None,
 ) -> str | None:
     if is_rewrite_v2_line(line):
-        return convert_rewrite_v2_line(line, sections, report, file, argument_names or set())
+        return convert_rewrite_v2_line(line, sections, report, file, argument_names or set(), jq_loader)
 
     inline_match = re.match(r"^(http-request|http-response)\s+(\S+)\s+(\S+)(?:\s+(.*))?$", line)
     if inline_match:
@@ -1618,7 +1653,7 @@ def convert_rewrite_line(
         rest = rest or ""
 
         if action == "response-body-json-jq":
-            expression = convert_jq_expression(rest, report, file, line)
+            expression = convert_jq_expression(rest, report, file, line, jq_loader)
             if expression is not None:
                 sections["Body Rewrite"].append(f"http-response-jq {pattern} {expression}")
         elif action == "response-body-json-del":
@@ -1658,7 +1693,7 @@ def convert_rewrite_line(
             return
         sections["Map Local"].append(f"{pattern} {converted_mock}")
     elif action == "response-body-json-jq":
-        expression = convert_jq_expression(rest, report, file, line)
+        expression = convert_jq_expression(rest, report, file, line, jq_loader)
         if expression is not None:
             sections["Body Rewrite"].append(f"http-response-jq {pattern} {expression}")
     elif action == "response-body-json-del":
@@ -2319,21 +2354,93 @@ def convert_file(
     if any(item["kind"] == "source-quality" for item in quality_items):
         return None
     unsupported_rules = unsupported_module_rule_policies(source_sections)
-    if unsupported_rules:
-        policies = ", ".join(dict.fromkeys(policy for _, policy in unsupported_rules))
-        add_report(
-            report,
-            path.name,
-            "module-excluded",
-            "Module was excluded from Surge output because module rules may only use DIRECT, REJECT, or "
-            f"REJECT-TINYGIF; found: {policies}.",
-            unsupported_rules[0][0],
-        )
-        return None
 
     sections: OrderedDict[str, list[str]] = OrderedDict((name, []) for name in SECTION_ORDER)
     argument_lines = section_lines(source_sections, "Argument")
     argument_defaults = collect_argument_defaults(argument_lines)
+    # Complete non-Script local diagnostics before any Script-derived exclusion.
+    # Keep Rewrite eligibility decisions pending until all Script syntax is known.
+    rewrite_exclusions: list[dict[str, str]] = []
+    for line in section_lines(source_sections, "General"):
+        match = re.match(r"^real-ip\s*=\s*(.+)$", line, flags=re.IGNORECASE)
+        if match:
+            sections["General"].append(f"always-real-ip = %APPEND% {match.group(1).strip()}")
+        else:
+            sections["General"].append(line)
+            add_report(report, path.name, "general-pass-through", "General line passed through without conversion.", line)
+
+    for raw_rule_line in section_lines(source_sections, "Rule"):
+        line = strip_rule_inline_comment(raw_rule_line)
+        if not line:
+            continue
+
+        rewrite_match = re.match(r"^(\S+)\s+(\d{3})\s+(.+)$", line)
+        if rewrite_match:
+            pattern, status_code, replacement = rewrite_match.groups()
+            sections["URL Rewrite"].append(f"{pattern} {replacement.strip()} {status_code}")
+            continue
+
+        if is_bare_domain_rule(line):
+            append_unique_rule(sections["Rule"], convert_rule_line(f"DOMAIN,{line},REJECT"))
+            continue
+
+        rule_parts = split_top_level(line, ",")
+        if len(rule_parts) >= 3 and rule_parts[0].strip().upper() == "URL-REGEX":
+            pattern = rule_parts[1].strip()
+            if len(pattern) >= 2 and pattern[0] == pattern[-1] and pattern[0] in ("'", '"'):
+                pattern = pattern[1:-1]
+            policy = rule_parts[2].strip().upper()
+            if policy == "REJECT-DICT":
+                sections["Map Local"].append(f'{pattern} data-type=text data="{{}}" status-code=200 header="Content-Type:application/json"')
+                continue
+            if policy == "REJECT-IMG":
+                sections["Map Local"].append(f"{pattern} data-type=tiny-gif status-code=200")
+                continue
+
+        try:
+            sections["Rule"].append(convert_rule_line(line))
+        except RuleConversionError as exc:
+            add_report(report, path.name, "unsupported-rule", str(exc), line)
+
+    rewrite_preflight_sections: OrderedDict[str, list[str]] = OrderedDict((name, []) for name in SECTION_ORDER)
+    rewrite_preflight_report: list[dict[str, str]] = []
+    for line in section_lines(source_sections, "Rewrite"):
+        try:
+            regex_flag_reason = convert_rewrite_line(line, rewrite_preflight_sections, rewrite_preflight_report, path.name, set(argument_defaults), jq_loader=lambda _: ".")
+        except JsonRewriteError as exc:
+            add_report(rewrite_preflight_report, path.name, "unsupported-rewrite", str(exc), line)
+            continue
+        if regex_flag_reason:
+            add_report(
+                rewrite_exclusions,
+                path.name,
+                "module-excluded",
+                "Module was excluded from Surge output because Rewrite V2 has no verified Surge equivalent "
+                f"that preserves the source semantics: {regex_flag_reason}.",
+                line,
+            )
+
+    rewrite_preflight_fatal = fatal_report_items(rewrite_preflight_report)
+    report.extend(rewrite_preflight_fatal)
+    invalid_rewrite_lines = {item["line"] for item in rewrite_preflight_fatal}
+
+    for line in section_lines(source_sections, "MitM"):
+        match = re.match(r"^hostname\s*=\s*(.+)$", line, flags=re.IGNORECASE)
+        if match:
+            hostnames = clean_hostname_list(match.group(1))
+            if hostnames:
+                sections["MITM"].append(f"hostname = %APPEND% {hostnames}")
+        else:
+            add_report(report, path.name, "mitm-unsupported", "Unsupported MitM line", line)
+
+    surge_system = convert_system_metadata(metadata.get("system"), report, path.name)
+    argument_preflight: list[dict[str, str]] = []
+    convert_argument_lines(argument_lines, argument_preflight, path.name, used_names=set(argument_defaults))
+    argument_fatal = fatal_report_items(argument_preflight)
+    if argument_fatal:
+        report.extend(argument_fatal)
+        return None
+
     script_lines = section_lines(source_sections, "Script")
     legacy_script_lines = [line for line in script_lines if not is_script_v2_line(line)]
     shared_enable_argument_names = collect_enable_argument_names(script_lines) & collect_script_argument_names(script_lines)
@@ -2371,6 +2478,7 @@ def convert_file(
                     raise UnverifiedScriptV2("NodeLinkCheck injected Policy argument collides with an existing source declaration")
             adapted = plan_script_v2(script, script_context)
             name, parts = prepare_script_v2(adapted.script)
+            parts = adapted.preview_parts(parts)
             adapted_scripts[script_index] = adapted
             name = name or f"{script.trigger} {script_index}"
             prepared_scripts[script_index] = (script, name, parts)
@@ -2380,6 +2488,22 @@ def convert_file(
             add_report(report, path.name, "unsupported-script", f"Invalid Script V2: {exc}", line)
             invalid_scripts = True
     if invalid_scripts:
+        return None
+    if fatal_report_items(report[report_start:]) and (script_lines or unsupported_rules or rewrite_exclusions):
+        return None
+    if unsupported_rules:
+        policies = ", ".join(dict.fromkeys(policy for _, policy in unsupported_rules))
+        add_report(
+            report,
+            path.name,
+            "module-excluded",
+            "Module was excluded from Surge output because module rules may only use DIRECT, REJECT, or "
+            f"REJECT-TINYGIF; found: {policies}.",
+            unsupported_rules[0][0],
+        )
+        return None
+    if rewrite_exclusions:
+        report.append(rewrite_exclusions[0])
         return None
     if unverified_scripts:
         line, reason = unverified_scripts[0]
@@ -2426,11 +2550,6 @@ def convert_file(
                        "Module was excluded because WARP Panel adaptation requires an enabled script; "
                        "dynamic or disabled Panel/Script linkage is not verified.", warp_line)
             return None
-        script_name = warp_props.get("tag") or "WARP INFO"
-        if problem := warp_script_name_problem(script_name):
-            add_report(report, path.name, "module-excluded",
-                       "Module was excluded because " + problem + ".", warp_line)
-            return None
         # Check Panel identity locally before Object-source verification. For V2
         # only names are needed, so no unverified Object argument is rendered.
         # Legacy conversion is local and preserves its position-based names.
@@ -2440,25 +2559,30 @@ def convert_file(
                 reference_lines.append(f"{prepared_scripts[script_index][1]} = ")
             else:
                 convert_script_line(line, reference_lines, [], path.name, argument_defaults, shared_enable_argument_names)
+        # Legacy tag is optional. Use the same positional name actually emitted
+        # in this mixed legacy/V2 sequence, rather than inventing a Panel name.
+        script_name = warp_props.get("tag") or surge_script_reference_name(
+            reference_lines[script_lines.index(warp_line)]
+        )
+        if problem := warp_script_name_problem(script_name):
+            add_report(report, path.name, "module-excluded",
+                       "Module was excluded because " + problem + ".", warp_line)
+            return None
         if sum(surge_script_reference_name(line) == script_name for line in reference_lines) != 1:
             add_report(report, path.name, "module-excluded",
                        "Module was excluded because the WARP Panel reference does not identify exactly one Script after enable-prefix expansion.", warp_line)
             return None
 
-    # Finish local syntax/declaration/ordinary-feature checks for every script
-    # before fetching any Object adapter source. Unsupported local features must
-    # not become fatal verification failures merely because the network is down.
-    for script_index, adapted in adapted_scripts.items():
+    # Local preflight used an inert JQ body solely to validate call shape. It
+    # never enters sections or output. Resolve resource contents only after the
+    # known local Script/Rewrite exclusions above; Object verification is later.
+    for line in section_lines(source_sections, "Rewrite"):
+        if line in invalid_rewrite_lines:
+            continue
         try:
-            verified = verify_script_v2_source(adapted, source_loader=script_source_loader or fetch_script_source)
-            script, name, parts = prepared_scripts[script_index]
-            prepared_scripts[script_index] = (script, name, verified.apply_parts(parts))
-            adapted_scripts[script_index] = verified
-        except ScriptSourceVerificationError as exc:
-            add_report(report, path.name, "script-verification", str(exc), script_lines[script_index - 1])
-            invalid_scripts = True
-    if invalid_scripts:
-        return None
+            convert_rewrite_line(line, sections, report, path.name, set(argument_defaults))
+        except JsonRewriteError as exc:
+            add_report(report, path.name, "unsupported-rewrite", str(exc), line)
 
     if NODE_LINK_CHECK_SCRIPT_PATH in generic_paths:
         metadata["desc"] = (
@@ -2494,71 +2618,14 @@ def convert_file(
             warp_line,
         )
 
-    for line in section_lines(source_sections, "General"):
-        match = re.match(r"^real-ip\s*=\s*(.+)$", line, flags=re.IGNORECASE)
-        if match:
-            sections["General"].append(f"always-real-ip = %APPEND% {match.group(1).strip()}")
-        else:
-            sections["General"].append(line)
-            add_report(report, path.name, "general-pass-through", "General line passed through without conversion.", line)
-
-    for raw_rule_line in section_lines(source_sections, "Rule"):
-        line = strip_rule_inline_comment(raw_rule_line)
-        if not line:
-            continue
-
-        rewrite_match = re.match(r"^(\S+)\s+(\d{3})\s+(.+)$", line)
-        if rewrite_match:
-            pattern, status_code, replacement = rewrite_match.groups()
-            sections["URL Rewrite"].append(f"{pattern} {replacement.strip()} {status_code}")
-            continue
-
-        if is_bare_domain_rule(line):
-            append_unique_rule(sections["Rule"], convert_rule_line(f"DOMAIN,{line},REJECT"))
-            continue
-
-        rule_parts = split_top_level(line, ",")
-        if len(rule_parts) >= 3 and rule_parts[0].strip().upper() == "URL-REGEX":
-            pattern = rule_parts[1].strip()
-            if len(pattern) >= 2 and pattern[0] == pattern[-1] and pattern[0] in ("'", '"'):
-                pattern = pattern[1:-1]
-            policy = rule_parts[2].strip().upper()
-            if policy == "REJECT-DICT":
-                sections["Map Local"].append(f'{pattern} data-type=text data="{{}}" status-code=200 header="Content-Type:application/json"')
-                continue
-            if policy == "REJECT-IMG":
-                sections["Map Local"].append(f"{pattern} data-type=tiny-gif status-code=200")
-                continue
-
-        try:
-            sections["Rule"].append(convert_rule_line(line))
-        except RuleConversionError as exc:
-            add_report(report, path.name, "unsupported-rule", str(exc), line)
-
-    for line in section_lines(source_sections, "Rewrite"):
-        try:
-            regex_flag_reason = convert_rewrite_line(line, sections, report, path.name, set(argument_defaults))
-        except JsonRewriteError as exc:
-            add_report(report, path.name, "unsupported-rewrite", str(exc), line)
-            continue
-        if regex_flag_reason:
-            add_report(
-                report,
-                path.name,
-                "module-excluded",
-                "Module was excluded from Surge output because Rewrite V2 regex flags have no verified "
-                f"Surge equivalent; {regex_flag_reason}.",
-                line,
-            )
-            return None
-
+    pending_object_reports: list[dict[str, str]] = []
     for script_index, line in enumerate(script_lines, start=1):
         if script_index in prepared_scripts:
             script, name, parts = prepared_scripts[script_index]
             adapted = adapted_scripts[script_index]
             prefix = adapted.enable_prefix if adapted.enable_prefix is not None else ("#" if script.properties.get("enable") is False else "")
             if adapted.argument_codec:
-                add_report(report, path.name, "script-object-adapted",
+                add_report(pending_object_reports, path.name, "script-object-adapted",
                            f"Used reviewed {adapted.argument_codec} String decoder for typed Object parameters; source SHA-256={adapted.source_sha256}. Remote URL remains mutable after publication.", line)
             if adapted.cron_override is not None:
                 add_report(report, path.name, "script-dynamic-cron-adapted",
@@ -2593,22 +2660,12 @@ def convert_file(
         )
         return None
 
-    for line in section_lines(source_sections, "MitM"):
-        match = re.match(r"^hostname\s*=\s*(.+)$", line, flags=re.IGNORECASE)
-        if match:
-            hostnames = clean_hostname_list(match.group(1))
-            if hostnames:
-                sections["MITM"].append(f"hostname = %APPEND% {hostnames}")
-        else:
-            add_report(report, path.name, "mitm-unsupported", "Unsupported MitM line", line)
-
     toggle_defaults = collect_enable_toggle_defaults(script_lines, argument_defaults, shared_enable_argument_names)
     for adapted in adapted_scripts.values():
         toggle_defaults.update(adapted.toggle_defaults)
-    used_argument_names: set[str] = set()
-    for section_name, lines in source_sections.items():
-        if section_name.lower() != "argument":
-            used_argument_names.update(collect_loon_placeholder_names("\n".join(lines)))
+    # Use parsed V2 references, not text inside raw/escaped literals. Legacy
+    # references remain conservative; emitted placeholders add enable/Object use.
+    used_argument_names: set[str] = set(script_context.non_enable_names)
     # V2 Object syntax ends in "${last}}", which the legacy brace regex
     # intentionally excludes. Resolve usage from actual emitted placeholders too.
     emitted_text = "\n".join(line for lines in sections.values() for line in lines)
@@ -2624,7 +2681,6 @@ def convert_file(
         argument_items.append(("Policy", "PROXY"))
 
     output: list[str] = []
-    surge_system = convert_system_metadata(metadata.get("system"), report, path.name)
     shared_http_names = sorted(name for name, count in Counter(
         surge_script_reference_name(line) for line in sections["Script"]
         if parse_properties(line.partition(" = ")[2]).get("type") in {"http-request", "http-response"}
@@ -2639,6 +2695,27 @@ def convert_file(
         add_report(report, path.name, "module-excluded",
                    "Module was excluded because supported no-op conversion leaves no effective Surge sections.", "")
         return None
+
+    # All deterministic local conversion and eligibility checks above must run
+    # before remote verification. The sections so far are memory-only previews;
+    # no Object candidate may reach a file write without current source hashes.
+    has_object_plan = any(adapted.argument_override is not None for adapted in adapted_scripts.values())
+    if has_object_plan and fatal_report_items(report[report_start:]):
+        return None
+    for script_index, adapted in adapted_scripts.items():
+        try:
+            verified = verify_script_v2_source(adapted, source_loader=script_source_loader or fetch_script_source)
+            _, _, preview_parts = prepared_scripts[script_index]
+            if verified.apply_parts(preview_parts) != preview_parts:
+                raise ScriptSourceVerificationError("verified Script plan differs from its local preview")
+            adapted_scripts[script_index] = verified
+        except ScriptSourceVerificationError as exc:
+            add_report(report, path.name, "script-verification", str(exc), script_lines[script_index - 1])
+            invalid_scripts = True
+    if invalid_scripts:
+        return None
+    report.extend(pending_object_reports)
+
     for key in ("name", "desc", "author", "icon"):
         if key in metadata:
             output.append(f"#!{key}={metadata[key]}")

@@ -339,7 +339,7 @@ http-request ^https://example.com script-path=https://example.com/a.js, tag=Samp
         self.assertEqual(report, [])
 
     def test_argument_name_normalization_collision_is_fatal(self) -> None:
-        _, report = self.convert_lpx(
+        output, report = self.convert_lpx_result(
             """#!name=Sample
 
 [Argument]
@@ -351,6 +351,7 @@ http-request ^https://example.com script-path=https://example.com/a.js, tag=Samp
 """
         )
 
+        self.assertIsNone(output)
         self.assertEqual([item["kind"] for item in report], ["argument-name-collision"])
 
     def test_argument_default_with_comma_is_quoted_and_requires_modern_surge(self) -> None:
