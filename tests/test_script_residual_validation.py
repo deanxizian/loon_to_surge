@@ -31,12 +31,13 @@ cron "0 8 * * *" then script("https://example.com/a.js") with tag="Test"
         with contextlib.redirect_stdout(io.StringIO()):
             convert_kelee_to_surge('Loon', 'Surge', 'Surge/convert-report.json')
 
-    def validate(self, properties: str, script_type: str = 'cron') -> dict:
+    def validate(self, properties: str, script_type: str = 'cron', *, modern_quotes: bool = False) -> dict:
         prefix = 'Test = type=' + script_type
         if script_type == 'cron':
             prefix += ', cronexp="0 8 * * *"'
+        requirement = '#!requirement=CORE_VERSION>=6008000\n' if modern_quotes else ''
         (self.root / 'Surge' / 'Sample.sgmodule').write_text(
-            '#!name=Sample\n[Script]\n' + prefix + ', ' + properties + '\n',
+            '#!name=Sample\n' + requirement + '[Script]\n' + prefix + ', ' + properties + '\n',
             encoding='utf-8',
         )
         return validate_surge_modules('Loon', 'Surge', 'Surge/convert-report.json')
@@ -48,14 +49,14 @@ cron "0 8 * * *" then script("https://example.com/a.js") with tag="Test"
                     self.validate('script-path=https://example.com/a.js ' + option + argument)
 
     def test_quoted_and_unquoted_argument_values_can_contain_loon_option_text(self) -> None:
-        for argument in (
-            '"enable=true,enabled?=true,data-path=x,mock-data-is-base64=true"',
-            "'enable=true,data-path=x'",
-            'enable=true&data-path=x',
-            json.dumps('quoted "enable=true", backslash \\, data-path=x'),
+        for argument, modern_quotes in (
+            ('"enable=true,enabled?=true,data-path=x,mock-data-is-base64=true"', False),
+            ("'enable=true,data-path=x'", False),
+            ('enable=true&data-path=x', False),
+            (json.dumps('quoted "enable=true", backslash \\, data-path=x'), True),
         ):
             with self.subTest(argument=argument):
-                summary = self.validate('script-path=https://example.com/a.js, argument=' + argument)
+                summary = self.validate('script-path=https://example.com/a.js, argument=' + argument, modern_quotes=modern_quotes)
                 self.assertEqual(summary['modules'], 1)
 
     def test_text_after_a_quoted_argument_is_not_exempted(self) -> None:
