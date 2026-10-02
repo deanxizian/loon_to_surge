@@ -289,6 +289,27 @@ def effective_section_line(section: str, line: str) -> str | None:
     return line
 
 
+def script_quoted_escape_feature(lines: list[tuple[int, str]]) -> bool:
+    """Recheck serialized Script values without trusting converter metadata."""
+    for _, line in lines:
+        effective = effective_section_line("Script", line)
+        if not effective:
+            continue
+        for item in split_top_level(effective.partition(" = ")[2], ","):
+            value = item.partition("=")[2].strip()
+            if not (value.startswith('"') and value.endswith('"')):
+                continue
+            escaped = False
+            for char in value[1:-1]:
+                if escaped:
+                    if char in ('"', "\\"):
+                        return True
+                    escaped = False
+                elif char == "\\":
+                    escaped = True
+    return False
+
+
 def validate_nested_rule_matcher(prefix: str, matcher: str, errors: list[str]) -> None:
     text = strip_wrapping_parentheses(matcher)
     parts = split_top_level(text, ",")
@@ -731,9 +752,10 @@ def validate_surge_modules(
             or re.search(r"(?:^|\()URL-REGEX,", line) is not None
             for _, line in sections.get("Rule", [])
         )
+        has_quoted_script_escape = script_quoted_escape_feature(sections.get("Script", []))
         expected_requirement = (
             SURGE_5_14_FEATURE_REQUIREMENT
-            if has_jq_rewrite or has_modern_rule_feature or has_quoted_argument_default
+            if has_jq_rewrite or has_modern_rule_feature or has_quoted_argument_default or has_quoted_script_escape
             else BASE_MODULE_FEATURE_REQUIREMENT
             if has_base_module_feature
             else None

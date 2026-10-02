@@ -53,6 +53,7 @@ Loon 文件里的 `#!` 元数据按以下规则输出：
 - `system` 只输出 Surge 官方支持的 `ios` 或 `mac`：Loon 的 `iOS/iPadOS` 映射为 `ios`，`macOS` 映射为 `mac`；同时覆盖 iOS 和 macOS 时省略限制，`watchOS` 没有 Surge 对应目标。
 - 使用模块参数、域名 `extended-matching`、普通 `[Body Rewrite]` 或 `[Map Local]` 的模块添加 `#!requirement=CORE_VERSION>=20`，这是官方已列出的基础兼容门槛。
 - 含 `http-request-jq`、`http-response-jq`、`pre-matching`、URL-REGEX `extended-matching`，或使用引号保护含逗号或以双引号开头的参数默认值的模块添加保守门槛 `#!requirement=CORE_VERSION>=6008000`。Surge Manual/Release Notes 只给出部分新特性的客户端最低版本（JQ 为 iOS 5.14 / Mac 5.9，引号值为 iOS 5.21 / Mac 6.8）；`6008000` 是官方版本表中已确认共同支持这些语法的 Core，会排除部分可能兼容的旧客户端，但不会向不支持这些特性的版本宣称可用。
+- `[Script]` 属性的双引号值使用 `\"` 或 `\\` 转义时，同样要求 `CORE_VERSION>=6008000`，包括 V2 Object 序列化后的 JSON `argument`、String 参数和正则属性；转换器与独立产物校验器均检查实际输出。依据 [Surge Quoted Values](https://manual.nssurge.com/profile/format.html)，此转义语法对应 iOS 5.21 / Mac 6.8。普通 Cron 引号、未使用这两种转义的引号值和未加引号的正则不会因此提高门槛。
 
 模块文件名使用模块 `name`，并清理 Windows 不合法文件名字符。重名时自动追加 `-2`、`-3`。
 
@@ -628,7 +629,7 @@ macOS 上额外运行 `swift tests/verify_url_ignore_case.swift` 和 `swift test
 - URL Rewrite 的拒绝行使用 `_ reject`。
 - 模块 `[Rule]` 只含已核对的规则类型，并且策略只含 `DIRECT`、`REJECT`、`REJECT-TINYGIF`。
 - `#!system` 只可能是 `ios` 或 `mac`。
-- 模块参数、域名 `extended-matching`、普通 `[Body Rewrite]` / `[Map Local]` 使用 `CORE_VERSION>=20`；JQ、`pre-matching` 和 URL-REGEX `extended-matching` 使用保守门槛 `CORE_VERSION>=6008000`。
+- 模块参数、域名 `extended-matching`、普通 `[Body Rewrite]` / `[Map Local]` 使用 `CORE_VERSION>=20`；JQ、`pre-matching`、URL-REGEX `extended-matching`、引号参数默认值及 Script 双引号值中的引号/反斜杠转义使用保守门槛 `CORE_VERSION>=6008000`。
 - 所有 Map Local `status-code` 都在 `200` 至 `999`。
 - Surge 清单与 `module-excluded` 报告合起来完整覆盖全部 Loon 模块。
 - 每个动态 `[Panel]` 引用的 `script-name` 都存在于同一模块的 `[Script]`。

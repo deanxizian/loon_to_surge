@@ -2086,6 +2086,18 @@ def format_surge_arguments(items: list[tuple[str, str]]) -> str:
     )
 
 
+def script_uses_quoted_escapes(line: str) -> bool:
+    # Quoted cron expressions predate the modern escaping syntax. Only
+    # literal quotes/backslashes inside double-quoted property values need it;
+    # regex escapes in unquoted patterns must not raise the minimum version.
+    properties = line.partition(" = ")[2]
+    for item in split_top_level(properties, ","):
+        value = item.partition("=")[2].strip()
+        if value.startswith('"') and value.endswith('"') and re.search(r'\\["\\]', value[1:-1]):
+            return True
+    return False
+
+
 def surge_module_requirement(
     sections: OrderedDict[str, list[str]],
     argument_items: list[tuple[str, str]],
@@ -2100,7 +2112,8 @@ def surge_module_requirement(
         for line in sections["Rule"]
     )
     has_quoted_argument_default = any(surge_argument_default_requires_quotes(default) for _, default in argument_items)
-    if has_jq_rewrite or has_modern_rule_feature or has_quoted_argument_default:
+    has_quoted_script_escape = any(script_uses_quoted_escapes(line) for line in sections["Script"])
+    if has_jq_rewrite or has_modern_rule_feature or has_quoted_argument_default or has_quoted_script_escape:
         return SURGE_5_14_FEATURE_REQUIREMENT
     if (
         sections["Body Rewrite"]
