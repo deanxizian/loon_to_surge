@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import base64
 from collections import Counter
+from dataclasses import replace
 import json
 from pathlib import Path
 import re
@@ -16,6 +17,18 @@ from typing import Any
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from surge_syntax import tokenize_surge_line  # noqa: E402
+from source_quality import inspect_source_quality, validate_generated_json_mock  # noqa: E402
+from source_repairs import apply_reviewed_source_repairs  # noqa: E402
+import convert_kelee_to_surge as rewrite_converter  # noqa: E402
+from loon_rewrite_v2 import (  # noqa: E402
+    V2Array,
+    V2Regex,
+    V2String,
+    V2Value,
+    is_rewrite_v2_line,
+    parse_rewrite_v2_line,
+    parse_url_only_condition,
+)
 
 from convert_kelee_to_surge import (  # noqa: E402
     BASE_MODULE_FEATURE_REQUIREMENT,
@@ -31,7 +44,12 @@ from convert_kelee_to_surge import (  # noqa: E402
     SUPPORTED_RULE_TYPES,
     SURGE_5_14_FEATURE_REQUIREMENT,
     VERIFIED_SURGE_GENERIC_SCRIPT_PATHS,
+    WARP_PANEL_SCRIPT_PATH,
     module_semantics_problem,
+    parse_lpx,
+    parse_lpx_text,
+    script_name_has_inline_comment,
+    surge_script_reference_name,
     split_top_level,
     strip_wrapping_parentheses,
     unquote_property_value,
@@ -51,6 +69,11 @@ INFORMATIONAL_REPORT_KINDS = {
     "script-enable-shared-kept",
     "script-enable-toggle-emitted",
     "script-property-corrected",
+    "source-quality-unverified",
+    "source-repair-applied",
+    "script-object-adapted",
+    "script-dynamic-cron-adapted",
+    "script-http-name-shared",
 }
 MAP_LOCAL_DATA_TYPES = {"base64", "file", "text", "tiny-gif"}
 MAP_LOCAL_OPTIONS = {"data", "data-type", "header", "status-code"}
@@ -61,6 +84,101 @@ SCRIPT_TYPE_OPTIONS = {
     "http-request": {"ability", "binary-body-mode", "max-size", "pattern", "requires-body"},
     "http-response": {"ability", "binary-body-mode", "max-size", "pattern", "requires-body"},
 }
+BARE_LOON_PLACEHOLDER = re.compile(r"(?<!\{)\{[A-Za-z_][A-Za-z0-9_.-]*\}(?!\})")
+SURGE_ARGUMENT_PLACEHOLDER = re.compile(r"\{\{\{[A-Za-z_][A-Za-z0-9_]*\}\}\}")
+LITERAL_PLACEHOLDER = re.compile(SURGE_ARGUMENT_PLACEHOLDER.pattern + "|" + BARE_LOON_PLACEHOLDER.pattern)
+
+
+def literal_rewrite_placeholder_spans(
+    source_sections: dict[str, list[str]],
+) -> dict[tuple[str, str], list[set[tuple[int, int]]]]:
+    """Prove literal spans against the source AST and their exact output line.
+
+    Replace only literal String/Regex fragments with unique markers, then pass
+    that AST through the existing local emitters. Real V2Variable nodes are
+    never masked. Only markers surviving unchanged into an exact output line
+    authorize residual-looking text there; this is not a name-level exemption.
+    Literal target macros retain their spans for explicit rejection instead.
+    Replaying local emitters does not fetch jq_file resources or Script bodies.
+    """
+    source_text = "\n".join(line for lines in source_sections.values() for line in lines)
+    argument_names = set(rewrite_converter.collect_argument_defaults(rewrite_converter.section_lines(source_sections, "Argument")))
+    normalized_names = " ".join(rewrite_converter.surge_argument_name(name) for name in argument_names)
+    marker_prefix = "SURGE_LITERAL_PROVENANCE_"
+    while marker_prefix in source_text or marker_prefix in normalized_names:
+        marker_prefix += "X"
+    marker_pattern = re.compile(re.escape(marker_prefix) + r"\d+_END")
+    proven: dict[tuple[str, str], list[set[tuple[int, int]]]] = {}
+
+    for line in rewrite_converter.section_lines(source_sections, "Rewrite"):
+        if not is_rewrite_v2_line(line) or not LITERAL_PLACEHOLDER.search(line):
+            continue
+        markers: dict[str, str] = {}
+
+        def mask_text(text: str) -> str:
+            def mark(match: re.Match[str]) -> str:
+                marker = f"{marker_prefix}{len(markers)}_END"
+                markers[marker] = match.group()
+                return marker
+            return LITERAL_PLACEHOLDER.sub(mark, text)
+
+        def mask_value(value: V2Value) -> V2Value:
+            if isinstance(value, V2String):
+                return replace(value, parts=tuple(mask_text(part) if isinstance(part, str) else part for part in value.parts))
+            if isinstance(value, V2Regex):
+                return replace(value, pattern=mask_text(value.pattern))
+            if isinstance(value, V2Array):
+                return replace(value, items=tuple(mask_value(item) for item in value.items))
+            return value
+
+        try:
+            rewrite = parse_rewrite_v2_line(line)
+            condition = parse_url_only_condition(rewrite.condition)
+            condition = replace(condition, regex=replace(condition.regex, pattern=mask_text(condition.regex.pattern)))
+            pattern = rewrite_converter.v2_url_pattern(condition)
+            converted: list[tuple[str, str]] = []
+            for original in rewrite.actions:
+                # Remote text has no local literal provenance. Skip just this
+                # Action so adjacent local JSON Actions can still prove theirs.
+                if original.name.endswith(".jq_file"):
+                    continue
+                action = replace(original, arguments=tuple(mask_value(value) for value in original.arguments))
+                converters = (
+                    lambda: rewrite_converter.convert_v2_url_action(action, rewrite.phase, pattern, condition, argument_names),
+                    lambda: rewrite_converter.convert_v2_reject_action(action, rewrite.phase, pattern),
+                    lambda: rewrite_converter.convert_v2_header_action(action, rewrite.phase, pattern, condition, argument_names),
+                    lambda: rewrite_converter.convert_v2_body_action(action, rewrite.phase, pattern, condition, argument_names),
+                    lambda: rewrite_converter.convert_v2_json_action(action, rewrite.phase, pattern, [], "", line),
+                    lambda: rewrite_converter.convert_v2_mock_action(action, rewrite.phase, pattern),
+                )
+                for converter in converters:
+                    action_lines = converter()
+                    if action_lines is not None:
+                        converted.extend(action_lines)
+                        break
+                else:
+                    raise ValueError("No local Rewrite V2 emitter")
+        except ValueError:
+            # Unsupported or malformed source cannot establish an exemption.
+            continue
+
+        for section, masked in converted:
+            restored: list[str] = []
+            spans: set[tuple[int, int]] = set()
+            previous = 0
+            length = 0
+            for match in marker_pattern.finditer(masked):
+                before = masked[previous:match.start()]
+                literal = markers[match.group()]
+                restored.extend((before, literal))
+                length += len(before)
+                spans.add((length, length + len(literal)))
+                length += len(literal)
+                previous = match.end()
+            if spans:
+                restored.append(masked[previous:])
+                proven.setdefault((section, "".join(restored)), []).append(spans)
+    return proven
 
 
 class SurgeValidationError(RuntimeError):
@@ -92,30 +210,75 @@ def parse_sections(text: str, file: str, errors: list[str]) -> tuple[list[str], 
     return order, sections
 
 
-def module_arguments(text: str, file: str, errors: list[str]) -> set[str]:
+def module_argument_features(text: str, file: str, errors: list[str]) -> tuple[set[str], bool]:
+    """Parse generated argument metadata independently of converter formatting.
+
+    Commas delimit entries except inside a double-quoted default. Quotes and
+    backslashes can be escaped there; punctuation inside an unquoted default
+    does not start a quoted field. Any quoted default uses the modern syntax.
+    """
     lines = [item for item in text.splitlines() if item.startswith("#!arguments=")]
     if not lines:
-        return set()
+        return set(), False
     if len(lines) > 1:
         errors.append(f"{file}: must contain at most one #!arguments line")
-
     payload = lines[0].removeprefix("#!arguments=")
-    if not payload:
+    if not payload.strip():
         errors.append(f"{file}: #!arguments must declare at least one argument")
-        return set()
+        return set(), False
+
     arguments: set[str] = set()
-    for item in split_top_level(payload, ","):
-        key, separator, default = item.partition(":")
-        key = key.strip()
+    has_quoted_default = False
+    position = 0
+    while position < len(payload):
+        start = position
+        while position < len(payload) and payload[position] not in ":,":
+            position += 1
+        key = payload[start:position].strip()
         if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", key):
             errors.append(f"{file}: invalid module argument name: {key!r}")
-            continue
-        if separator and any(char in default for char in ("\r", "\n")):
-            errors.append(f"{file}: invalid line break in default for module argument: {key}")
-        if key in arguments:
-            errors.append(f"{file}: duplicate module argument name: {key}")
-        arguments.add(key)
-    return arguments
+        else:
+            if key in arguments:
+                errors.append(f"{file}: duplicate module argument name: {key}")
+            arguments.add(key)
+
+        if position < len(payload) and payload[position] == ":":
+            position += 1
+            while position < len(payload) and payload[position].isspace():
+                position += 1
+            if position < len(payload) and payload[position] == '"':
+                has_quoted_default = True
+                position += 1
+                closed = False
+                while position < len(payload):
+                    char = payload[position]
+                    position += 1
+                    if char == "\\":
+                        if position < len(payload):
+                            position += 1
+                        else:
+                            break
+                    elif char == '"':
+                        closed = True
+                        break
+                if not closed:
+                    errors.append(f"{file}: unterminated quoted module argument default: {key}")
+                    break
+                while position < len(payload) and payload[position].isspace():
+                    position += 1
+                if position < len(payload) and payload[position] != ",":
+                    errors.append(f"{file}: unexpected text after quoted module argument default: {key}")
+            while position < len(payload) and payload[position] != ",":
+                position += 1
+        if position < len(payload):
+            position += 1  # The separating comma, never a comma inside quotes.
+            if position == len(payload):
+                errors.append(f"{file}: empty module argument after trailing comma")
+    return arguments, has_quoted_default
+
+
+def module_arguments(text: str, file: str, errors: list[str]) -> set[str]:
+    return module_argument_features(text, file, errors)[0]
 
 
 def effective_section_line(section: str, line: str) -> str | None:
@@ -158,7 +321,33 @@ def validate_nested_rule_matcher(prefix: str, matcher: str, errors: list[str]) -
             validate_nested_rule_matcher(prefix, child, errors)
 
 
-def validate_section_line(file: str, number: int, section: str, line: str, errors: list[str]) -> None:
+def map_local_declares_json(header: str) -> bool:
+    """Parse both documented Surge header forms, not a substring heuristic."""
+    if not header:
+        return False
+    if ":" in header:
+        lines = header.split("|")
+    else:
+        try:
+            decoded = base64.b64decode(header, validate=True).decode("utf-8")
+        except (ValueError, UnicodeError) as exc:
+            raise ValueError("Map Local header is not valid UTF-8 Base64") from exc
+        lines = decoded.splitlines()
+    types: list[str] = []
+    for line in lines:
+        if not line.strip():
+            continue
+        key, separator, value = line.partition(":")
+        if not separator or not key.strip():
+            raise ValueError("Map Local header contains a malformed key-value pair")
+        if key.strip().lower() == "content-type":
+            types.append(value.split(";", 1)[0].strip().lower())
+    return "application/json" in types
+
+
+def validate_section_line(
+    file: str, number: int, section: str, line: str, errors: list[str], *, source_file: str = "",
+) -> None:
     effective = effective_section_line(section, line)
     if effective is None:
         return
@@ -277,6 +466,19 @@ def validate_section_line(file: str, number: int, section: str, line: str, error
                 base64.b64decode(options.get("data", ""), validate=True)
             except Exception:
                 errors.append(f"{prefix}: invalid Map Local base64 data")
+        try:
+            declares_json = map_local_declares_json(options.get("header", ""))
+        except ValueError as exc:
+            errors.append(f"{prefix}: {exc}")
+            declares_json = False
+        if declares_json and data_type in {"text", "base64"}:
+            try:
+                body = options.get("data", "")
+                if data_type == "base64":
+                    body = base64.b64decode(body, validate=True)
+                validate_generated_json_mock(source_file, tokens[0], body)
+            except (ValueError, UnicodeError) as exc:
+                errors.append(f"{prefix}: invalid Map Local JSON payload: {exc}")
         return
 
     if section == "Panel":
@@ -311,6 +513,8 @@ def validate_section_line(file: str, number: int, section: str, line: str, error
         return
 
     if section == "Script":
+        if script_name_has_inline_comment(effective.partition(" = ")[0]):
+            errors.append(f"{prefix}: unsafe Script name contains an inline-comment delimiter")
         if " = type=" not in effective:
             errors.append(f"{prefix}: invalid Script line: {line}")
             return
@@ -444,6 +648,27 @@ def validate_surge_modules(
     if fatal_items:
         errors.append(f"report contains {len(fatal_items)} fatal conversion item(s)")
 
+    # Recheck source payload integrity independently of the converter's report.
+    # A stale or tampered report must not make known source defects publishable.
+    parsed_sources: dict[str, dict[str, list[str]]] = {}
+    for source in loon_files:
+        try:
+            source_text, expected_repairs = apply_reviewed_source_repairs(source.name, source.read_bytes().decode("utf-8"))
+            for item in expected_repairs:
+                if item["kind"] == "source-repair-blocked":
+                    errors.append(f"{source.name}: source repair: {item['message']}")
+            actual_repairs = [item for item in items if item.get("file") == source.name and item.get("kind") == "source-repair-applied"]
+            expected_applied = [item for item in expected_repairs if item["kind"] == "source-repair-applied"]
+            if actual_repairs != expected_applied:
+                errors.append(f"{source.name}: source repair provenance does not match pinned raw source")
+            _, source_sections = parse_lpx_text(source_text)
+            parsed_sources[source.name] = source_sections
+            for item in inspect_source_quality(source.name, source_sections):
+                if item["kind"] == "source-quality":
+                    errors.append(f"{source.name}: source quality: {item['message']}")
+        except (OSError, UnicodeError) as exc:
+            errors.append(f"{source.name}: cannot inspect source quality: {exc}")
+
     manifest_by_output = {
         item["output"]: item for item in manifest if isinstance(item, dict) and isinstance(item.get("output"), str)
     }
@@ -487,6 +712,7 @@ def validate_surge_modules(
         requirement_lines = [line for line in text.splitlines() if line.startswith("#!requirement=")]
         if len(requirement_lines) > 1:
             errors.append(f"{path.name}: must contain at most one #!requirement line")
+        declared, has_quoted_argument_default = module_argument_features(text, path.name, errors)
         has_base_module_feature = (
             "Body Rewrite" in sections
             or "Map Local" in sections
@@ -507,27 +733,29 @@ def validate_surge_modules(
         )
         expected_requirement = (
             SURGE_5_14_FEATURE_REQUIREMENT
-            if has_jq_rewrite or has_modern_rule_feature
+            if has_jq_rewrite or has_modern_rule_feature or has_quoted_argument_default
             else BASE_MODULE_FEATURE_REQUIREMENT
             if has_base_module_feature
             else None
         )
         if expected_requirement and requirement_lines != [f"#!requirement={expected_requirement}"]:
             errors.append(
-                f"{path.name}: expected #!requirement={expected_requirement} for its HTTP rewrite features"
+                f"{path.name}: expected #!requirement={expected_requirement} for its version-gated module features"
             )
         elif not expected_requirement and requirement_lines:
             errors.append(f"{path.name}: unexpected #!requirement without a version-gated module feature")
 
         panel_script_names: set[str] = set()
         script_names: set[str] = set()
+        script_name_counts: Counter[str] = Counter()
+        warp_script_names: set[str] = set()
         for name, lines in sections.items():
             if not lines:
                 errors.append(f"{path.name}: empty section [{name}]")
             section_modules[name] += 1
             section_lines[name] += len(lines)
             for number, line in lines:
-                validate_section_line(path.name, number, name, line, errors)
+                validate_section_line(path.name, number, name, line, errors, source_file=manifest_by_output.get(path.name, {}).get("source", ""))
                 effective = effective_section_line(name, line)
                 if effective and name == "Panel" and " = " in effective:
                     for item in split_top_level(effective.split(" = ", 1)[1], ","):
@@ -535,7 +763,15 @@ def validate_surge_modules(
                         if separator and key.strip() == "script-name":
                             panel_script_names.add(unquote_property_value(value))
                 if effective and name == "Script" and " = " in effective:
-                    script_names.add(effective.split(" = ", 1)[0].strip())
+                    identifier = surge_script_reference_name(effective)
+                    script_names.add(identifier)
+                    script_name_counts[identifier] += 1
+                    properties = dict((key.strip(), value.strip()) for part in split_top_level(effective.split(" = ", 1)[1], ",")
+                                      for key, separator, value in [part.partition("=")] if separator)
+                    if properties.get("type") == "generic" and unquote_property_value(properties.get("script-path", "")) == WARP_PANEL_SCRIPT_PATH:
+                        warp_script_names.add(identifier)
+                        if line.startswith("#") or re.match(r"^\{\{\{[A-Za-z_][A-Za-z0-9_]*\}\}\}", line):
+                            errors.append(f"{path.name}:{number}: WARP Script must be unconditionally enabled for Panel linkage")
                 if name == "Body Rewrite":
                     try:
                         tokens = tokenize_surge_line(line)
@@ -544,6 +780,12 @@ def validate_surge_modules(
                     if tokens and tokens[0].endswith("-jq") and len(tokens) == 3 and tokens[2].strip():
                         jq_expressions.append((path.name, number, tokens[2]))
 
+        missing_warp_panels = sorted(warp_script_names - panel_script_names)
+        if missing_warp_panels:
+            errors.append(f"{path.name}: WARP Script has no linked Panel: {missing_warp_panels}")
+        ambiguous_panel_scripts = sorted(name for name in panel_script_names if script_name_counts[name] > 1)
+        if ambiguous_panel_scripts:
+            errors.append(f"{path.name}: Panel references ambiguous Script names: {ambiguous_panel_scripts}")
         missing_panel_scripts = sorted(panel_script_names - script_names)
         if missing_panel_scripts:
             errors.append(f"{path.name}: Panel references missing Script names: {missing_panel_scripts}")
@@ -564,11 +806,28 @@ def validate_surge_modules(
                 f"{path.name}: manifest sections {manifest_item.get('sections')!r} do not match actual sections {order!r}"
             )
 
+        literal_lines = literal_rewrite_placeholder_spans(
+            parsed_sources.get((manifest_item or {}).get("source", ""), {})
+        )
+        literal_spans_by_number: dict[int, set[tuple[int, int]]] = {}
+        for section, lines in sections.items():
+            for number, line in lines:
+                candidates = literal_lines.get((section, line), [])
+                if candidates:
+                    # Consume one source occurrence: copying a valid literal line
+                    # into unrelated or additional output does not prove it.
+                    literal_spans_by_number[number] = candidates.pop(0)
+                    for start, end in sorted(literal_spans_by_number[number]):
+                        if SURGE_ARGUMENT_PLACEHOLDER.fullmatch(line[start:end]):
+                            errors.append(
+                                f"{path.name}:{number}: literal source text would be expanded as a Surge module argument: {line[start:end]}"
+                            )
+
         forbidden = {
             "Loon Rewrite V2": r"^(?:request|response)\s+if\s+.+\s+then\s+",
             "Loon enable": r"\benable\s*=",
             "Loon enabled?": r"\benabled\?\s*=",
-            "bare Loon argument placeholder": r"(?<!\{)\{[A-Za-z_][A-Za-z0-9_.-]*\}(?!\})",
+            "bare Loon argument placeholder": BARE_LOON_PLACEHOLDER,
             "Loon mock option": r"\b(?:data-path|mock-data-is-base64)=",
         }
         script_line_numbers = {number for number, _ in sections.get("Script", [])}
@@ -578,10 +837,13 @@ def validate_surge_modules(
                 # above; URL query parameters and regex/argument text are literal values.
                 if number in script_line_numbers and label in {"Loon enable", "Loon enabled?", "Loon mock option"}:
                     continue
-                if re.search(pattern, line):
+                matches = list(re.finditer(pattern, line.strip()))
+                if label == "bare Loon argument placeholder":
+                    proven_spans = literal_spans_by_number.get(number, set())
+                    matches = [match for match in matches if match.span() not in proven_spans]
+                if matches:
                     errors.append(f"{path.name}:{number}: residual {label}: {line}")
 
-        declared = module_arguments(text, path.name, errors)
         replacement_text = "\n".join(
             line for line in text.splitlines() if not line.startswith("#!arguments=")
         )

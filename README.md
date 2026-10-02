@@ -25,9 +25,17 @@ Surge/*.sgmodule
 Surge/convert-report.json
 ```
 
-成功生成后的 warning 是需要知情的转换事项。Surge 官方规定模块规则只能使用 `DIRECT`、`REJECT`、`REJECT-TINYGIF`，因此含 `PROXY`、`REJECT-DROP` 等策略的模块会整项排除。当前支持 Rewrite V2 的 URL `/i`、Body 正则 `i/m/s`、仅 URL 条件的 HTTP Script V2 和静态 Cron；复杂脚本条件、对象参数、动态属性和新版 generic/network-changed 上下文仍会整模块排除，并记录 `module-excluded`。URL 的 `m/s` 以及 Header 正则 flags 也暂不转换。已核实具有 Surge 分支的旧版 generic 脚本会使用原生参数或 Panel 配置并记录 `generic-script-adapted`。未知属性、无效语法等错误仍会使任务失败，并在覆盖前保留上一版 Surge 产物。
+成功生成后的 warning 是需要知情的转换事项。Surge 官方规定模块规则只能使用 `DIRECT`、`REJECT`、`REJECT-TINYGIF`，因此含 `PROXY`、`REJECT-DROP` 等策略的模块会整项排除。当前支持 Rewrite V2 的 URL `/i`、Body 正则 `i/m/s`、仅 URL 条件的 HTTP Script V2，以及经过校验的静态或参数化 Cron。新版 Object 参数仅对已核对的 Spotify、网易云、YouTube 去广告/字幕脚本适配，转换时必须验证其源码 SHA-256；下载失败或版本变化会阻止发布。仅用于 enable 的 Boolean 开关可映射为行前缀参数，NodeLinkCheck/WARP 新旧 generic 均使用专门适配。复杂条件、未验证对象参数、其他动态属性/运行上下文等仍会整模块排除并记录 `module-excluded`。URL 的 `m/s` 及 Header 正则 flags 暂不转换。无效语法、已确认的上游 JSON 类型漂移及损坏的 JSON mock 会阻止发布；候选产物先校验再替换上一版 Surge。
 
 旧版 HTTP Script 缺省超时显式输出为 10 秒，新版为 20 秒；源文件明确设置的超时保持不变。转换前还会检查 Body Rewrite／脚本匹配冲突、跨行 URL 改写顺序和禁止修改的 Header 字段；无法保证语义的组合整模块排除。现有模块和用户主配置之间的交互仍需实际流量验证。
+
+## 转换质量边界
+
+新旧 Rewrite 共用空 JQ 处理与已验证的 JQ 修正；不会改写含嵌套插值的 JQ 文本。源 JSON mock 和生成后的 JSON Map Local 均检查实际内容，不能仅用合法 Base64 代表合法 JSON。已确认的上游类型变化按精确源规则阻断，绝不把所有 `"{}"` / `"[]"` 字符串强制转成对象/数组。
+
+Surge 参数是文本框，不会强制执行 Loon 的 switch/select 控件：请仅填原声明允许的值；enable 行前缀使用 `#` 或空值。远程脚本在转换时进行版本核验，发布后 URL 仍可变；静态通过不代表已做 Surge 真机验证。测试夹具和核验依据见 `tests/fixtures/`。
+
+2026-10-02 固定快照已加入 10 项经过历史证据核对的窄范围兼容补丁：259/275 项通过完整转换及 1711 条 JQ 校验，16 项明确排除。补丁仅匹配精确源文件 SHA-256，并检查每条原始行、替换行和最终文件 hash；恢复原对象/数组类型、驾校一点通 12 项删除及顺丰完整 JSON，不修改下载的原始文件。每次应用记录 `source-repair-applied`。这 10 项的未知新版本仍会阻断，必须重新审查；不是通用猜测修复。此次代码 PR 尚未刷新仓库的 `Loon/`、`Surge/` 产物。
 
 ## 自动更新
 

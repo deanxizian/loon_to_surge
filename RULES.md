@@ -35,6 +35,12 @@
 
 生成时会先写入临时目录，转换完成后再替换 `Surge` 目录和报告文件。若生成内容没有变化，`convert-report.json` 里的 `generated_at` 会尽量保持不变。报告中的 `total`、`converted`、`excluded` 分别表示 Loon 输入数、Surge 输出数和主动排除数；Surge 清单与排除报告必须完整覆盖全部 Loon 输入。
 
+受支持的空操作（例如空 JQ）或未使用参数处理后，若没有任何生成 section，模块会明确记录 `module-excluded`，不生成仅含元数据的模块。已有致命诊断优先，不能改记为排除来绕过发布阻断。固定禁用的 Script 定义仍按现有注释形式保留。
+
+Script V2 按源文件中的出现顺序逐条准备；重复文本也保留独立序号。显式 HTTP 脚本 tag 保留原值，不因同名而改名或整项排除；同名情况记录非阻断的 `script-http-name-shared`，注明未做该边界的 Surge 真机验证：[Surge Profile Format](https://manual.nssurge.com/profile/format.html) 明确 `[Script]` 为逐行 section，[HTTP 脚本](https://manual.nssurge.com/scripting/overview.html) 按配置顺序首次匹配。Panel 按名称引用的歧义检查仍保留；不把引用型限制推广成所有 HTTP 脚本名称必须唯一。
+
+转换先完成不依赖远程内容的语法与已知排除检查；`jq_file`/`jq-path` 的预检查只验证本地调用形状与潜在改写范围，不下载资源，也不把占位内容写入产物；远程 JQ 按可能生效的 Body Rewrite 做组合排除，不以资源可能为空来放宽重叠判定。确定候选资格后解析所需 JQ 资源、构造内存候选并检查组合语义，再核对 Object 脚本的当前 hash；未验签的 Object 候选不会落盘。最后仍须通过独立暂存产物校验与 JQ 编译，才替换发布目录。Rewrite 排除不会终止其余行的语法检查，已有致命诊断优先。
+
 输入只接受非空的 `[Argument]`、`[General]`、`[Rule]`、`[Rewrite]`、`[Script]` 和 `[MITM]`。出现其他非空 section，或仅大小写不同的重复 section 时，会记录 `unsupported-section` 并终止发布，避免静默丢掉上游新语法。
 
 ## 元数据
@@ -46,7 +52,7 @@ Loon 文件里的 `#!` 元数据按以下规则输出：
 - 继续保留：`openUrl`、`open`、`tag`、`system_version`、`loon_version`、`homepage`、`date`
 - `system` 只输出 Surge 官方支持的 `ios` 或 `mac`：Loon 的 `iOS/iPadOS` 映射为 `ios`，`macOS` 映射为 `mac`；同时覆盖 iOS 和 macOS 时省略限制，`watchOS` 没有 Surge 对应目标。
 - 使用模块参数、域名 `extended-matching`、普通 `[Body Rewrite]` 或 `[Map Local]` 的模块添加 `#!requirement=CORE_VERSION>=20`，这是官方已列出的基础兼容门槛。
-- 含 `http-request-jq`、`http-response-jq`、`pre-matching`、URL-REGEX `extended-matching`，或使用引号保护含逗号参数默认值的模块添加保守门槛 `#!requirement=CORE_VERSION>=6008000`。Surge Manual/Release Notes 只给出部分新特性的客户端最低版本（JQ 为 iOS 5.14 / Mac 5.9，引号值为 iOS 5.21 / Mac 6.8）；`6008000` 是官方版本表中已确认共同支持这些语法的 Core，会排除部分可能兼容的旧客户端，但不会向不支持这些特性的版本宣称可用。
+- 含 `http-request-jq`、`http-response-jq`、`pre-matching`、URL-REGEX `extended-matching`，或使用引号保护含逗号或以双引号开头的参数默认值的模块添加保守门槛 `#!requirement=CORE_VERSION>=6008000`。Surge Manual/Release Notes 只给出部分新特性的客户端最低版本（JQ 为 iOS 5.14 / Mac 5.9，引号值为 iOS 5.21 / Mac 6.8）；`6008000` 是官方版本表中已确认共同支持这些语法的 Core，会排除部分可能兼容的旧客户端，但不会向不支持这些特性的版本宣称可用。
 
 模块文件名使用模块 `name`，并清理 Windows 不合法文件名字符。重名时自动追加 `-2`、`-3`。
 
@@ -61,7 +67,7 @@ Loon `[Argument]` 会转换为 Surge `#!arguments=`。
 - 按 Surge 当前表格语法输出 `参数名:默认值,参数名2:默认值2`，不做 URL 编码。
 - 参数名只保留 ASCII 字母、数字和下划线；其他字符转换为 `_`，数字开头时加 `ARG_`。归一化后重名会阻止发布。
 - 脚本参数、cron 或 Rewrite 里的 Loon 占位符 `{Name}` / `${Name}` 会转换成 Surge 模块占位符 `{{{Name}}}`。
-- 默认值含逗号时使用双引号保护，并按 Surge 引号值语法转义反斜杠和双引号；对应模块要求 `CORE_VERSION>=6008000`。实际换行仍会记录 `argument-default` 并终止发布。
+- 默认值含逗号或去掉前导空白后以双引号开头时，使用双引号保护原始值，并按 Surge 引号值语法转义反斜杠和双引号；对应模块要求 `CORE_VERSION>=6008000`。实际换行仍会记录 `argument-default` 并终止发布。
 - 未被任何生成行引用的 Loon 参数会删除，并记录 `argument-unused-dropped`。
 
 示例：
@@ -376,7 +382,7 @@ Name = type=http-request, pattern=pattern, script-path=https://example.com/a.js
 
 其中 `requires-body=false` 和 `binary-body-mode=false` 会省略。
 
-旧版 `http-request/http-response` 未指定 `timeout` 时，按 [Loon 旧版文档](https://nsloon.app/docs/Script/) 显式补 `timeout=10`，避免退回 Surge 的 5 秒默认值。用户明确设置的超时原样保留。这里按输入语法区分默认值；`#!loon_version` 是插件最低版本元数据，不用于猜测用户运行版本。新版 Script V2 仍使用 HTTP 20 秒、Cron 300 秒。
+旧版 `http-request/http-response` 未指定 `timeout` 时，按 [Loon 旧版文档](https://nsloon.app/docs/Script/) 显式补 `timeout=10`，避免退回 Surge 的 5 秒默认值。用户明确设置的超时原样保留。这里按输入语法区分默认值；`#!loon_version` 是插件最低版本元数据，不用于猜测用户运行版本。新版 Script V2 使用 HTTP 20 秒、Cron/Generic 300 秒。
 
 `argument` 会统一加双引号，内部 `{Name}` 会转换为 `{{{Name}}}`。
 
@@ -450,13 +456,24 @@ Loon 的 `img-url` 只用于其 generic 脚本界面，Surge `[Script]` 没有�
 - 静态五段/六段数字 Cron 表达式，输出带引号的 `cronexp`。
 - 省略参数，或静态 String/Raw String 参数；显式空字符串仍输出 `argument=""`。JSON 文本保持 String，不转换为对象。
 - 静态 `tag`、`timeout`、`debug`、`enable`，以及 HTTP 的 `requires_body`、`binary_body_mode`。`enable=false` 生成注释行；`binary_body_mode` 不隐式开启 `requires_body`。`img_url` 仅为显示元数据，删除并记录 `script-property-corrected`。
-- 默认超时显式输出为 HTTP `20` 秒、Cron `300` 秒，避免使用 [Surge 的 5 秒默认值](https://manual.nssurge.com/scripting/overview.html)。
+- 默认超时显式输出为 HTTP `20` 秒、Cron/Generic `300` 秒，避免使用 [Surge 的 5 秒默认值](https://manual.nssurge.com/scripting/overview.html)。
 
-以下有效但尚未验证等价语义的用法会整模块排除并记录原因：复合条件或非 URL 条件、对象 `$argument`、动态参数/属性/Cron、新版 generic/network-changed、本地脚本路径、URL `/m` 或 `/s`。Surge 原生 `$argument` 是 String，不能把 Loon 对象参数直接序列化后宣称等价。也不能通过脚本内部判断复杂条件后提前返回来模拟 Loon 的第一条完整命中规则，这会截断后续脚本匹配。
+此外，Script V2 支持以下受限适配：
+
+- Object 参数：仅精确 URL + SHA-256 白名单中的 Spotify、网易云、YouTube 去广告/字幕脚本；核对其真实 String 解码分支，保留 Boolean/String 类型。仅接受已验证的 switch/select 值域；源码下载失败或 hash 变化记录 `script-verification` 并阻断，不能按临时排除继续发布。
+- 动态 Cron：声明默认值和所有有限选项须通过五/六段数字表达式检查；无引号、控制字符、占位符注入。Surge 用户仍须输入合法 Cron。
+- 动态 enable：只接受 Boolean switch，且同一参数不用于其他语义；输出 `#`/空前缀，不静默折叠共享动态变量。
+- NodeLinkCheck/WARP 新版 generic 复用专用 Policy/Panel 适配，其他 generic/network-changed 继续排除。V2 NodeLinkCheck 若已有归一化名为 `Policy` 的声明会排除，避免注入参数碰撞；新旧语法 WARP 均在联网验签前排除动态 enable 或静态禁用（旧语法 false/0/off/no 等别名同样处理）；标签含控制字符、占位符、注释标记、逗号、引号或反斜杠等 Panel 引用分隔符也会排除。旧语法不擅自去掉标签引号，未闭合或含尾随文本的带引号标签先记为致命语法错误；模块只适配一条 WARP generic；新旧语法省略 tag 时，Panel 和 Script 均使用同一条脚本实际生成的位置名称，Panel 目标须在展开 enable 前缀后仍唯一；独立校验会拒绝缺失 Panel、固定注释或动态前缀控制的 WARP Script。所有 V2 Script 名称拒绝空格后的注释分隔符，避免定义被截断。
+
+V2 参数使用情况按解析后的变量节点判断；原始字符串、正则及转义字面值不算真实变量引用。输出中看似 `{Name}` 的文本只有在源 AST、section、整条生成行、具体范围及出现次数均证明为字面值时，才豁免残留检测；实际变量仍须转换。字面 `{{{Name}}}` 若会留在 Surge 文本并触发模块插值，则整模块排除；编码到 Base64 mock 后不会触发插值的情况可保留。`jq_file` 同行的本地 Action 可单独提供字面值证明，下载的 JQ 内容不享有豁免，其中的 Surge 三重括号目标宏（含缓存文本）在写入改写行或保留参数声明之前即作为致命错误阻断；远程 JQ 的 URL 条件若含占位符样的字面文本，当前明确排除并且不下载。
+
+Surge 是自由文本参数 UI，无法强制原 Loon 选项范围；仅声明值域内的参数受支持。Script V2 复合条件、未核实 Object、其他动态属性、本地脚本路径、URL `/m` 或 `/s` 仍整模块排除。FollowRSS、IT之家没有 String 参数解码分支；贴吧的分支改变字符串真值；WPS query 分隔符无法无损携带任意输入，目前不强转这些模块。
+
+Surge 原生 `$argument` 是 String，不能对未知脚本把 Loon 对象参数直接序列化后宣称等价。也不能通过脚本内部判断复杂条件后提前返回来模拟 Loon 的第一条完整命中规则，这会截断后续脚本匹配。
 
 含控制字符或类似模块占位符的静态文本目前也会排除。重复/未知属性、错误类型、非正或非有限超时、缺失脚本地址等无效语法仍记录 `unsupported-script` 并阻止替换产物。这里的转换只覆盖配置语义：脚本自身若依赖 Loon API、缺省 `$argument=null` 或专属上下文，仍需检查脚本的 Surge 分支并运行验证。
 
-所有旧版 Script 类型都要求非空 `script-path`。未知属性、冲突的重复属性或无效布尔值会记录为 `unsupported-script` 并阻止发布；相同值的重复属性会安全去重并记录 `script-property-corrected`。
+在进入 Script 适配流程时先预校验旧语法，只有语法合法的未知/未验证能力才可作为普通排除；多 WARP 或未支持 V2 组合不能把旧 Script 的格式错误降级为排除。所有旧版 Script 类型都要求非空 `script-path`。未知属性、冲突的重复属性或无效布尔值会记录为 `unsupported-script` 并阻止发布；相同值的重复属性会安全去重并记录 `script-property-corrected`。
 
 ## Script enable 开关
 
@@ -523,11 +540,26 @@ hostname = %APPEND% example.com, *.example.org
 
 其他 MITM 行不会猜测转换，会写入报告 `mitm-unsupported`。
 
+## 上游内容与候选校验
+
+新旧 JQ 使用同一空表达式和已验证修正规则。含 JQ 插值的程序保持原文，避免嵌套字符串被误改。生成候选在替换 `Surge/` 前运行完整校验；生产更新强制安装并使用 jq。校验失败保留原产物（不承诺操作系统/磁盘故障下跨目录提交的原子性）。
+
+`source_quality.py` 检查内联 JSON mock 的 UTF-8、Base64 和严格 JSON；生成端再次检查声明 JSON 的 Map Local 实际内容。车来了六个精确来源/URL允许已验证的协议外壳，内部仍须是合法 JSON；不全局放行这类外壳。远程/动态内容不能静态核验时明确记录验证范围。
+
+2026-10-02 已核实的八模块十五处对象/数组变字符串，按文件名、URL、动作、路径和值的精确组合阻断，不自动改写任何普通 JSON String。上述原始缺陷默认继续报错；已单独核对并授权的十项兼容补丁在 `source_repairs.py` 中以完整文件 SHA-256 固定。修复只在内存进行，原始下载文件保留。每条原始行、替换行和最终文件均校验 hash，任何断言失败均不应用部分修复；未知版本记录 `source-repair-blocked`，不得沿用旧补丁。补丁恢复十五处类型、驾校的 URL 和十二个删除字段、顺丰逐字节验证的完整旧 JSON。完整出处和语义回归见 `tests/fixtures/source-repairs/`。独立 validator 会重算修复并逐项核对报告出处，不能通过删掉或伪造报告放行。
+
 ## 报告类型
 
 `Surge/convert-report.json` 用于记录成功转换后仍需人工知情的项目。转换期间也使用相同类型收集错误，但致命错误会直接终止任务，不覆盖上一版报告和模块。当前常见类型：
 
 - `argument-unused-dropped`：Loon 声明了参数，但任何生成行都未引用，参数已从 Surge 输出删除。
+- `script-object-adapted`：按精确源码版本核对的 String 解码器映射 Object 参数，报告源码 SHA-256；发布后远程 URL 仍可变。
+- `script-dynamic-cron-adapted`：通过声明检查的参数化 Cron。
+- `source-quality-unverified`：远程/动态 JSON 内容不在本次离线内容验证范围。
+- `source-repair-applied`：按精确源版本应用已审查补丁，记录原始/修复/历史文件 hash 和行 hash；原始下载不变。
+- `source-repair-blocked`：已审查文件遇到未知版本，或补丁断言失败，致命。
+- `source-quality`：已确认的源 JSON 损坏或已验证类型漂移，致命。
+- `script-verification`：必需脚本源码无法下载或版本与已审查版本不符，致命。
 - `generic-script-adapted`：已核实的 generic 使用其原生 Surge 接口补充了 Policy 参数或 Panel 配置。
 - `module-excluded`：模块含有 Surge 模块不允许的 Rule 策略、未经核实的 Loon generic 脚本、没有已验证 Surge 等价语义的 Rewrite V2 正则 flags、尚未支持的 Script V2，或其他不可安全发布的模块级问题，已从 Surge 输出和索引中排除。
 - `script-enable-toggle-emitted`：`enable={Arg}` 已转为 Surge 行前缀开关。
@@ -551,7 +583,7 @@ hostname = %APPEND% example.com, *.example.org
 - `mitm-unsupported`：MITM 行不支持。
 - `unsupported-system`：Loon 平台限制无法映射为 Surge 的 `ios/mac`。
 
-`argument-unused-dropped`、`generic-script-adapted`、`module-excluded`、`script-enable-*`、`script-property-corrected`、`rewrite-empty-skipped`、`rewrite-action-corrected` 和 `jq-expression-corrected` 是成功生成后的知情报告；其中 `module-excluded` 表示对应模块没有发布到 Surge。`general-pass-through`、`jq-path-inline-failed`、`unsupported-*`、`argument-parse`、`argument-default`、`argument-name-collision`、`mitm-unsupported` 属于致命转换错误；出现时 GitHub Action 失败并保留上一版 Surge 产物。
+`argument-unused-dropped`、`generic-script-adapted`、`script-object-adapted`、`script-dynamic-cron-adapted`、`script-http-name-shared`、`source-quality-unverified`、`source-repair-applied`、`module-excluded`、`script-enable-*`、`script-property-corrected`、`rewrite-empty-skipped`、`rewrite-action-corrected` 和 `jq-expression-corrected` 是成功生成后的知情报告；其中 `module-excluded` 表示对应模块没有发布到 Surge。`source-repair-blocked`、`source-quality`、`script-verification`、`general-pass-through`、`jq-path-inline-failed`、`unsupported-*`、`argument-parse`、`argument-default`、`argument-name-collision`、`mitm-unsupported` 属于致命转换错误；出现时 GitHub Action 失败并保留上一版 Surge 产物。
 
 因此，成功生成的 `convert-report.json` 中存在 warning 不等于模块不可用。当前上游的空 JQ 和错标 JQ 会被明确记录，不会生成空规则或拆坏的规则。
 

@@ -1,0 +1,292 @@
+{
+  "snapshot_utc": "2026-10-02T10:55:24Z",
+  "note": "Exact Script section lines from the reviewed275-file snapshot; fixture uses synthetic filename to avoid applying unrelated whole-source repairs. Original names and order must survive. No JS execution.",
+  "cases": [
+    {
+      "source": "AliYunDrive_remove_ads.lpx",
+      "source_url": "https://kelee.one/Tool/Loon/Lpx/AliYunDrive_remove_ads.lpx",
+      "source_sha256": "e95aa82e1d1f1b0ec83c1bb99a26a87fd1be90fb89a1a75288f62e5854a22169",
+      "script_lines": [
+        "response if ${url} ~= /^https:\\/\\/(biz)?api\\.alipan\\.com\\/apps\\/v\\d\\/users?\\/home\\/(news|widgets)/i then script(\"https://kelee.one/Resource/JavaScript/AliYunDrive/AliYunDrive_remove_ads.js\") with tag=\"移除阿里云盘广告\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/member\\.alipan\\.com\\/v1\\/users\\/onboard_list/i then script(\"https://kelee.one/Resource/JavaScript/AliYunDrive/AliYunDrive_remove_ads.js\") with tag=\"移除阿里云盘广告\", requires_body=true"
+      ],
+      "expected_tags": [
+        "移除阿里云盘广告",
+        "移除阿里云盘广告"
+      ]
+    },
+    {
+      "source": "Amap_remove_ads.lpx",
+      "source_url": "https://kelee.one/Tool/Loon/Lpx/Amap_remove_ads.lpx",
+      "source_sha256": "36b1d2156c6d36511e324ac328a865f89695e5d93e959c7bca2d547b25578ef3",
+      "script_lines": [
+        "response if ${url} ~= /^https:\\/\\/m5\\.amap\\.com\\/ws\\/aos\\/perception\\/publicTravel\\/beforeNavi\\?/i then script(\"https://kelee.one/Resource/JavaScript/Amap/Amap_remove_ads.js\") with tag=\"移除路线规划推广\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/m5\\.amap\\.com\\/ws\\/bus\\/plan\\/integrate\\?/i then script(\"https://kelee.one/Resource/JavaScript/Amap/Amap_remove_ads.js\") with tag=\"移除路线规划、导航结束页推广\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/m5\\.amap\\.com\\/ws\\/c3frontend\\/(?:af-(?:hotel|launch)\\/page\\/main|af-nearby\\/nearby)/i then script(\"https://kelee.one/Resource/JavaScript/Amap/Amap_remove_ads.js\") with tag=\"移除导航详情页底部酒店、处理附近页\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/m5\\.amap\\.com\\/ws\\/perception\\/drive\\/(?:routeInfo|routePlan)/i then script(\"https://kelee.one/Resource/JavaScript/Amap/Amap_remove_ads.js\") with tag=\"移除路线规划推广\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/m5\\.amap\\.com\\/ws\\/shield\\/search_bff\\/hotword\\?/i then script(\"https://kelee.one/Resource/JavaScript/Amap/Amap_remove_ads.js\") with tag=\"移除搜索栏推广\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/m5\\.amap\\.com\\/ws\\/shield\\/search_poi\\/(?:mps|search\\/sp|sug|tips_operation_location)/i then script(\"https://kelee.one/Resource/JavaScript/Amap/Amap_remove_ads.js\") with tag=\"移除搜索详情页推广\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/m5\\.amap\\.com\\/ws\\/faas\\/amap-navigation\\/(?:card-service-plan-home|main-page)/i then script(\"https://kelee.one/Resource/JavaScript/Amap/Amap_remove_ads.js\") with tag=\"移除首页推广\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/m5\\.amap\\.com\\/ws\\/shield\\/frogserver\\/aocs\\/updatable\\/1\\?/i then script(\"https://kelee.one/Resource/JavaScript/Amap/Amap_remove_ads.js\") with tag=\"移除首页推广\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/m5\\.amap\\.com\\/ws\\/shield\\/dsp\\/profile\\/index\\/nodefaasv3\\?/i then script(\"https://kelee.one/Resource/JavaScript/Amap/Amap_remove_ads.js\") with tag=\"移除我的页面推广\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/m5\\.amap\\.com\\/ws\\/shield\\/search\\/nearbyrec_smart\\?/i then script(\"https://kelee.one/Resource/JavaScript/Amap/Amap_remove_ads.js\") with tag=\"移除附近页推广\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/m5\\.amap\\.com\\/ws\\/valueadded\\/alimama\\/splash_screen\\?/i then script(\"https://kelee.one/Resource/JavaScript/Amap/Amap_remove_ads.js\") with tag=\"移除开屏广告\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/m5-zb\\.amap\\.com\\/ws\\/boss\\/(?:car\\/order\\/content_info|order_web\\/friendly_information)/i then script(\"https://kelee.one/Resource/JavaScript/Amap/Amap_remove_ads.js\") with tag=\"移除打车页推广卡片、弹窗\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/m5-zb\\.amap\\.com\\/ws\\/promotion-web\\/resource(\\/home)?\\?/i then script(\"https://kelee.one/Resource/JavaScript/Amap/Amap_remove_ads.js\") with tag=\"移除打车页红点角标、天气图标\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/(?:info|m5)\\.amap\\.com\\/ws\\/shield\\/search\\/(?:common\\/coupon\\/info|poi\\/detail)/i then script(\"https://kelee.one/Resource/JavaScript/Amap/Amap_remove_ads.js\") with tag=\"移除导航详情页推广\", requires_body=true"
+      ],
+      "expected_tags": [
+        "移除路线规划推广",
+        "移除路线规划、导航结束页推广",
+        "移除导航详情页底部酒店、处理附近页",
+        "移除路线规划推广",
+        "移除搜索栏推广",
+        "移除搜索详情页推广",
+        "移除首页推广",
+        "移除首页推广",
+        "移除我的页面推广",
+        "移除附近页推广",
+        "移除开屏广告",
+        "移除打车页推广卡片、弹窗",
+        "移除打车页红点角标、天气图标",
+        "移除导航详情页推广"
+      ]
+    },
+    {
+      "source": "AutoHome_remove_ads.lpx",
+      "source_url": "https://kelee.one/Tool/Loon/Lpx/AutoHome_remove_ads.lpx",
+      "source_sha256": "d5e5df298aff4b2df080926426ac8b196c04ec69963113f86b3bcfc7d97e0efc",
+      "script_lines": [
+        "response if ${url} ~= /^https:\\/\\/news\\.app\\.autohome\\.com\\.cn\\/news_v\\d+(?:\\.\\d+){2}\\/news\\/homenavigation/i then script(\"https://kelee.one/Resource/JavaScript/AutoHome/AutoHome_remove_ads.js\") with tag=\"精简我的页面\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/(a\\.athm\\.cn\\/)?mobile\\.app\\.autohome\\.com\\.cn\\/platform\\/carserver\\/((usercenter\\/getservicecards)|(carcard\\/allcard)|(carcard\\/mycardv\\d+)|(carcard\\/cards))/i then script(\"https://kelee.one/Resource/JavaScript/AutoHome/AutoHome_remove_ads.js\") with tag=\"精简我的页面\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/(a\\.athm\\.cn\\/)?club\\.app\\.autohome\\.com\\.cn\\/club_v\\d+(?:\\.\\d+){2}\\/club\\/index\\/businessv\\d+/i then script(\"https://kelee.one/Resource/JavaScript/AutoHome/AutoHome_remove_ads.js\") with tag=\"社区广场去广告\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/(a\\.athm\\.cn\\/)?cars\\.app\\.autohome\\.com\\.cn\\/carstreaming\\/selectcarportal\\/reclist/i then script(\"https://kelee.one/Resource/JavaScript/AutoHome/AutoHome_remove_ads.js\") with tag=\"移除直播浮窗\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/(a\\.athm\\.cn\\/)?cars\\.app\\.autohome\\.com\\.cn\\/carstreaming\\/selectcarportal\\/seriestopwithtagscard/i then script(\"https://kelee.one/Resource/JavaScript/AutoHome/AutoHome_remove_ads.js\") with tag=\"移除报价页面直播内容\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/(a\\.athm\\.cn\\/)?apiautoappusc\\.che168\\.com\\/apic\\/v\\d+\\/gethomepagefeed/i then script(\"https://kelee.one/Resource/JavaScript/AutoHome/AutoHome_remove_ads.js\") with tag=\"移除二手车竖版轮播图\", requires_body=true"
+      ],
+      "expected_tags": [
+        "精简我的页面",
+        "精简我的页面",
+        "社区广场去广告",
+        "移除直播浮窗",
+        "移除报价页面直播内容",
+        "移除二手车竖版轮播图"
+      ]
+    },
+    {
+      "source": "CaixinMedia_remove_ads.lpx",
+      "source_url": "https://kelee.one/Tool/Loon/Lpx/CaixinMedia_remove_ads.lpx",
+      "source_sha256": "bec532b12dcb94e9bac660b3c437036be85087aed832dd5e9f64982aceabcc3c",
+      "script_lines": [
+        "response if ${url} ~= /^https:\\/\\/entities\\.caixin\\.com\\/api\\/dataplus\\/columns/i then script(\"https://kelee.one/Resource/JavaScript/CaixinMedia/CaixinMedia_remove_ads.js\") with tag=\"移除财新数据通广告\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/gateway\\.caixin\\.com\\/api\\/app-api\\/(caixinapp\\/appinfo|search\\/getkeyword)/i then script(\"https://kelee.one/Resource/JavaScript/CaixinMedia/CaixinMedia_remove_ads.js\") with tag=\"移除文末广告\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/gateway\\.caixin\\.com\\/api\\/app-content\\/fm\\/index\\/list\\?/i then script(\"https://kelee.one/Resource/JavaScript/CaixinMedia/CaixinMedia_remove_ads.js\") with tag=\"移除财新FM广告\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/gg\\.caixin\\.com\\/s\\?z=caixin&op=\\d/i then script(\"https://kelee.one/Resource/JavaScript/CaixinMedia/CaixinMedia_remove_ads.js\") with tag=\"移除开屏广告\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/mappsv5\\.caixin\\.com\\/articlev5\\/\\d+\\/\\d+\\.json$/i then script(\"https://kelee.one/Resource/JavaScript/CaixinMedia/CaixinMedia_remove_ads.js\") with tag=\"移除正文广告\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/mapps?v5\\.caixin\\.com\\/(channelv5\\/list|\\/?index_page_v5\\/)\\w+/i then script(\"https://kelee.one/Resource/JavaScript/CaixinMedia/CaixinMedia_remove_ads.js\") with tag=\"移除正文广告\", requires_body=true"
+      ],
+      "expected_tags": [
+        "移除财新数据通广告",
+        "移除文末广告",
+        "移除财新FM广告",
+        "移除开屏广告",
+        "移除正文广告",
+        "移除正文广告"
+      ]
+    },
+    {
+      "source": "HUPU_remove_ads.lpx",
+      "source_url": "https://kelee.one/Tool/Loon/Lpx/HUPU_remove_ads.lpx",
+      "source_sha256": "b794ccc0a54393318941eaac22ac80826d7d4d631e1df363d7dd1ea9d484c361",
+      "script_lines": [
+        "response if ${url} ~= /^https:\\/\\/fairy\\.mobileapi\\.hupu\\.com\\/mang\\/preview\\/banners/i then script(\"https://kelee.one/Resource/JavaScript/HUPU/HUPU_remove_ads.js\") with tag=\"移除虎扑广告\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/bbs\\.mobileapi\\.hupu\\.com\\/\\d\\/\\d\\.\\d\\.\\d+\\/bbsallapi\\/lego\\/data/i then script(\"https://kelee.one/Resource/JavaScript/HUPU/HUPU_remove_ads.js\") with tag=\"移除虎扑广告\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/games\\.mobileapi\\.hupu\\.com\\/\\d\\/\\d\\.\\d\\.\\d+\\/buffer\\/hotList/i then script(\"https://kelee.one/Resource/JavaScript/HUPU/HUPU_remove_ads.js\") with tag=\"移除虎扑广告\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/games\\.mobileapi\\.hupu\\.com\\/\\d\\/\\d\\.\\d\\.\\d+\\/bplapi\\/user\\/v1\\/more/i then script(\"https://kelee.one/Resource/JavaScript/HUPU/HUPU_remove_ads.js\") with tag=\"移除虎扑广告\", requires_body=true"
+      ],
+      "expected_tags": [
+        "移除虎扑广告",
+        "移除虎扑广告",
+        "移除虎扑广告",
+        "移除虎扑广告"
+      ]
+    },
+    {
+      "source": "KebidaDushu_remove_ads.lpx",
+      "source_url": "https://kelee.one/Tool/Loon/Lpx/KebidaDushu_remove_ads.lpx",
+      "source_sha256": "afd9a0fb716b8863f08fe007d5ea27e13f1aac912d84d63d7db37499d2498c44",
+      "script_lines": [
+        "response if ${url} ~= /^https?:\\/\\/g[a-z0-9-]+\\.dushu365\\.com\\/chief-orch\\/home\\/bookPortal\\/v105\\/category/i then script(\"https://kelee.one/Resource/JavaScript/KebidaDushu/KebidaDushu_remove_ads.js\") with tag=\"帆书去广告\", requires_body=true",
+        "response if ${url} ~= /^https?:\\/\\/g[a-z0-9-]+\\.dushu365\\.com\\/abtest-front\\/banner-modular\\/get/i then script(\"https://kelee.one/Resource/JavaScript/KebidaDushu/KebidaDushu_remove_ads.js\") with tag=\"帆书去广告\", requires_body=true",
+        "response if ${url} ~= /^https?:\\/\\/g[a-z0-9-]+\\.dushu365\\.com\\/resource-orchestration-system\\/book\\/channel\\/v100\\/info/i then script(\"https://kelee.one/Resource/JavaScript/KebidaDushu/KebidaDushu_remove_ads.js\") with tag=\"帆书去广告\", requires_body=true",
+        "response if ${url} ~= /^https?:\\/\\/g[a-z0-9-]+\\.dushu365\\.com\\/fs-member\\/user\\/profile\\/v100\\/detail/i then script(\"https://kelee.one/Resource/JavaScript/KebidaDushu/KebidaDushu_remove_ads.js\") with tag=\"帆书去广告\", requires_body=true",
+        "response if ${url} ~= /^https?:\\/\\/g[a-z0-9-]+\\.dushu365\\.com\\/chief-orch\\/home\\/bookPortal\\/v111\\/forApp/i then script(\"https://kelee.one/Resource/JavaScript/KebidaDushu/KebidaDushu_remove_ads.js\") with tag=\"帆书去广告\", requires_body=true",
+        "response if ${url} ~= /^https?:\\/\\/g[a-z0-9-]+\\.dushu365\\.com\\/sns-orchestration-system\\/homePage\\/api\\/v100\\/myPage/i then script(\"https://kelee.one/Resource/JavaScript/KebidaDushu/KebidaDushu_remove_ads.js\") with tag=\"帆书去广告\", requires_body=true",
+        "response if ${url} ~= /^https?:\\/\\/g[a-z0-9-]+\\.dushu365\\.com\\/task-orchestration\\/taskCenter\\/api\\/v101\\/taskList/i then script(\"https://kelee.one/Resource/JavaScript/KebidaDushu/KebidaDushu_remove_ads.js\") with tag=\"帆书去广告\", requires_body=true",
+        "response if ${url} ~= /^https?:\\/\\/g[a-z0-9-]+\\.dushu365\\.com\\/resource-orchestration-system\\/book\\/v101\\/content/i then script(\"https://kelee.one/Resource/JavaScript/KebidaDushu/KebidaDushu_remove_ads.js\") with tag=\"帆书去广告\", requires_body=true",
+        "response if ${url} ~= /^https?:\\/\\/g[a-z0-9-]+\\.dushu365\\.com\\/user-orchestration\\/user\\/api\\/v101\\/ceiltip/i then script(\"https://kelee.one/Resource/JavaScript/KebidaDushu/KebidaDushu_remove_ads.js\") with tag=\"帆书去广告\", requires_body=true"
+      ],
+      "expected_tags": [
+        "帆书去广告",
+        "帆书去广告",
+        "帆书去广告",
+        "帆书去广告",
+        "帆书去广告",
+        "帆书去广告",
+        "帆书去广告",
+        "帆书去广告",
+        "帆书去广告"
+      ]
+    },
+    {
+      "source": "NeteaseNews_remove_ads.lpx",
+      "source_url": "https://kelee.one/Tool/Loon/Lpx/NeteaseNews_remove_ads.lpx",
+      "source_sha256": "827054a37355006a14c7316ad1c99c65b60db4ee00c43e458afb5ab62faf5c6d",
+      "script_lines": [
+        "response if ${url} ~= /^https:\\/\\/nex\\.163\\.com\\/q/i then script(\"https://kelee.one/Resource/JavaScript/NeteaseNews/NeteaseNews_remove_ads.js\") with tag=\"移除网易新闻广告\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/gw\\.m\\.163\\.com\\/nc\\/api\\/v1\\/feed\\/dynamic\\/headline-list\\?/i then script(\"https://kelee.one/Resource/JavaScript/NeteaseNews/NeteaseNews_remove_ads.js\") with tag=\"移除网易新闻广告\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/gw\\.m\\.163\\.com\\/nc\\/api\\/v1\\/search\\/hot-word/i then script(\"https://kelee.one/Resource/JavaScript/NeteaseNews/NeteaseNews_remove_ads.js\") with tag=\"移除网易新闻广告\", requires_body=true"
+      ],
+      "expected_tags": [
+        "移除网易新闻广告",
+        "移除网易新闻广告",
+        "移除网易新闻广告"
+      ]
+    },
+    {
+      "source": "PuPuMall_remove_ads.lpx",
+      "source_url": "https://kelee.one/Tool/Loon/Lpx/PuPuMall_remove_ads.lpx",
+      "source_sha256": "1c20c9124c45b832dd942a1a92ac0533d01bfe96228da07943c849864c548bbd",
+      "script_lines": [
+        "response if ${url} ~= /^https:\\/\\/j1\\.pupuapi\\.com\\/client\\/marketing\\/banner\\/v7/i then script(\"https://kelee.one/Resource/JavaScript/PuPuMall/PuPuMall_remove_ads.js\") with tag=\"移除朴朴超市广告\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/j1\\.pupuapi\\.com\\/client\\/marketing\\/banner\\/search_component_banner/i then script(\"https://kelee.one/Resource/JavaScript/PuPuMall/PuPuMall_remove_ads.js\") with tag=\"移除朴朴超市广告\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/j1\\.pupuapi\\.com\\/client\\/search\\/hot_keywords\\/v3/i then script(\"https://kelee.one/Resource/JavaScript/PuPuMall/PuPuMall_remove_ads.js\") with tag=\"移除朴朴超市广告\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/j1\\.pupuapi\\.com\\/client\\/app_resource\\/resource_preload\\/list_h5_resource/i then script(\"https://kelee.one/Resource/JavaScript/PuPuMall/PuPuMall_remove_ads.js\") with tag=\"移除朴朴超市广告\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/j1\\.pupuapi\\.com\\/client\\/recommendation\\/interests\\/products/i then script(\"https://kelee.one/Resource/JavaScript/PuPuMall/PuPuMall_remove_ads.js\") with tag=\"移除朴朴超市广告\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/j1\\.pupuapi\\.com\\/client\\/marketing\\/advertisement\\/v1/i then script(\"https://kelee.one/Resource/JavaScript/PuPuMall/PuPuMall_remove_ads.js\") with tag=\"移除朴朴超市广告\", requires_body=true"
+      ],
+      "expected_tags": [
+        "移除朴朴超市广告",
+        "移除朴朴超市广告",
+        "移除朴朴超市广告",
+        "移除朴朴超市广告",
+        "移除朴朴超市广告",
+        "移除朴朴超市广告"
+      ]
+    },
+    {
+      "source": "RedPaper_remove_ads.lpx",
+      "source_url": "https://kelee.one/Tool/Loon/Lpx/RedPaper_remove_ads.lpx",
+      "source_sha256": "b782ea4f811702a80f853eae8bd3a3f7a33c8a3af833f5c54fba3d75a524f646",
+      "script_lines": [
+        "response if ${url} ~= /^https:\\/\\/edith\\.xiaohongshu\\.com\\/api\\/sns\\/v1\\/note\\/(?:imagefeed|live_photo\\/save)/i then script(\"https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js\") with tag=\"移除图片和实况照片水印\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/edith\\.xiaohongshu\\.com\\/api\\/sns\\/v1\\/system\\/service\\/ui\\/config\\?/i then script(\"https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js\") with tag=\"移除整体配置 ui\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/edith\\.xiaohongshu\\.com\\/api\\/sns\\/v1\\/system_service\\/config\\?/i then script(\"https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js\") with tag=\"移除开屏广告 config\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/edith\\.xiaohongshu\\.com\\/api\\/sns\\/v2\\/system_service\\/splash_config/i then script(\"https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js\") with tag=\"移除开屏广告 splash_config\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/edith\\.xiaohongshu\\.com\\/api\\/sns\\/v2\\/(?:note\\/widgets|user\\/followings\\/followfeed)/i then script(\"https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js\") with tag=\"移除详情页小部件、关注页感兴趣的人\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/edith\\.xiaohongshu\\.com\\/api\\/sns\\/v4\\/followfeed\\?/i then script(\"https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js\") with tag=\"移除信息流广告\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/edith\\.xiaohongshu\\.com\\/api\\/sns\\/v5\\/recommend\\/user\\/follow_recommend\\?/i then script(\"https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js\") with tag=\"移除详情页感兴趣的人\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/edith\\.xiaohongshu\\.com\\/api\\/sns\\/(?:v1\\/interaction\\/comment\\/video\\/download|v5\\/note\\/comment\\/list)/i then script(\"https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js\") with tag=\"移除评论区实况照片水印\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/edith\\.xiaohongshu\\.com\\/api\\/sns\\/(?:v2\\/note\\/feed|v3\\/note\\/videofeed)/i then script(\"https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js\") with tag=\"移除图片和视频水印\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/(?:edith|rec)\\.xiaohongshu\\.com\\/api\\/sns\\/v6\\/homefeed\\?/i then script(\"https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js\") with tag=\"移除信息流广告\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/(?:edith|so)\\.xiaohongshu\\.com\\/api\\/sns\\/v10\\/search\\/notes\\?/i then script(\"https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js\") with tag=\"移除搜索页广告\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/(?:edith|rec|www)\\.xiaohongshu\\.com\\/api\\/sns\\/(?:v4\\/note\\/videofeed|v10\\/note\\/video\\/save)/i then script(\"https://kelee.one/Resource/JavaScript/RedPaper/RedPaper_remove_ads.js\") with tag=\"移除视频水印\", requires_body=true"
+      ],
+      "expected_tags": [
+        "移除图片和实况照片水印",
+        "移除整体配置 ui",
+        "移除开屏广告 config",
+        "移除开屏广告 splash_config",
+        "移除详情页小部件、关注页感兴趣的人",
+        "移除信息流广告",
+        "移除详情页感兴趣的人",
+        "移除评论区实况照片水印",
+        "移除图片和视频水印",
+        "移除信息流广告",
+        "移除搜索页广告",
+        "移除视频水印"
+      ]
+    },
+    {
+      "source": "Taobao_remove_ads.lpx",
+      "source_url": "https://kelee.one/Tool/Loon/Lpx/Taobao_remove_ads.lpx",
+      "source_sha256": "23f29f4b051c237b802a5b22a4fd9f7e7eb713a559e5f81ca94d8d6b6f4554cc",
+      "script_lines": [
+        "response if ${url} ~= /^https:\\/\\/guide-acs\\.m\\.taobao\\.com\\/gw\\/mtop\\.taobao\\.(cloudvideo\\.video\\.query|wireless\\.home\\.splash\\.awesome\\.get)/i then script(\"https://kelee.one/Resource/JavaScript/Taobao/Taobao_remove_ads.js\") with tag=\"移除淘宝开屏广告\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/poplayer\\.template\\.alibaba\\.com\\/\\w+\\.json/i then script(\"https://kelee.one/Resource/JavaScript/Taobao/Taobao_remove_ads.js\") with tag=\"移除淘宝开屏广告\", requires_body=true"
+      ],
+      "expected_tags": [
+        "移除淘宝开屏广告",
+        "移除淘宝开屏广告"
+      ]
+    },
+    {
+      "source": "VVebo_repair.lpx",
+      "source_url": "https://kelee.one/Tool/Loon/Lpx/VVebo_repair.lpx",
+      "source_sha256": "387d1bc5b196e0b14f21aab4efefb9b15f5d14eac93bc0e2d72397d151b36f29",
+      "script_lines": [
+        "request if ${url} ~= /^https:\\/\\/api\\.weibo\\.cn\\/2\\/users\\/show\\?/i then script(\"https://kelee.one/Resource/JavaScript/VVebo/VVebo_repair.js\") with tag=\"修复时间线\"",
+        "request if ${url} ~= /^https:\\/\\/api\\.weibo\\.cn\\/2\\/statuses\\/user_timeline\\?/i then script(\"https://kelee.one/Resource/JavaScript/VVebo/VVebo_repair.js\") with tag=\"修复时间线\"",
+        "request if ${url} ~= /^https:\\/\\/api\\.weibo\\.cn\\/2\\/remind\\/unread_count\\?/i then script(\"https://kelee.one/Resource/JavaScript/VVebo/VVebo_repair.js\") with tag=\"修复时间线\"",
+        "response if ${url} ~= /^https:\\/\\/api\\.weibo\\.cn\\/2\\/profile\\/statuses\\/tab\\?/i then script(\"https://kelee.one/Resource/JavaScript/VVebo/VVebo_repair.js\") with tag=\"修复时间线\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/api\\.weibo\\.cn\\/2\\/cardlist\\?/i then script(\"https://kelee.one/Resource/JavaScript/VVebo/VVebo_repair.js\") with tag=\"修复我的页面\", requires_body=true"
+      ],
+      "expected_tags": [
+        "修复时间线",
+        "修复时间线",
+        "修复时间线",
+        "修复时间线",
+        "修复我的页面"
+      ]
+    },
+    {
+      "source": "Weibo_remove_ads.lpx",
+      "source_url": "https://kelee.one/Tool/Loon/Lpx/Weibo_remove_ads.lpx",
+      "source_sha256": "2d48b4f03df6341dedf6a44c1ba71953c9140e533a50dd43005100b51d7cc425",
+      "script_lines": [
+        "response if ${url} ~= /^https:\\/\\/api\\.weibo\\.cn\\/2\\/(?:checkin\\/show|client\\/publisher_list|push\\/active)/i then script(\"https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js\") with tag=\"移除首页推广\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/api\\.weibo\\.cn\\/2\\/groups\\/allgroups\\/v2\\?/i then script(\"https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js\") with tag=\"移除首页顶部标签\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/api\\.weibo\\.cn\\/2\\/(?:cardlist|page)/i then script(\"https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js\") with tag=\"移除信息流广告\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/api\\.weibo\\.cn\\/2\\/comments\\/build_comments\\?/i then script(\"https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js\") with tag=\"移除评论区广告\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/api\\.weibo\\.cn\\/2\\/(?:container\\/asyn|flowlist|flowpage)/i then script(\"https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js\") with tag=\"移除个人微博详情页广告\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/api\\.weibo\\.cn\\/2\\/friendships\\/(?:create|destroy)/i then script(\"https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js\") with tag=\"移除关注、取消关注弹窗\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/api\\.weibo\\.cn\\/2\\/profile\\/(?:container_timeline|dealatt|me|statuses\\/tab|userinfo)/i then script(\"https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js\") with tag=\"移除个人主页广告\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/api\\.weibo\\.cn\\/2\\/shproxy\\/chaohua\\/discovery\\/searchactive\\?/i then script(\"https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js\") with tag=\"移除超话搜索页广告\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/api\\.weibo\\.cn\\/2\\/statuses\\/(?:comments_expand_child|container_detail_comment)/i then script(\"https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js\") with tag=\"移除评论区广告\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/api\\.weibo\\.cn\\/2\\/statuses\\/(?:container_detail\\?|container_timeline(?:_hot|_topic|_topicpage|_unread)?|repost_timeline|unread_hot_timeline)/i then script(\"https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js\") with tag=\"移除信息流广告\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/api\\.weibo\\.cn\\/2\\/statuses\\/(?:extend|show)\\?/i then script(\"https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js\") with tag=\"移除微博详情页广告\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/api\\.weibo\\.cn\\/2\\/video\\/(?:full_screen_stream|tiny_stream_mid_detail|tiny_stream_video_list)\\?/i then script(\"https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js\") with tag=\"移除视频流广告\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/api\\.weibo\\.cn\\/2\\/!\\/huati\\/discovery_home_bottom_channels\\?/i then script(\"https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js\") with tag=\"移除超话顶部标签\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/api\\.weibo\\.cn\\/2\\/direct_messages\\/user_list\\?/i then script(\"https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js\") with tag=\"移除消息页列表广告\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/api\\.weibo\\.cn\\/2\\/messageflow\\/notice\\?/i then script(\"https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js\") with tag=\"移除消息页提醒\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/api\\.weibo\\.cn\\/2\\/search\\/(?:container_timeline|finder)\\?/i then script(\"https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js\") with tag=\"移除热门微博信息流广告\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/api\\.weibo\\.cn\\/2\\/searchall\\?/i then script(\"https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js\") with tag=\"移除发现页搜索结果广告\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/bootpreload\\.uve\\.weibo\\.com\\/v[12]\\/ad\\/preload/i then script(\"https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js\") with tag=\"移除开屏广告 preload\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/sdkapp\\.uve\\.weibo\\.com\\/interface\\/sdk\\/sdkad\\.php/i then script(\"https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js\") with tag=\"移除开屏广告 sdkad\", requires_body=true",
+        "response if ${url} ~= /^https:\\/\\/wbapp\\.uve\\.weibo\\.com\\/(?:preload\\/get_ad|wbapplua\\/wbpullad\\.lua)/i then script(\"https://kelee.one/Resource/JavaScript/Weibo/Weibo_remove_ads.js\") with tag=\"移除开屏广告 wbapplua\", requires_body=true"
+      ],
+      "expected_tags": [
+        "移除首页推广",
+        "移除首页顶部标签",
+        "移除信息流广告",
+        "移除评论区广告",
+        "移除个人微博详情页广告",
+        "移除关注、取消关注弹窗",
+        "移除个人主页广告",
+        "移除超话搜索页广告",
+        "移除评论区广告",
+        "移除信息流广告",
+        "移除微博详情页广告",
+        "移除视频流广告",
+        "移除超话顶部标签",
+        "移除消息页列表广告",
+        "移除消息页提醒",
+        "移除热门微博信息流广告",
+        "移除发现页搜索结果广告",
+        "移除开屏广告 preload",
+        "移除开屏广告 sdkad",
+        "移除开屏广告 wbapplua"
+      ]
+    }
+  ]
+}

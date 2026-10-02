@@ -1,0 +1,359 @@
+{
+  "snapshot_at": "2026-10-02T10:55:24.487733+00:00",
+  "previous_revision": "a991b1d3a6b9af719dedc1be8a2c767e8f4228f0",
+  "cases": [
+    {
+      "category": "known-json-type-drift",
+      "file": "BaiduMap_remove_ads.lpx",
+      "source_url": "https://kelee.one/Tool/Loon/Lpx/BaiduMap_remove_ads.lpx",
+      "snapshot_sha256": "49522f58512a3d88da58eb4208793a12d1634c12a626d91d19514ac9aa627ded",
+      "line_number": 20,
+      "line": "response if ${url} ~= /^https:\\/\\/newclient\\.map\\.baidu\\.com\\/(client\\/)?usersystem\\/mine\\/page\\?/i then response.json.replace(\"data\", \"{}\")",
+      "previous_file_sha256": "7f38daaa731c0918ec9bae278efd1fa92cab929b22689959392a55218df92731",
+      "previous_line_number": 20,
+      "previous_line_sha256": "8dea4320958cecbccd88385147336741e16026dddf15c7c531111a6118970b09",
+      "changes": [
+        {
+          "path": "data",
+          "before_type": "object",
+          "current_literal": "{}"
+        }
+      ],
+      "previous_line": "^https:\\/\\/newclient\\.map\\.baidu\\.com\\/(client\\/)?usersystem\\/mine\\/page\\? response-body-json-replace data {}"
+    },
+    {
+      "category": "known-json-type-drift",
+      "file": "DiDi_remove_ads.lpx",
+      "source_url": "https://kelee.one/Tool/Loon/Lpx/DiDi_remove_ads.lpx",
+      "snapshot_sha256": "bc7385fe302ae697a08c3dbf345079548917b7f2e6cc2454431417a7a601b970",
+      "line_number": 61,
+      "line": "response if ${url} ~= /^https:\\/\\/htwkop\\.xiaojukeji\\.com(:443)?\\/gateway\\?api=hm\\.fa\\.querySellCardSummary/i then response.json.replace(\"data\", \"{}\")",
+      "previous_file_sha256": "1184e4c2a0f55e98411ca25812fc22407ee455e4cdcf295a7d9b23eb8199ca0f",
+      "previous_line_number": 61,
+      "previous_line_sha256": "5c03449e1483daafbc35387b8ae576a5cb215103c6201f9fd0f04f70b6f1ee2e",
+      "changes": [
+        {
+          "path": "data",
+          "before_type": "object",
+          "current_literal": "{}"
+        }
+      ],
+      "previous_line": "^https:\\/\\/htwkop\\.xiaojukeji\\.com(:443)?\\/gateway\\?api=hm\\.fa\\.querySellCardSummary response-body-json-replace data {}"
+    },
+    {
+      "category": "known-json-type-drift",
+      "file": "DiDi_remove_ads.lpx",
+      "source_url": "https://kelee.one/Tool/Loon/Lpx/DiDi_remove_ads.lpx",
+      "snapshot_sha256": "bc7385fe302ae697a08c3dbf345079548917b7f2e6cc2454431417a7a601b970",
+      "line_number": 63,
+      "line": "response if ${url} ~= /^https:\\/\\/htwkop\\.xiaojukeji\\.com(:443)?\\/gateway\\?api=hm\\.fa\\.queryWelfareCenter/i then response.json.replace(\"data\", \"{}\")",
+      "previous_file_sha256": "1184e4c2a0f55e98411ca25812fc22407ee455e4cdcf295a7d9b23eb8199ca0f",
+      "previous_line_number": 63,
+      "previous_line_sha256": "98818e603f5ee15bacbb335ccbc3a316d8ddc91d4d8026cbd24c2bcdad09859d",
+      "changes": [
+        {
+          "path": "data",
+          "before_type": "object",
+          "current_literal": "{}"
+        }
+      ],
+      "previous_line": "^https:\\/\\/htwkop\\.xiaojukeji\\.com(:443)?\\/gateway\\?api=hm\\.fa\\.queryWelfareCenter response-body-json-replace data {}"
+    },
+    {
+      "category": "known-json-type-drift",
+      "file": "DigitalHeartbeat_remove_ads.lpx",
+      "source_url": "https://kelee.one/Tool/Loon/Lpx/DigitalHeartbeat_remove_ads.lpx",
+      "snapshot_sha256": "802fd6e67f3aae15b144ef4da4b4cd502959a26a4fe47e422ade1072ed1f8fe0",
+      "line_number": 14,
+      "line": "response if ${url} ~= /^https:\\/\\/api-changzheng\\.chinaath\\.com\\/changzheng-common-proxy-api\\/api\\/advertising\\/proxy\\/getOpenScreenAdvertising$/i then response.json.replace(\"data.advertisingList\", \"[]\")",
+      "previous_file_sha256": "f2c237ccb3d4d489693a3d3952659f38e2ca7e1114fb9d3b83ab553b9177e258",
+      "previous_line_number": 14,
+      "previous_line_sha256": "c088968654f4e669e15b890d76bb8dcb4047850266943df4f9b60433e244d730",
+      "changes": [
+        {
+          "path": "data.advertisingList",
+          "before_type": "array",
+          "current_literal": "[]"
+        }
+      ],
+      "previous_line": "^https:\\/\\/api-changzheng\\.chinaath\\.com\\/changzheng-common-proxy-api\\/api\\/advertising\\/proxy\\/getOpenScreenAdvertising$ response-body-json-replace data.advertisingList []"
+    },
+    {
+      "category": "known-json-type-drift",
+      "file": "Keep_remove_ads.lpx",
+      "source_url": "https://kelee.one/Tool/Loon/Lpx/Keep_remove_ads.lpx",
+      "snapshot_sha256": "015279fe23c9b7323b2c97adf0740dc6f697ccd938675f3adfd81c22610659ff",
+      "line_number": 29,
+      "line": "response if ${url} ~= /^https:\\/\\/api\\.gotokeep\\.com\\/twins\\/v4\\/feed\\/entryDetail\\?/i then response.json.replace(\"data\", \"{}\")",
+      "previous_file_sha256": "2ee11147bbaefc6e6e0e4b058e461b4792e535525355e9f8bf26a794b316399e",
+      "previous_line_number": 29,
+      "previous_line_sha256": "f28b4f8a1e9fa18b32f52662d913c91f625375f973d556aa870dade59f8fa146",
+      "changes": [
+        {
+          "path": "data",
+          "before_type": "object",
+          "current_literal": "{}"
+        }
+      ],
+      "previous_line": "^https:\\/\\/api\\.gotokeep\\.com\\/twins\\/v4\\/feed\\/entryDetail\\? response-body-json-replace data {}"
+    },
+    {
+      "category": "known-json-type-drift",
+      "file": "MeiRiSaiChe_remove_ads.lpx",
+      "source_url": "https://kelee.one/Tool/Loon/Lpx/MeiRiSaiChe_remove_ads.lpx",
+      "snapshot_sha256": "712c7adec68d9d749622f1ea98e79b2b8e5a61efc0cd1303525a2481365f0a31",
+      "line_number": 14,
+      "line": "response if ${url} ~= /^https:\\/\\/api\\.romielf\\.com\\/index\\/indexv\\d\\?/i then response.json.replace([\"data.advertisement\", \"data.listadvertising\"], [\"[]\", \"[]\"])",
+      "previous_file_sha256": "4ce75f469df00a8be1b8321500b3b3dfc1993b18406dd66daa5f31a18d28949f",
+      "previous_line_number": 14,
+      "previous_line_sha256": "cda421aeaf4ed203505cc5799b107a78b7015b2e525f9339fbb555373d728120",
+      "changes": [
+        {
+          "path": "data.advertisement",
+          "before_type": "array",
+          "current_literal": "[]"
+        },
+        {
+          "path": "data.listadvertising",
+          "before_type": "array",
+          "current_literal": "[]"
+        }
+      ],
+      "previous_line": "^https:\\/\\/api\\.romielf\\.com\\/index\\/indexv\\d\\? response-body-json-replace data.advertisement [] data.listadvertising []"
+    },
+    {
+      "category": "known-json-type-drift",
+      "file": "PangguaiLife_remove_ads.lpx",
+      "source_url": "https://kelee.one/Tool/Loon/Lpx/PangguaiLife_remove_ads.lpx",
+      "snapshot_sha256": "3a9ccc82e301155d9add5e0e46ae19cc50f464d473a7e1bf7d3ce677988da2af",
+      "line_number": 18,
+      "line": "response if ${url} ~= /^https:\\/\\/userapi\\.qiekj\\.com\\/local-life\\/tab-order$/i then response.json.replace(\"data\", \"[]\")",
+      "previous_file_sha256": "72688706325ed2901ecda13a762c07dc8ff0c00c3e7574049347f31a5a4b658f",
+      "previous_line_number": 18,
+      "previous_line_sha256": "d92f5014fb6c6bdb2880eb8242f7c58139ae5500b33ee2c5d225e9de41d933d7",
+      "changes": [
+        {
+          "path": "data",
+          "before_type": "array",
+          "current_literal": "[]"
+        }
+      ],
+      "previous_line": "^https:\\/\\/userapi\\.qiekj\\.com\\/local-life\\/tab-order$ response-body-json-replace data []"
+    },
+    {
+      "category": "known-json-type-drift",
+      "file": "PangguaiLife_remove_ads.lpx",
+      "source_url": "https://kelee.one/Tool/Loon/Lpx/PangguaiLife_remove_ads.lpx",
+      "snapshot_sha256": "3a9ccc82e301155d9add5e0e46ae19cc50f464d473a7e1bf7d3ce677988da2af",
+      "line_number": 19,
+      "line": "response if ${url} ~= /^https:\\/\\/userapi\\.qiekj\\.com\\/integralGoods\\/queryIntegralGoodsCategoryList$/i then response.json.replace(\"data\", \"[]\")",
+      "previous_file_sha256": "72688706325ed2901ecda13a762c07dc8ff0c00c3e7574049347f31a5a4b658f",
+      "previous_line_number": 19,
+      "previous_line_sha256": "22c7d508268d6b75019f2e4a2f810f61c30d0215b3aef71ad22f8f88cddbd5ad",
+      "changes": [
+        {
+          "path": "data",
+          "before_type": "array",
+          "current_literal": "[]"
+        }
+      ],
+      "previous_line": "^https:\\/\\/userapi\\.qiekj\\.com\\/integralGoods\\/queryIntegralGoodsCategoryList$ response-body-json-replace data []"
+    },
+    {
+      "category": "known-json-type-drift",
+      "file": "QiDian_remove_ads.lpx",
+      "source_url": "https://kelee.one/Tool/Loon/Lpx/QiDian_remove_ads.lpx",
+      "snapshot_sha256": "73c6e2839aeb27619a9f4fe28302b5bf710d7e7ddb34643775074590339d3c57",
+      "line_number": 28,
+      "line": "response if ${url} ~= /^https:\\/\\/magev6\\.if\\.qidian\\.com\\/argus\\/api\\/v2\\/dailyrecommend\\/getdailyrecommend\\?/i then response.json.replace(\"Data.Items\", \"[]\")",
+      "previous_file_sha256": "1f78f635f43d1af35b6977e329b2eb26d7e4c05b9c5433717af39811b94ff3ef",
+      "previous_line_number": 28,
+      "previous_line_sha256": "ebb719ffb897db5db45a2907f475d4593c618ba702565b8d9858e29afc4dad69",
+      "changes": [
+        {
+          "path": "Data.Items",
+          "before_type": "array",
+          "current_literal": "[]"
+        }
+      ],
+      "previous_line": "^https:\\/\\/magev6\\.if\\.qidian\\.com\\/argus\\/api\\/v2\\/dailyrecommend\\/getdailyrecommend\\? response-body-json-replace Data.Items []"
+    },
+    {
+      "category": "known-json-type-drift",
+      "file": "RedPaper_remove_ads.lpx",
+      "source_url": "https://kelee.one/Tool/Loon/Lpx/RedPaper_remove_ads.lpx",
+      "snapshot_sha256": "b782ea4f811702a80f853eae8bd3a3f7a33c8a3af833f5c54fba3d75a524f646",
+      "line_number": 25,
+      "line": "response if ${url} ~= /^https:\\/\\/edith\\.xiaohongshu\\.com\\/api\\/sns\\/v1\\/search\\/banner_list$/i then response.json.replace(\"data\", \"{}\")",
+      "previous_file_sha256": "54f8cbdb77c5064e3c93c4bbc7cd525ce42fceb055b41a5ea41727477b70d1da",
+      "previous_line_number": 25,
+      "previous_line_sha256": "9951ebceb8bf6db9d1a79e7c9f963edc9f1367a4e83b49d94578921c6b78c350",
+      "changes": [
+        {
+          "path": "data",
+          "before_type": "object",
+          "current_literal": "{}"
+        }
+      ],
+      "previous_line": "^https:\\/\\/edith\\.xiaohongshu\\.com\\/api\\/sns\\/v1\\/search\\/banner_list$ response-body-json-replace data {}"
+    },
+    {
+      "category": "known-json-type-drift",
+      "file": "RedPaper_remove_ads.lpx",
+      "source_url": "https://kelee.one/Tool/Loon/Lpx/RedPaper_remove_ads.lpx",
+      "snapshot_sha256": "b782ea4f811702a80f853eae8bd3a3f7a33c8a3af833f5c54fba3d75a524f646",
+      "line_number": 26,
+      "line": "response if ${url} ~= /^https:\\/\\/edith\\.xiaohongshu\\.com\\/api\\/sns\\/v1\\/search\\/hot_list$/i then response.json.replace(\"data.items\", \"[]\")",
+      "previous_file_sha256": "54f8cbdb77c5064e3c93c4bbc7cd525ce42fceb055b41a5ea41727477b70d1da",
+      "previous_line_number": 26,
+      "previous_line_sha256": "f9ed2330b30d699ce732c667df419124bab4c4544088d84a3955f7a9a17ecab2",
+      "changes": [
+        {
+          "path": "data.items",
+          "before_type": "array",
+          "current_literal": "[]"
+        }
+      ],
+      "previous_line": "^https:\\/\\/edith\\.xiaohongshu\\.com\\/api\\/sns\\/v1\\/search\\/hot_list$ response-body-json-replace data.items []"
+    },
+    {
+      "category": "known-json-type-drift",
+      "file": "RedPaper_remove_ads.lpx",
+      "source_url": "https://kelee.one/Tool/Loon/Lpx/RedPaper_remove_ads.lpx",
+      "snapshot_sha256": "b782ea4f811702a80f853eae8bd3a3f7a33c8a3af833f5c54fba3d75a524f646",
+      "line_number": 27,
+      "line": "response if ${url} ~= /^https:\\/\\/edith\\.xiaohongshu\\.com\\/api\\/sns\\/v4\\/search\\/hint/i then response.json.replace(\"data.hint_words\", \"[]\")",
+      "previous_file_sha256": "54f8cbdb77c5064e3c93c4bbc7cd525ce42fceb055b41a5ea41727477b70d1da",
+      "previous_line_number": 27,
+      "previous_line_sha256": "009f509796316ef76464074490e99d4dd1b2b104caabb708836fa2ad361d01ac",
+      "changes": [
+        {
+          "path": "data.hint_words",
+          "before_type": "array",
+          "current_literal": "[]"
+        }
+      ],
+      "previous_line": "^https:\\/\\/edith\\.xiaohongshu\\.com\\/api\\/sns\\/v4\\/search\\/hint response-body-json-replace data.hint_words []"
+    },
+    {
+      "category": "known-json-type-drift",
+      "file": "RedPaper_remove_ads.lpx",
+      "source_url": "https://kelee.one/Tool/Loon/Lpx/RedPaper_remove_ads.lpx",
+      "snapshot_sha256": "b782ea4f811702a80f853eae8bd3a3f7a33c8a3af833f5c54fba3d75a524f646",
+      "line_number": 28,
+      "line": "response if ${url} ~= /^https:\\/\\/edith\\.xiaohongshu\\.com\\/api\\/sns\\/v4\\/search\\/trending\\?/i then response.json.replace([\"data.queries\", \"data.hint_word\"], [\"[]\", \"{}\"])",
+      "previous_file_sha256": "54f8cbdb77c5064e3c93c4bbc7cd525ce42fceb055b41a5ea41727477b70d1da",
+      "previous_line_number": 28,
+      "previous_line_sha256": "4f4c1c33826dc77da67f94d0511c690f01bd1184b1d59e4a98ff47cbb02793bf",
+      "changes": [
+        {
+          "path": "data.queries",
+          "before_type": "array",
+          "current_literal": "[]"
+        },
+        {
+          "path": "data.hint_word",
+          "before_type": "object",
+          "current_literal": "{}"
+        }
+      ],
+      "previous_line": "^https:\\/\\/edith\\.xiaohongshu\\.com\\/api\\/sns\\/v4\\/search\\/trending\\? response-body-json-replace data.queries [] data.hint_word {}"
+    },
+    {
+      "category": "invalid-json-mock",
+      "file": "SF-Express_remove_ads.lpx",
+      "source_url": "https://kelee.one/Tool/Loon/Lpx/SF-Express_remove_ads.lpx",
+      "snapshot_sha256": "fdc1c6a5ff266785c1c2bf38ecbf7600f2fbe142f966400b6c8468b9a307262d",
+      "line_number": 18,
+      "line": "response if ${url} ~= /^https:\\/\\/ucmp(-static)?\\.sf-express\\.com\\/proxy\\/ccspBase\\/module-config\\/(login\\/)?query\\?/i then response.body.mock(\"json\", \"{\\\"version\\\":\\\"2.0\\\",\\\"success\\\":true,\\\"obj\\\":[{\\\"positionName\\\":\\\"APP2025\\\",\\\"positionChannel\\\":\\\"app\\\",\\\"sceneList\\\":[{\\\"urlType\\\":\\\"webview\\\",\\\"sceneCode\\\":\\\"ddcb36295d5d2939ba4bbe2e5e02a4d8\\\",\\\"extendField1\\\":\\\"{\\\\\\\"boundApp\\\\\\\":\\\\\\\"Android,iOS\\\\\\\"}\\\",\\\"id\\\":29130,\\\"extendFieldOneDTO\\\":{\\\"boundApp\\\":\\\"Android,iOS\\\"},\\\"seq\\\":0,\\\"sceneName\\\":\\\"寄快递\\\",\\\"updateTime\\\":\\\"2026-02-06 18:55:15\\\",\\\"url\\\":\\\"{ \\\\\\\"needLogin\\\\\\\": true, \\\\\\\"classify\\\\\\\": \\\\\\\"MY_SERVICE\\\\\\\", \\\\\\\"params\\\\\\\": { \\\\\\\"jumpName\\\\\\\": \\\\\\\"快速寄件\\\\\", 200)",
+      "previous_file_sha256": "82d52eead6393a69c9d64950628d932e098717e744d1b9c3cddb33fb93b89444",
+      "previous_line_number": 18,
+      "previous_line_sha256": "e860ef60fcdad8a3d532b0a186840b779bdb95f9f3077d591c854e11915299e2",
+      "changes": [],
+      "previous_body": {
+        "utf8_bytes": 23756,
+        "sha256": "5ede16966f5706f3a47b22a64f6fc876f61ee41ce107a9224a716d0a2ec9b8fc",
+        "valid_json": true,
+        "obj_entries": 3
+      }
+    },
+    {
+      "category": "framed-json-protocol",
+      "file": "Chelaile_remove_ads.lpx",
+      "source_url": "https://kelee.one/Tool/Loon/Lpx/Chelaile_remove_ads.lpx",
+      "snapshot_sha256": "90f17cc715088c64f7f1bee7a23997b6160437f3e4c538ec12e05197588b044b",
+      "line_number": 17,
+      "line": "response if ${url} ~= /^https:\\/\\/api\\.chelaile\\.net\\.cn\\/goocity\\/flowPos\\/home\\?/i then response.body.mock(\"json\", \"**YGKJ{\\\"jsonr\\\":{\\\"status\\\":\\\"00\\\",\\\"data\\\":{\\\"advertList\\\":[{\\\"id\\\":106,\\\"title\\\":\\\"站点地图\\\",\\\"iconUrl\\\":\\\"https://image3.chelaile.net.cn/89iIqxaM.png\\\",\\\"linkUrl\\\":\\\"\\\",\\\"adType\\\":5,\\\"showRedDot\\\":0,\\\"updateTime\\\":0,\\\"appId\\\":\\\"\\\",\\\"appPath\\\":\\\"\\\",\\\"bubbleOrder\\\":0,\\\"h5Type\\\":0},{\\\"id\\\":1,\\\"title\\\":\\\"地铁\\\",\\\"iconUrl\\\":\\\"https://image3.chelaile.net.cn/rewrLCWY.png\\\",\\\"linkUrl\\\":\\\"https://web.chelaile.net.cn/metro/index.html?h5_stats_referer=icon\\\",\\\"adType\\\":2,\\\"showRedDot\\\":0,\\\"updateTime\\\":0,\\\"appId\\\":\\\"\\\",\\\"appPath\\\":\\\"\\\",\\\"bubbleOrder\\\":0,\\\"h5Type\\\":0}]}}}YGKJ##\", 200)",
+      "previous_file_sha256": "5fb50ac114e3c64b1d14cd98a7576070ebeb065a6d761cede4c6845e95d62469",
+      "previous_line_number": 17,
+      "previous_line_sha256": "9d1301d9f17a8a69fc697f82cf19c8d789f298fc24a7a666c70e2e936ae3f6cd",
+      "changes": [],
+      "previous_line": "^https:\\/\\/api\\.chelaile\\.net\\.cn\\/goocity\\/flowPos\\/home\\? mock-response-body data-type=json data=\"**YGKJ{\"jsonr\":{\"status\":\"00\",\"data\":{\"advertList\":[{\"id\":106,\"title\":\"站点地图\",\"iconUrl\":\"https://image3.chelaile.net.cn/89iIqxaM.png\",\"linkUrl\":\"\",\"adType\":5,\"showRedDot\":0,\"updateTime\":0,\"appId\":\"\",\"appPath\":\"\",\"bubbleOrder\":0,\"h5Type\":0},{\"id\":1,\"title\":\"地铁\",\"iconUrl\":\"https://image3.chelaile.net.cn/rewrLCWY.png\",\"linkUrl\":\"https://web.chelaile.net.cn/metro/index.html?h5_stats_referer=icon\",\"adType\":2,\"showRedDot\":0,\"updateTime\":0,\"appId\":\"\",\"appPath\":\"\",\"bubbleOrder\":0,\"h5Type\":0}]}}}YGKJ##\" status-code=200"
+    },
+    {
+      "category": "framed-json-protocol",
+      "file": "Chelaile_remove_ads.lpx",
+      "source_url": "https://kelee.one/Tool/Loon/Lpx/Chelaile_remove_ads.lpx",
+      "snapshot_sha256": "90f17cc715088c64f7f1bee7a23997b6160437f3e4c538ec12e05197588b044b",
+      "line_number": 19,
+      "line": "response if ${url} ~= /^https:\\/\\/api\\.chelaile\\.net\\.cn\\/goocity\\/flowPos\\/listByPos\\?/i then response.body.mock(\"json\", \"**YGKJ{}YGKJ##\", 200)",
+      "previous_file_sha256": "5fb50ac114e3c64b1d14cd98a7576070ebeb065a6d761cede4c6845e95d62469",
+      "previous_line_number": 19,
+      "previous_line_sha256": "d239e83eccd6fa19999d6714fdd08fc6d693fe8f8a8bdb710b488f0079b71ac3",
+      "changes": [],
+      "previous_line": "^https:\\/\\/api\\.chelaile\\.net\\.cn\\/goocity\\/flowPos\\/listByPos\\? mock-response-body data-type=json data=\"**YGKJ{}YGKJ##\" status-code=200"
+    },
+    {
+      "category": "framed-json-protocol",
+      "file": "Chelaile_remove_ads.lpx",
+      "source_url": "https://kelee.one/Tool/Loon/Lpx/Chelaile_remove_ads.lpx",
+      "snapshot_sha256": "90f17cc715088c64f7f1bee7a23997b6160437f3e4c538ec12e05197588b044b",
+      "line_number": 21,
+      "line": "response if ${url} ~= /^https:\\/\\/web\\.chelaile\\.net\\.cn\\/api\\/operative_position\\/infoflow\\/getInfo\\?/i then response.body.mock(\"json\", \"**YGKJ{}YGKJ##\", 200)",
+      "previous_file_sha256": "5fb50ac114e3c64b1d14cd98a7576070ebeb065a6d761cede4c6845e95d62469",
+      "previous_line_number": 21,
+      "previous_line_sha256": "cdcc520e7288b5a1db5c0362cc57dc24b52e61b48b5b7abb988bba04111d1251",
+      "changes": [],
+      "previous_line": "^https:\\/\\/web\\.chelaile\\.net\\.cn\\/api\\/operative_position\\/infoflow\\/getInfo\\? mock-response-body data-type=json data=\"**YGKJ{}YGKJ##\" status-code=200"
+    },
+    {
+      "category": "framed-json-protocol",
+      "file": "Chelaile_remove_ads.lpx",
+      "source_url": "https://kelee.one/Tool/Loon/Lpx/Chelaile_remove_ads.lpx",
+      "snapshot_sha256": "90f17cc715088c64f7f1bee7a23997b6160437f3e4c538ec12e05197588b044b",
+      "line_number": 27,
+      "line": "response if ${url} ~= /^https:\\/\\/api\\.chelaile\\.net\\.cn\\/led-weather\\/v\\d\\/condition_brief\\?/i then response.body.mock(\"json\", \"**YGKJ{}YGKJ##\", 200)",
+      "previous_file_sha256": "5fb50ac114e3c64b1d14cd98a7576070ebeb065a6d761cede4c6845e95d62469",
+      "previous_line_number": 27,
+      "previous_line_sha256": "ce876273666da9075edfa671634c05f650153233c21e17eb3ec71ed20a539351",
+      "changes": [],
+      "previous_line": "^https:\\/\\/api\\.chelaile\\.net\\.cn\\/led-weather\\/v\\d\\/condition_brief\\? mock-response-body data-type=json data=\"**YGKJ{}YGKJ##\" status-code=200"
+    },
+    {
+      "category": "framed-json-protocol",
+      "file": "Chelaile_remove_ads.lpx",
+      "source_url": "https://kelee.one/Tool/Loon/Lpx/Chelaile_remove_ads.lpx",
+      "snapshot_sha256": "90f17cc715088c64f7f1bee7a23997b6160437f3e4c538ec12e05197588b044b",
+      "line_number": 29,
+      "line": "response if ${url} ~= /^https:\\/\\/api\\.chelaile\\.net\\.cn\\/goocity\\/config\\/notices\\?/i then response.body.mock(\"json\", \"**YGKJ{}YGKJ##\", 200)",
+      "previous_file_sha256": "5fb50ac114e3c64b1d14cd98a7576070ebeb065a6d761cede4c6845e95d62469",
+      "previous_line_number": 29,
+      "previous_line_sha256": "66abc635f6107211e595a5c0fab2405196862b98704bd64fe68d848bf8ae5196",
+      "changes": [],
+      "previous_line": "^https:\\/\\/api\\.chelaile\\.net\\.cn\\/goocity\\/config\\/notices\\? mock-response-body data-type=json data=\"**YGKJ{}YGKJ##\" status-code=200"
+    },
+    {
+      "category": "framed-json-protocol",
+      "file": "Chelaile_remove_ads.lpx",
+      "source_url": "https://kelee.one/Tool/Loon/Lpx/Chelaile_remove_ads.lpx",
+      "snapshot_sha256": "90f17cc715088c64f7f1bee7a23997b6160437f3e4c538ec12e05197588b044b",
+      "line_number": 31,
+      "line": "response if ${url} ~= /^https:\\/\\/api\\.chelaile\\.net\\.cn\\/encourage\\/activity\\/control\\?/i then response.body.mock(\"json\", \"**YGKJ{}YGKJ##\", 200)",
+      "previous_file_sha256": "5fb50ac114e3c64b1d14cd98a7576070ebeb065a6d761cede4c6845e95d62469",
+      "previous_line_number": 31,
+      "previous_line_sha256": "ad4b9603c2a0acc38554b95aa54e4301821cfd50f859e340c64c730d94a3db5a",
+      "changes": [],
+      "previous_line": "^https:\\/\\/api\\.chelaile\\.net\\.cn\\/encourage\\/activity\\/control\\? mock-response-body data-type=json data=\"**YGKJ{}YGKJ##\" status-code=200"
+    }
+  ]
+}

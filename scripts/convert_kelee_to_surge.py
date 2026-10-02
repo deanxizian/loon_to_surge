@@ -7,8 +7,10 @@ import re
 import shutil
 import tempfile
 import urllib.request
-from collections import OrderedDict
+from collections import Counter, OrderedDict
+from collections.abc import Callable
 from datetime import datetime
+from functools import cache
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit
@@ -24,6 +26,25 @@ try:
     from stable_output import file_contents_match, json_payload_matches, previous_timestamp, tree_contents_match
 except ModuleNotFoundError:
     from scripts.stable_output import file_contents_match, json_payload_matches, previous_timestamp, tree_contents_match
+
+try:
+    from source_repairs import apply_reviewed_source_repairs
+except ModuleNotFoundError:
+    from scripts.source_repairs import apply_reviewed_source_repairs
+
+try:
+    from source_quality import inspect_source_quality
+except ModuleNotFoundError:
+    from scripts.source_quality import inspect_source_quality
+
+try:
+    from script_v2_compat import (
+        plan_script_v2, verify_script_v2_source, build_script_v2_context, UnverifiedScriptArgument, ScriptSourceVerificationError,
+    )
+except ModuleNotFoundError:
+    from scripts.script_v2_compat import (
+        plan_script_v2, verify_script_v2_source, build_script_v2_context, UnverifiedScriptArgument, ScriptSourceVerificationError,
+    )
 
 try:
     from loon_script_v2 import V2ArgumentObject, V2Script, is_script_v2_line, parse_script_v2_line
@@ -70,6 +91,10 @@ class UnverifiedRewriteV2RegexFlags(RewriteV2Error):
 
 class UnverifiedScriptV2(ValueError):
     """Valid Script V2 functionality that cannot yet be preserved in Surge."""
+
+
+class UnverifiedRewriteV2Literal(RewriteV2Error):
+    """A source literal would become an active Surge module substitution."""
 
 
 WINDOWS_INVALID_FILENAME_CHARS = set('<>:"/\\|?*')
@@ -146,6 +171,9 @@ FATAL_REPORT_KINDS = {
     "unsupported-rewrite",
     "unsupported-script",
     "unsupported-system",
+    "source-quality",
+    "source-repair-blocked",
+    "script-verification",
 }
 LOON_SCRIPT_COMMON_PROPERTIES = {
     "argument",
@@ -443,6 +471,13 @@ def convert_replace_pairs_to_jq(text: str) -> list[str]:
     return parts
 
 
+def fetch_script_source(url: str) -> bytes:
+    """Download bytes only for exact reviewed adapters; never execute JavaScript."""
+    request = urllib.request.Request(url, headers={"User-Agent": LOON_USER_AGENT, "Accept": "*/*"})
+    with urllib.request.urlopen(request, timeout=30) as response:
+        return response.read()
+
+
 def fetch_jq_path(url: str) -> str:
     if url not in JQ_PATH_CACHE:
         request = urllib.request.Request(
@@ -459,46 +494,91 @@ def fetch_jq_path(url: str) -> str:
     return JQ_PATH_CACHE[url]
 
 
+def checked_remote_jq_program(program: str) -> str:
+    """Remote JQ is literal program text, never a source of module variables."""
+    if not isinstance(program, str):
+        raise JsonRewriteError("Remote JQ resource did not provide text")
+    if re.search(r"\{\{\{.*?\}\}\}", program, flags=re.DOTALL):
+        raise JsonRewriteError("Remote JQ contains an unproven Surge module placeholder")
+    return program
+
+
 def quote_jq_expression(text: str) -> str:
     return "'" + text.replace("'", "\\'") + "'"
 
 
-def convert_jq_expression(text: str, report: list[dict[str, str]], file: str, line: str) -> str | None:
-    stripped = text.strip()
-    if not stripped or stripped in ("''", '""'):
-        add_report(
-            report,
-            file,
-            "rewrite-empty-skipped",
-            "Empty JQ expression was skipped because Surge requires a non-empty JQ program.",
-            line,
-        )
+def normalize_jq_program(expression: str, report: list[dict[str, str]], file: str, line: str) -> str | None:
+    """Share legacy/V2 empty-program policy and known JQ compatibility repairs."""
+    if not expression.strip():
+        add_report(report, file, "rewrite-empty-skipped",
+                   "Empty JQ expression was skipped because Surge requires a non-empty JQ program.", line)
         return None
+    # JQ interpolation can contain nested code and strings. A flat quote scan
+    # cannot classify those safely; leave such programs byte-for-byte intact.
+    if "\\(" in expression:
+        return expression
+    original = expression
+    for old, new in JQ_COMPATIBILITY_REWRITES:
+        # Never rewrite matching text inside a JQ string or a comment.
+        positions: set[int] = set()
+        quoted = escaped = comment = False
+        for index, char in enumerate(expression):
+            if comment:
+                if char == "\n":
+                    comment = False
+                continue
+            if quoted:
+                if escaped:
+                    escaped = False
+                elif char == "\\":
+                    escaped = True
+                elif char == '"':
+                    quoted = False
+                continue
+            if char == '#':
+                comment = True
+            elif char == '"':
+                quoted = True
+            else:
+                positions.add(index)
+        chunks: list[str] = []
+        cursor = 0
+        while True:
+            at = expression.find(old, cursor)
+            if at < 0:
+                chunks.append(expression[cursor:])
+                break
+            chunks.append(expression[cursor:at])
+            chunks.append(new if at in positions else old)
+            cursor = at + len(old)
+        expression = "".join(chunks)
+    if expression != original:
+        add_report(report, file, "jq-expression-corrected",
+                   "Normalized missing JQ token separators and variable-binding grouping so the expression compiles.", line)
+    return expression
 
+
+def convert_jq_expression(text: str, report: list[dict[str, str]], file: str, line: str,
+                          jq_loader: Callable[[str], str] | None = None) -> str | None:
+    stripped = text.strip()
     match = re.fullmatch(r'jq-path=(["\']?)(.+?)\1', stripped)
-    if not match:
+    if match:
+        url = match.group(2)
+        try:
+            expression = checked_remote_jq_program((jq_loader or fetch_jq_path)(url))
+        except Exception as exc:
+            add_report(report, file, "jq-path-inline-failed", f"Unable to inline jq-path {url}: {exc}", line)
+            return text
+    else:
         quote = stripped[0] if len(stripped) >= 2 and stripped[0] == stripped[-1] and stripped[0] in ("'", '"') else ""
         expression = stripped[1:-1] if quote else stripped
-        original_expression = expression
-        for old, new in JQ_COMPATIBILITY_REWRITES:
-            expression = expression.replace(old, new)
-        if expression != original_expression:
-            add_report(
-                report,
-                file,
-                "jq-expression-corrected",
-                "Normalized missing JQ token separators and variable-binding grouping so the expression compiles.",
-                line,
-            )
-            return quote_jq_expression(expression)
+    normalized = normalize_jq_program(expression, report, file, line)
+    if normalized is None:
+        return None
+    # Keep unchanged legacy quoting for stable old output.
+    if not match and normalized == expression:
         return stripped
-
-    url = match.group(2)
-    try:
-        return quote_jq_expression(fetch_jq_path(url))
-    except Exception as exc:  # noqa: BLE001 - keep converting the module and report the fallback.
-        add_report(report, file, "jq-path-inline-failed", f"Unable to inline jq-path {url}: {exc}", line)
-        return text
+    return quote_jq_expression(normalized)
 
 
 def parse_properties(text: str | None) -> OrderedDict[str, str]:
@@ -587,6 +667,25 @@ def validate_script_properties(
     empty = sorted(key for key, value in props.items() if not value and key != "argument")
     if empty:
         errors.append(f"Empty script property/properties: {', '.join(empty)}")
+
+    if script_type == "generic" and unquote_property_value(props.get("script-path", "")) == WARP_PANEL_SCRIPT_PATH:
+        tag = props.get("tag", "")
+        quote = ""
+        escaped = False
+        for char in tag:
+            if quote:
+                if escaped:
+                    escaped = False
+                elif char == "\\":
+                    escaped = True
+                elif char == quote:
+                    quote = ""
+            elif char in ('"', "'"):
+                quote = char
+        if quote:
+            errors.append("Unable to parse unbalanced WARP tag quoting safely")
+        if tag.startswith(('"', "'")) and not re.fullmatch(r'''(?:"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')''', tag):
+            errors.append("Malformed quoted WARP tag")
 
     for key in ("binary-body-mode", "debug", "requires-body", "wake-system"):
         if key in props and props[key].lower() not in {"true", "false"}:
@@ -1023,6 +1122,19 @@ def v2_constant_string(value: V2Value, description: str) -> str:
     return "".join(part for part in value.parts if isinstance(part, str))
 
 
+def v2_literal_surge_macros(value: V2Value) -> set[str]:
+    if isinstance(value, V2String):
+        literals = [part for part in value.parts if isinstance(part, str)]
+    elif isinstance(value, V2Regex):
+        literals = [value.pattern]
+    elif isinstance(value, V2Array):
+        return set().union(*(v2_literal_surge_macros(item) for item in value.items))
+    else:
+        return set()
+    return {match.group(0) for literal in literals
+            for match in re.finditer(r"\{\{\{[A-Za-z_][A-Za-z0-9_]*\}\}\}", literal)}
+
+
 def v2_regex_capture_group_count(pattern: str) -> int:
     count = 0
     in_character_class = False
@@ -1347,7 +1459,10 @@ def convert_v2_body_action(
     return converted
 
 
-def convert_v2_json_action(action: V2Action, phase: str, pattern: str) -> list[tuple[str, str]] | None:
+def convert_v2_json_action(
+    action: V2Action, phase: str, pattern: str, report: list[dict[str, str]], file: str, line: str,
+    jq_loader: Callable[[str], str] | None = None,
+) -> list[tuple[str, str]] | None:
     matched = re.fullmatch(r"(request|response)\.json\.(add|delete|replace|jq|jq_file)", action.name)
     if not matched:
         return None
@@ -1387,10 +1502,12 @@ def convert_v2_json_action(action: V2Action, phase: str, pattern: str) -> list[t
         if not re.match(r"^https?://", source):
             raise RewriteV2Error("Relative jq_file resources are not downloaded with standalone Kelee .lpx files")
         try:
-            source = fetch_jq_path(source)
+            source = checked_remote_jq_program((jq_loader or fetch_jq_path)(source))
         except Exception as exc:  # noqa: BLE001 - turn remote resource failures into a fatal conversion report.
             raise RewriteV2Error(f"Unable to inline jq_file {source}: {exc}") from exc
-    converted.append(("Body Rewrite", f"{direction} {pattern} {quote_jq_expression(source)}"))
+    normalized = normalize_jq_program(source, report, file, line)
+    if normalized is not None:
+        converted.append(("Body Rewrite", f"{direction} {pattern} {quote_jq_expression(normalized)}"))
     return converted
 
 
@@ -1464,10 +1581,17 @@ def convert_rewrite_v2_line(
     report: list[dict[str, str]],
     file: str,
     argument_names: set[str],
+    jq_loader: Callable[[str], str] | None = None,
 ) -> str | None:
     try:
         rewrite = parse_rewrite_v2_line(line)
         condition = parse_url_only_condition(rewrite.condition)
+        if any(action.name.endswith(".jq_file") for action in rewrite.actions) and re.search(
+            r"(?<!\{)\{[A-Za-z_][A-Za-z0-9_.-]*\}(?!\})", condition.regex.pattern
+        ):
+            raise UnverifiedRewriteV2Literal(
+                "literal placeholder-like URL patterns with remote JQ lack verified local output provenance"
+            )
         if condition.capture_name and condition.capture_name in argument_names:
             raise RewriteV2Error(
                 f"URL capture name {condition.capture_name!r} conflicts with a declared plugin argument"
@@ -1476,18 +1600,26 @@ def convert_rewrite_v2_line(
         converted: list[tuple[str, str]] = []
 
         for action in rewrite.actions:
-            action_lines = (
-                convert_v2_url_action(action, rewrite.phase, pattern, condition, argument_names)
-                or convert_v2_reject_action(action, rewrite.phase, pattern)
-                or convert_v2_header_action(action, rewrite.phase, pattern, condition, argument_names)
-                or convert_v2_body_action(action, rewrite.phase, pattern, condition, argument_names)
-                or convert_v2_json_action(action, rewrite.phase, pattern)
-                or convert_v2_mock_action(action, rewrite.phase, pattern)
+            # [] is a supported no-op (empty JQ), while None means not this action.
+            action_lines = None
+            converters = (
+                lambda: convert_v2_url_action(action, rewrite.phase, pattern, condition, argument_names),
+                lambda: convert_v2_reject_action(action, rewrite.phase, pattern),
+                lambda: convert_v2_header_action(action, rewrite.phase, pattern, condition, argument_names),
+                lambda: convert_v2_body_action(action, rewrite.phase, pattern, condition, argument_names),
+                lambda: convert_v2_json_action(action, rewrite.phase, pattern, report, file, line, jq_loader),
+                lambda: convert_v2_mock_action(action, rewrite.phase, pattern),
             )
-            if not action_lines:
+            for converter in converters:
+                action_lines = converter()
+                if action_lines is not None:
+                    break
+            if action_lines is None:
                 raise RewriteV2Error(f"Unsupported Rewrite V2 Action: {action.name}")
             converted.extend(action_lines)
 
+        if not converted:
+            return None
         target_sections = {section for section, _ in converted}
         if len(target_sections) != 1:
             raise RewriteV2Error(
@@ -1496,9 +1628,17 @@ def convert_rewrite_v2_line(
         if len(rewrite.actions) > 1 and target_sections & {"URL Rewrite", "Map Local"}:
             raise RewriteV2Error("Multiple terminal URL or mock Actions cannot be represented as one Surge operation")
 
+        literal_macros = v2_literal_surge_macros(condition.regex)
+        for action in rewrite.actions:
+            for argument in action.arguments:
+                literal_macros.update(v2_literal_surge_macros(argument))
+        if any(macro in converted_line for macro in literal_macros for _, converted_line in converted):
+            raise UnverifiedRewriteV2Literal(
+                "literal Surge module placeholders would be interpolated instead of preserved"
+            )
         for section, converted_line in converted:
             sections[section].append(converted_line)
-    except UnverifiedRewriteV2RegexFlags as exc:
+    except (UnverifiedRewriteV2RegexFlags, UnverifiedRewriteV2Literal) as exc:
         return str(exc)
     except RewriteV2Error as exc:
         add_report(report, file, "unsupported-rewrite", f"Rewrite V2: {exc}", line)
@@ -1511,9 +1651,10 @@ def convert_rewrite_line(
     report: list[dict[str, str]],
     file: str,
     argument_names: set[str] | None = None,
+    jq_loader: Callable[[str], str] | None = None,
 ) -> str | None:
     if is_rewrite_v2_line(line):
-        return convert_rewrite_v2_line(line, sections, report, file, argument_names or set())
+        return convert_rewrite_v2_line(line, sections, report, file, argument_names or set(), jq_loader)
 
     inline_match = re.match(r"^(http-request|http-response)\s+(\S+)\s+(\S+)(?:\s+(.*))?$", line)
     if inline_match:
@@ -1521,7 +1662,7 @@ def convert_rewrite_line(
         rest = rest or ""
 
         if action == "response-body-json-jq":
-            expression = convert_jq_expression(rest, report, file, line)
+            expression = convert_jq_expression(rest, report, file, line, jq_loader)
             if expression is not None:
                 sections["Body Rewrite"].append(f"http-response-jq {pattern} {expression}")
         elif action == "response-body-json-del":
@@ -1561,7 +1702,7 @@ def convert_rewrite_line(
             return
         sections["Map Local"].append(f"{pattern} {converted_mock}")
     elif action == "response-body-json-jq":
-        expression = convert_jq_expression(rest, report, file, line)
+        expression = convert_jq_expression(rest, report, file, line, jq_loader)
         if expression is not None:
             sections["Body Rewrite"].append(f"http-response-jq {pattern} {expression}")
     elif action == "response-body-json-del":
@@ -1680,10 +1821,37 @@ def validate_static_cron(cron: str) -> None:
                     raise RewriteV2Error(f"Cron field outside {minimum}..{maximum}: {field}")
 
 
+def script_name_has_inline_comment(name: str) -> bool:
+    return re.search(r"\s(?:#|;|//)", name) is not None
+
+
+def surge_script_reference_name(line: str) -> str:
+    """Potential runtime identifier, including names behind enable prefixes."""
+    name = line.partition(" = ")[0].strip()
+    if name.startswith("#"):
+        name = name[1:].lstrip()
+    return re.sub(r"^(?:\{\{\{[A-Za-z_][A-Za-z0-9_]*\}\}\})+", "", name)
+
+
+def warp_script_name_problem(name: str) -> str | None:
+    """Bounded common name checks for legacy and V2 WARP Panel references."""
+    if re.search(r"[\x00-\x1f\x7f]", name):
+        return "Script tag contains control characters"
+    if re.search(r"\{[A-Za-z_][A-Za-z0-9_.-]*\}|%[A-Za-z_][A-Za-z0-9_]*%", name):
+        return "Script tag contains literal placeholder-like text"
+    if not name.strip() or name != name.strip() or "=" in name or name.startswith(("#", ";", "//", "[")):
+        return "Script tag cannot be represented safely as a Surge script name"
+    if script_name_has_inline_comment(name):
+        return "Script tag contains a Surge inline-comment delimiter"
+    if any(char in name for char in (",", '"', "'", "\\")):
+        return "WARP tag contains Panel reference delimiters that are not safely represented"
+    return None
+
+
 def prepare_script_v2(script: V2Script) -> tuple[str | None, list[str]]:
-    if script.trigger in {"generic", "network-changed"}:
-        raise UnverifiedScriptV2(f"{script.trigger} runtime context and triggers are not verified")
     path = script_v2_constant(script.path, "Script path")
+    if script.trigger == "network-changed" or (script.trigger == "generic" and path not in VERIFIED_SURGE_GENERIC_SCRIPT_PATHS):
+        raise UnverifiedScriptV2(f"{script.trigger} runtime context and triggers are not verified")
     try:
         parsed_path = urlsplit(path)
     except ValueError as exc:
@@ -1711,6 +1879,9 @@ def prepare_script_v2(script: V2Script) -> tuple[str | None, list[str]]:
             raise UnverifiedScriptV2(str(exc)) from exc
         parts = [f"type=http-{script.trigger}", f"pattern={format_script_pattern(pattern)}"]
         default_timeout = "20"
+    elif script.trigger == "generic":
+        parts = ["type=generic"]
+        default_timeout = "300"
     else:
         cron = script_v2_constant(script.schedule, "Cron schedule")
         validate_static_cron(cron)
@@ -1727,10 +1898,23 @@ def prepare_script_v2(script: V2Script) -> tuple[str | None, list[str]]:
         argument = script_v2_constant(script.argument, "Script argument")
         # Keep literal braces intact; legacy convert_argument_value treats them as variables.
         parts.append("argument=" + json.dumps(argument, ensure_ascii=False))
+    if script.trigger == "generic" and path == NODE_LINK_CHECK_SCRIPT_PATH:
+        argument = script_v2_constant(script.argument, "Script argument") if script.argument is not None else ""
+        if any(part.partition("=")[0].strip().lower() == "policy" for part in argument.split("&")):
+            raise UnverifiedScriptV2("NodeLinkCheck supplies its own policy; the module Policy adapter cannot override it safely")
+        parts = [part for part in parts if not part.startswith("argument=")]
+        # This trusted adapter adds a module argument; user source strings stay literal.
+        argument = merge_query_argument(argument, "policy", surge_argument_placeholder("Policy"))
+        parts.append("argument=" + json.dumps(argument, ensure_ascii=False))
     tag = script.properties.get("tag")
     name = script_v2_constant(tag, "Script tag") if tag is not None else None
     if name is not None and (not name.strip() or name != name.strip() or "=" in name or name.startswith(("#", ";", "//", "["))):
         raise UnverifiedScriptV2("Script tag cannot be represented safely as a Surge script name")
+    if name is not None and script_name_has_inline_comment(name):
+        raise UnverifiedScriptV2("Script tag contains a Surge inline-comment delimiter")
+    if script.trigger == "generic" and path == WARP_PANEL_SCRIPT_PATH and name is not None:
+        if problem := warp_script_name_problem(name):
+            raise UnverifiedScriptV2(problem)
     return name, parts
 
 
@@ -1884,8 +2068,13 @@ def convert_argument_lines(
     return items
 
 
+def surge_argument_default_requires_quotes(value: str) -> bool:
+    # A leading literal quote would otherwise be consumed as Surge syntax.
+    return "," in value or value.lstrip().startswith('"')
+
+
 def format_surge_argument_default(value: str) -> str:
-    if "," not in value:
+    if not surge_argument_default_requires_quotes(value):
         return value
     escaped = value.replace("\\", "\\\\").replace('"', '\\"')
     return f'"{escaped}"'
@@ -1910,7 +2099,7 @@ def surge_module_requirement(
         or re.search(r"(?:^|\()URL-REGEX,", line) is not None
         for line in sections["Rule"]
     )
-    has_quoted_argument_default = any("," in default for _, default in argument_items)
+    has_quoted_argument_default = any(surge_argument_default_requires_quotes(default) for _, default in argument_items)
     if has_jq_rewrite or has_modern_rule_feature or has_quoted_argument_default:
         return SURGE_5_14_FEATURE_REQUIREMENT
     if (
@@ -1943,11 +2132,15 @@ def safe_module_filename(name: str, seen: dict[str, int]) -> str:
 
 
 def parse_lpx(path: Path) -> tuple[OrderedDict[str, str], dict[str, list[str]]]:
+    return parse_lpx_text(path.read_bytes().decode("utf-8"))
+
+
+def parse_lpx_text(text: str) -> tuple[OrderedDict[str, str], dict[str, list[str]]]:
     metadata: OrderedDict[str, str] = OrderedDict()
     source_sections: dict[str, list[str]] = {}
     current_section: str | None = None
 
-    for raw in path.read_text(encoding="utf-8").splitlines():
+    for raw in text.splitlines():
         line = raw.strip()
         if not line:
             continue
@@ -2154,109 +2347,29 @@ def convert_file(
     output_root: Path,
     report: list[dict[str, str]],
     seen_files: dict[str, int],
+    *,
+    script_source_loader: Callable[[str], bytes] | None = None,
 ) -> dict[str, Any] | None:
-    metadata, source_sections = parse_lpx(path)
-    report_unsupported_source_sections(source_sections, report, path.name)
-    unsupported_rules = unsupported_module_rule_policies(source_sections)
-    if unsupported_rules:
-        policies = ", ".join(dict.fromkeys(policy for _, policy in unsupported_rules))
-        add_report(
-            report,
-            path.name,
-            "module-excluded",
-            "Module was excluded from Surge output because module rules may only use DIRECT, REJECT, or "
-            f"REJECT-TINYGIF; found: {policies}.",
-            unsupported_rules[0][0],
-        )
+    report_start = len(report)
+    raw_source = path.read_bytes().decode("utf-8")
+    source_text, repair_items = apply_reviewed_source_repairs(path.name, raw_source)
+    report.extend(repair_items)
+    if any(item["kind"] == "source-repair-blocked" for item in repair_items):
         return None
+    metadata, source_sections = parse_lpx_text(source_text)
+    report_unsupported_source_sections(source_sections, report, path.name)
+    quality_items = inspect_source_quality(path.name, source_sections, source_text=source_text)
+    report.extend(quality_items)
+    if any(item["kind"] == "source-quality" for item in quality_items):
+        return None
+    unsupported_rules = unsupported_module_rule_policies(source_sections)
 
     sections: OrderedDict[str, list[str]] = OrderedDict((name, []) for name in SECTION_ORDER)
     argument_lines = section_lines(source_sections, "Argument")
     argument_defaults = collect_argument_defaults(argument_lines)
-    script_lines = section_lines(source_sections, "Script")
-    prepared_scripts: dict[str, tuple[V2Script, str | None, list[str]]] = {}
-    unverified_scripts: list[tuple[str, str]] = []
-    invalid_scripts = False
-    for line in script_lines:
-        if not is_script_v2_line(line):
-            continue
-        try:
-            script = parse_script_v2_line(line)
-            name, parts = prepare_script_v2(script)
-            prepared_scripts[line] = (script, name, parts)
-        except UnverifiedScriptV2 as exc:
-            unverified_scripts.append((line, str(exc)))
-        except RewriteV2Error as exc:
-            add_report(report, path.name, "unsupported-script", f"Invalid Script V2: {exc}", line)
-            invalid_scripts = True
-    if invalid_scripts:
-        return None
-    if unverified_scripts:
-        line, reason = unverified_scripts[0]
-        add_report(report, path.name, "module-excluded", f"Module was excluded from Surge output: Script V2 {reason}.", line)
-        return None
-    legacy_script_lines = [line for line in script_lines if not is_script_v2_line(line)]
-    generic_scripts = generic_script_properties(legacy_script_lines)
-    generic_paths = {
-        unquote_property_value(props.get("script-path", ""))
-        for _, props in generic_scripts
-        if props.get("script-path")
-    }
-    unverified_generic = unverified_generic_scripts(legacy_script_lines)
-    if unverified_generic:
-        paths = ", ".join(dict.fromkeys(item[1] for item in unverified_generic))
-        add_report(
-            report,
-            path.name,
-            "module-excluded",
-            "Module was excluded from Surge output because generic script compatibility is not verified: "
-            + paths
-            + ". Loon generic scripts may depend on selected-node context that Surge does not provide.",
-            unverified_generic[0][0],
-        )
-        return None
-
-    if NODE_LINK_CHECK_SCRIPT_PATH in generic_paths:
-        metadata["desc"] = (
-            "Checks the proxy chain for a Surge policy using Sub-Store node data. "
-            "Configure Policy when installing; default: PROXY."
-        )
-        metadata.pop("openUrl", None)
-        node_link_line = next(
-            line
-            for line, props in generic_scripts
-            if unquote_property_value(props.get("script-path", "")) == NODE_LINK_CHECK_SCRIPT_PATH
-        )
-        add_report(
-            report,
-            path.name,
-            "generic-script-adapted",
-            "Added a Surge Policy module argument and passed it to NodeLinkCheck as $argument.policy; default is PROXY.",
-            node_link_line,
-        )
-
-    if WARP_PANEL_SCRIPT_PATH in generic_paths:
-        metadata["desc"] = "Displays WARP details for the current Surge route in an information panel."
-        warp_line, warp_props = next(
-            (line, props)
-            for line, props in generic_scripts
-            if unquote_property_value(props.get("script-path", "")) == WARP_PANEL_SCRIPT_PATH
-        )
-        script_name = warp_props.get("tag") or "WARP INFO"
-        sections["Panel"].append(
-            f'{script_name} = title={json.dumps(script_name, ensure_ascii=False)}, '
-            'content="Refresh to query the current Surge route.", style=info, '
-            f"script-name={script_name}"
-        )
-        add_report(
-            report,
-            path.name,
-            "generic-script-adapted",
-            "Added a Surge information Panel linked to the verified WARP generic script.",
-            warp_line,
-        )
-    shared_enable_argument_names = collect_enable_argument_names(script_lines) & collect_script_argument_names(script_lines)
-
+    # Complete non-Script local diagnostics before any Script-derived exclusion.
+    # Keep Rewrite eligibility decisions pending until all Script syntax is known.
+    rewrite_exclusions: list[dict[str, str]] = []
     for line in section_lines(source_sections, "General"):
         match = re.match(r"^real-ip\s*=\s*(.+)$", line, flags=re.IGNORECASE)
         if match:
@@ -2298,33 +2411,274 @@ def convert_file(
         except RuleConversionError as exc:
             add_report(report, path.name, "unsupported-rule", str(exc), line)
 
+    rewrite_preflight_sections: OrderedDict[str, list[str]] = OrderedDict((name, []) for name in SECTION_ORDER)
+    rewrite_preflight_report: list[dict[str, str]] = []
     for line in section_lines(source_sections, "Rewrite"):
         try:
-            regex_flag_reason = convert_rewrite_line(line, sections, report, path.name, set(argument_defaults))
+            regex_flag_reason = convert_rewrite_line(line, rewrite_preflight_sections, rewrite_preflight_report, path.name, set(argument_defaults), jq_loader=lambda _: ".")
         except JsonRewriteError as exc:
-            add_report(report, path.name, "unsupported-rewrite", str(exc), line)
+            add_report(rewrite_preflight_report, path.name, "unsupported-rewrite", str(exc), line)
             continue
         if regex_flag_reason:
             add_report(
-                report,
+                rewrite_exclusions,
                 path.name,
                 "module-excluded",
-                "Module was excluded from Surge output because Rewrite V2 regex flags have no verified "
-                f"Surge equivalent; {regex_flag_reason}.",
+                "Module was excluded from Surge output because Rewrite V2 has no verified Surge equivalent "
+                f"that preserves the source semantics: {regex_flag_reason}.",
                 line,
             )
+
+    rewrite_preflight_fatal = fatal_report_items(rewrite_preflight_report)
+    report.extend(rewrite_preflight_fatal)
+    invalid_rewrite_lines = {item["line"] for item in rewrite_preflight_fatal}
+
+    for line in section_lines(source_sections, "MitM"):
+        match = re.match(r"^hostname\s*=\s*(.+)$", line, flags=re.IGNORECASE)
+        if match:
+            hostnames = clean_hostname_list(match.group(1))
+            if hostnames:
+                sections["MITM"].append(f"hostname = %APPEND% {hostnames}")
+        else:
+            add_report(report, path.name, "mitm-unsupported", "Unsupported MitM line", line)
+
+    surge_system = convert_system_metadata(metadata.get("system"), report, path.name)
+    argument_preflight: list[dict[str, str]] = []
+    convert_argument_lines(argument_lines, argument_preflight, path.name, used_names=set(argument_defaults))
+    argument_fatal = fatal_report_items(argument_preflight)
+    if argument_fatal:
+        report.extend(argument_fatal)
+        return None
+
+    script_lines = section_lines(source_sections, "Script")
+    legacy_script_lines = [line for line in script_lines if not is_script_v2_line(line)]
+    shared_enable_argument_names = collect_enable_argument_names(script_lines) & collect_script_argument_names(script_lines)
+    # Validate legacy syntax before any supported-but-unrepresentable V2/generic
+    # exclusion. An early exclusion must not downgrade malformed source to green.
+    preflight_report: list[dict[str, str]] = []
+    for line in legacy_script_lines:
+        convert_script_line(line, [], preflight_report, path.name, argument_defaults, shared_enable_argument_names)
+    preflight_fatal = fatal_report_items(preflight_report)
+    if preflight_fatal:
+        report.extend(preflight_fatal)
+        return None
+    script_context = build_script_v2_context(
+        argument_lines, script_lines,
+        (line for section, lines in source_sections.items() if section.lower() not in {"argument", "script"} for line in lines),
+    )
+    adapted_scripts = {}
+    prepared_scripts: dict[int, tuple[V2Script, str | None, list[str]]] = {}
+    unverified_scripts: list[tuple[str, str]] = []
+    invalid_scripts = False
+    for script_index, line in enumerate(script_lines, start=1):
+        if not is_script_v2_line(line):
+            continue
+        try:
+            script = parse_script_v2_line(line)
+            if script.trigger == "generic":
+                generic_path = script_v2_constant(script.path, "Script path")
+                if generic_path == WARP_PANEL_SCRIPT_PATH and (
+                    isinstance(script.properties.get("enable"), V2Variable) or script.properties.get("enable") is False
+                ):
+                    raise UnverifiedScriptV2("WARP Panel adaptation requires an enabled script; dynamic or disabled Panel/Script linkage is not verified")
+                if generic_path == NODE_LINK_CHECK_SCRIPT_PATH and any(
+                    surge_argument_name(name) == "Policy" for name in argument_defaults
+                ):
+                    raise UnverifiedScriptV2("NodeLinkCheck injected Policy argument collides with an existing source declaration")
+            adapted = plan_script_v2(script, script_context)
+            name, parts = prepare_script_v2(adapted.script)
+            parts = adapted.preview_parts(parts)
+            adapted_scripts[script_index] = adapted
+            name = name or f"{script.trigger} {script_index}"
+            prepared_scripts[script_index] = (script, name, parts)
+        except (UnverifiedScriptV2, UnverifiedScriptArgument) as exc:
+            unverified_scripts.append((line, str(exc)))
+        except RewriteV2Error as exc:
+            add_report(report, path.name, "unsupported-script", f"Invalid Script V2: {exc}", line)
+            invalid_scripts = True
+    if invalid_scripts:
+        return None
+    if fatal_report_items(report[report_start:]) and (script_lines or unsupported_rules or rewrite_exclusions):
+        return None
+    if unsupported_rules:
+        policies = ", ".join(dict.fromkeys(policy for _, policy in unsupported_rules))
+        add_report(
+            report,
+            path.name,
+            "module-excluded",
+            "Module was excluded from Surge output because module rules may only use DIRECT, REJECT, or "
+            f"REJECT-TINYGIF; found: {policies}.",
+            unsupported_rules[0][0],
+        )
+        return None
+    if rewrite_exclusions:
+        report.append(rewrite_exclusions[0])
+        return None
+    if unverified_scripts:
+        line, reason = unverified_scripts[0]
+        add_report(report, path.name, "module-excluded", f"Module was excluded from Surge output: Script V2 {reason}.", line)
+        return None
+    generic_scripts = generic_script_properties(legacy_script_lines)
+    for script_index, (script, name, parts) in prepared_scripts.items():
+        if script.trigger == "generic":
+            props = OrderedDict((part.partition("=")[0], part.partition("=")[2]) for part in parts)
+            props["tag"] = name or "generic"
+            generic_scripts.append((script_lines[script_index - 1], props))
+    generic_paths = {
+        unquote_property_value(props.get("script-path", ""))
+        for _, props in generic_scripts
+        if props.get("script-path")
+    }
+    unverified_generic = unverified_generic_scripts(legacy_script_lines)
+    if unverified_generic:
+        paths = ", ".join(dict.fromkeys(item[1] for item in unverified_generic))
+        add_report(
+            report,
+            path.name,
+            "module-excluded",
+            "Module was excluded from Surge output because generic script compatibility is not verified: "
+            + paths
+            + ". Loon generic scripts may depend on selected-node context that Surge does not provide.",
+            unverified_generic[0][0],
+        )
+        return None
+
+    warp_entries = [(line, props) for line, props in generic_scripts
+                    if unquote_property_value(props.get("script-path", "")) == WARP_PANEL_SCRIPT_PATH]
+    if warp_entries:
+        if len(warp_entries) != 1:
+            add_report(report, path.name, "module-excluded",
+                       "Module was excluded because multiple WARP generic entries require independently verified Panel mappings.", warp_entries[0][0])
+            return None
+        warp_line, warp_props = warp_entries[0]
+        warp_enable = warp_props.get("enable")
+        if warp_enable is not None and (
+            enable_argument_name(warp_enable) is not None or surge_toggle_default(warp_enable) == "#"
+        ):
+            add_report(report, path.name, "module-excluded",
+                       "Module was excluded because WARP Panel adaptation requires an enabled script; "
+                       "dynamic or disabled Panel/Script linkage is not verified.", warp_line)
+            return None
+        # Check Panel identity locally before Object-source verification. For V2
+        # only names are needed, so no unverified Object argument is rendered.
+        # Legacy conversion is local and preserves its position-based names.
+        reference_lines: list[str] = []
+        for script_index, line in enumerate(script_lines, start=1):
+            if script_index in prepared_scripts:
+                reference_lines.append(f"{prepared_scripts[script_index][1]} = ")
+            else:
+                convert_script_line(line, reference_lines, [], path.name, argument_defaults, shared_enable_argument_names)
+        # Legacy tag is optional. Use the same positional name actually emitted
+        # in this mixed legacy/V2 sequence, rather than inventing a Panel name.
+        script_name = warp_props.get("tag") or surge_script_reference_name(
+            reference_lines[script_lines.index(warp_line)]
+        )
+        if problem := warp_script_name_problem(script_name):
+            add_report(report, path.name, "module-excluded",
+                       "Module was excluded because " + problem + ".", warp_line)
+            return None
+        if sum(surge_script_reference_name(line) == script_name for line in reference_lines) != 1:
+            add_report(report, path.name, "module-excluded",
+                       "Module was excluded because the WARP Panel reference does not identify exactly one Script after enable-prefix expansion.", warp_line)
             return None
 
-    for line in script_lines:
-        if line in prepared_scripts:
-            script, name, parts = prepared_scripts[line]
-            prefix = "#" if script.properties.get("enable") is False else ""
+    # Combine every local Rewrite shape (including unknown remote JQ) with the
+    # actual planned Script types, patterns and enable prefixes before fetching.
+    # Unknown remote JQ is conservatively treated as an active body rewrite even
+    # if a future download could be empty. Inline empty JQ remains a known no-op.
+    semantic_preview: OrderedDict[str, list[str]] = OrderedDict(
+        (name, list(sections[name]) + list(rewrite_preflight_sections[name])) for name in SECTION_ORDER
+    )
+    for script_index, line in enumerate(script_lines, start=1):
+        if script_index in prepared_scripts:
+            script, name, parts = prepared_scripts[script_index]
+            adapted = adapted_scripts[script_index]
+            prefix = adapted.enable_prefix if adapted.enable_prefix is not None else ("#" if script.properties.get("enable") is False else "")
+            semantic_preview["Script"].append(f"{prefix}{name} = " + ", ".join(parts))
+        else:
+            convert_script_line(line, semantic_preview["Script"], [], path.name, argument_defaults, shared_enable_argument_names)
+    try:
+        preflight_problem = module_semantics_problem(semantic_preview)
+    except ValueError as exc:
+        add_report(report, path.name, "unsupported-rewrite", "Cannot check local rewrite preview", str(exc))
+        return None
+    if preflight_problem:
+        message, converted_line = preflight_problem
+        add_report(report, path.name, "module-excluded", "Module was excluded from Surge output: " + message, converted_line)
+        return None
+
+    # Inert JQ is never emitted. Resolve actual resources only after local
+    # combined eligibility succeeds; Object verification and final checks follow.
+    for line in section_lines(source_sections, "Rewrite"):
+        if line in invalid_rewrite_lines:
+            continue
+        try:
+            convert_rewrite_line(line, sections, report, path.name, set(argument_defaults))
+        except JsonRewriteError as exc:
+            add_report(report, path.name, "unsupported-rewrite", str(exc), line)
+
+    if NODE_LINK_CHECK_SCRIPT_PATH in generic_paths:
+        metadata["desc"] = (
+            "Checks the proxy chain for a Surge policy using Sub-Store node data. "
+            "Configure Policy when installing; default: PROXY."
+        )
+        metadata.pop("openUrl", None)
+        node_link_line = next(
+            line
+            for line, props in generic_scripts
+            if unquote_property_value(props.get("script-path", "")) == NODE_LINK_CHECK_SCRIPT_PATH
+        )
+        add_report(
+            report,
+            path.name,
+            "generic-script-adapted",
+            "Added a Surge Policy module argument and passed it to NodeLinkCheck as $argument.policy; default is PROXY.",
+            node_link_line,
+        )
+
+    if WARP_PANEL_SCRIPT_PATH in generic_paths:
+        metadata["desc"] = "Displays WARP details for the current Surge route in an information panel."
+        sections["Panel"].append(
+            f'{script_name} = title={json.dumps(script_name, ensure_ascii=False)}, '
+            'content="Refresh to query the current Surge route.", style=info, '
+            f"script-name={script_name}"
+        )
+        add_report(
+            report,
+            path.name,
+            "generic-script-adapted",
+            "Added a Surge information Panel linked to the verified WARP generic script.",
+            warp_line,
+        )
+
+    pending_object_reports: list[dict[str, str]] = []
+    for script_index, line in enumerate(script_lines, start=1):
+        if script_index in prepared_scripts:
+            script, name, parts = prepared_scripts[script_index]
+            adapted = adapted_scripts[script_index]
+            prefix = adapted.enable_prefix if adapted.enable_prefix is not None else ("#" if script.properties.get("enable") is False else "")
+            if adapted.argument_codec:
+                add_report(pending_object_reports, path.name, "script-object-adapted",
+                           f"Used reviewed {adapted.argument_codec} String decoder for typed Object parameters; source SHA-256={adapted.source_sha256}. Remote URL remains mutable after publication.", line)
+            if adapted.cron_override is not None:
+                add_report(report, path.name, "script-dynamic-cron-adapted",
+                           "Mapped a validated String Cron declaration to a Surge module parameter; use only a valid five/six-field numeric Cron value.", line)
+            if adapted.enable_prefix is not None:
+                add_report(report, path.name, "script-enable-toggle-emitted",
+                           "Mapped a Boolean switch used only for enable to a Surge line-prefix toggle (# or empty).", line)
             name = name or f"{script.trigger} {len(sections['Script']) + 1}"
             sections["Script"].append(f"{prefix}{name} = " + ", ".join(parts))
             if "img_url" in script.properties:
                 add_report(report, path.name, "script-property-corrected", "Dropped Script V2 img_url display metadata.", line)
         else:
             convert_script_line(line, sections["Script"], report, path.name, argument_defaults, shared_enable_argument_names)
+
+    if WARP_PANEL_SCRIPT_PATH in generic_paths:
+        linked_count = sum(surge_script_reference_name(line) == script_name for line in sections["Script"])
+        if linked_count != 1:
+            add_report(report, path.name, "module-excluded",
+                       "Module was excluded because the WARP Panel reference does not identify exactly one Script after enable-prefix expansion.", warp_line)
+            return None
 
     try:
         problem = module_semantics_problem(sections)
@@ -2339,20 +2693,16 @@ def convert_file(
         )
         return None
 
-    for line in section_lines(source_sections, "MitM"):
-        match = re.match(r"^hostname\s*=\s*(.+)$", line, flags=re.IGNORECASE)
-        if match:
-            hostnames = clean_hostname_list(match.group(1))
-            if hostnames:
-                sections["MITM"].append(f"hostname = %APPEND% {hostnames}")
-        else:
-            add_report(report, path.name, "mitm-unsupported", "Unsupported MitM line", line)
-
     toggle_defaults = collect_enable_toggle_defaults(script_lines, argument_defaults, shared_enable_argument_names)
-    used_argument_names: set[str] = set()
-    for section_name, lines in source_sections.items():
-        if section_name.lower() != "argument":
-            used_argument_names.update(collect_loon_placeholder_names("\n".join(lines)))
+    for adapted in adapted_scripts.values():
+        toggle_defaults.update(adapted.toggle_defaults)
+    # Use parsed V2 references, not text inside raw/escaped literals. Legacy
+    # references remain conservative; emitted placeholders add enable/Object use.
+    used_argument_names: set[str] = set(script_context.non_enable_names)
+    # V2 Object syntax ends in "${last}}", which the legacy brace regex
+    # intentionally excludes. Resolve usage from actual emitted placeholders too.
+    emitted_text = "\n".join(line for lines in sections.values() for line in lines)
+    used_argument_names.update(name for name in argument_defaults if surge_argument_placeholder(name) in emitted_text)
     argument_items = convert_argument_lines(
         argument_lines,
         report,
@@ -2364,7 +2714,41 @@ def convert_file(
         argument_items.append(("Policy", "PROXY"))
 
     output: list[str] = []
-    surge_system = convert_system_metadata(metadata.get("system"), report, path.name)
+    shared_http_names = sorted(name for name, count in Counter(
+        surge_script_reference_name(line) for line in sections["Script"]
+        if parse_properties(line.partition(" = ")[2]).get("type") in {"http-request", "http-response"}
+    ).items() if count > 1)
+    if shared_http_names and not fatal_report_items(report[report_start:]):
+        add_report(report, path.name, "script-http-name-shared",
+                   "Preserved repeated explicit HTTP Script names and source order. Surge documents "
+                   "line-based first-match selection, not a global name-uniqueness rule; repeated-name "
+                   "runtime behavior has not been device-tested. Names are observable via $script.name.",
+                   ", ".join(shared_http_names))
+    if not any(sections.values()) and not fatal_report_items(report[report_start:]):
+        add_report(report, path.name, "module-excluded",
+                   "Module was excluded because supported no-op conversion leaves no effective Surge sections.", "")
+        return None
+
+    # All deterministic local conversion and eligibility checks above must run
+    # before remote verification. The sections so far are memory-only previews;
+    # no Object candidate may reach a file write without current source hashes.
+    has_object_plan = any(adapted.argument_override is not None for adapted in adapted_scripts.values())
+    if has_object_plan and fatal_report_items(report[report_start:]):
+        return None
+    for script_index, adapted in adapted_scripts.items():
+        try:
+            verified = verify_script_v2_source(adapted, source_loader=script_source_loader or fetch_script_source)
+            _, _, preview_parts = prepared_scripts[script_index]
+            if verified.apply_parts(preview_parts) != preview_parts:
+                raise ScriptSourceVerificationError("verified Script plan differs from its local preview")
+            adapted_scripts[script_index] = verified
+        except ScriptSourceVerificationError as exc:
+            add_report(report, path.name, "script-verification", str(exc), script_lines[script_index - 1])
+            invalid_scripts = True
+    if invalid_scripts:
+        return None
+    report.extend(pending_object_reports)
+
     for key in ("name", "desc", "author", "icon"):
         if key in metadata:
             output.append(f"#!{key}={metadata[key]}")
@@ -2417,7 +2801,9 @@ def replace_file(source: Path, target: Path, root: Path) -> None:
     shutil.move(str(source), str(target))
 
 
-def convert_kelee_to_surge(input_dir: str, output_dir: str, report_path: str) -> None:
+def convert_kelee_to_surge(
+    input_dir: str, output_dir: str, report_path: str, *, require_jq: bool = False,
+) -> None:
     root = Path.cwd().resolve()
     input_root = root / input_dir
     output_root = root / output_dir
@@ -2437,10 +2823,14 @@ def convert_kelee_to_surge(input_dir: str, output_dir: str, report_path: str) ->
         report: list[dict[str, str]] = []
         manifest: list[dict[str, Any]] = []
         seen_files: dict[str, int] = {}
+        # Share downloads only within this conversion. A later invocation must
+        # verify fresh bytes from mutable URLs, including after a failed run.
+        script_source_loader = cache(fetch_script_source)
         files = sorted(input_root.glob("*.lpx"), key=lambda item: item.name)
 
         for file_path in files:
-            converted = convert_file(file_path, temp_output_root, report, seen_files)
+            converted = convert_file(file_path, temp_output_root, report, seen_files,
+                                     script_source_loader=script_source_loader)
             if converted is not None:
                 manifest.append(converted)
 
@@ -2468,6 +2858,14 @@ def convert_kelee_to_surge(input_dir: str, output_dir: str, report_path: str) ->
             summary["generated_at"] = timestamp()
         temp_report_full_path.write_text(json.dumps(summary, ensure_ascii=False, indent=4), encoding="utf-8", newline="\n")
 
+        # Validate staged bytes before changing the last-known-good output tree.
+        # A runtime import avoids the validator/converter module dependency cycle.
+        try:
+            from validate_surge_modules import validate_surge_modules
+        except ModuleNotFoundError:
+            from scripts.validate_surge_modules import validate_surge_modules
+        validate_surge_modules(str(input_root), str(temp_output_root), str(temp_report_full_path), require_jq=require_jq)
+
         replace_tree(temp_output_root, output_root, root)
         replace_file(temp_manifest_path, manifest_full_path, root)
         replace_file(temp_report_full_path, report_full_path, root)
@@ -2488,8 +2886,9 @@ def main() -> None:
     parser.add_argument("--input-dir", default="Loon")
     parser.add_argument("--output-dir", default="Surge")
     parser.add_argument("--report-path", default="Surge/convert-report.json")
+    parser.add_argument("--require-jq", action="store_true")
     args = parser.parse_args()
-    convert_kelee_to_surge(args.input_dir, args.output_dir, args.report_path)
+    convert_kelee_to_surge(args.input_dir, args.output_dir, args.report_path, require_jq=args.require_jq)
 
 
 if __name__ == "__main__":
