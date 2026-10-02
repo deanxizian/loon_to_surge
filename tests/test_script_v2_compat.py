@@ -119,6 +119,38 @@ class ScriptV2CompatibilityTest(unittest.TestCase):
             with self.subTest(declaration=declaration), self.assertRaises(compat.UnverifiedScriptArgument):
                 self.adapt_with_probe(self.line(variables=['tab']), [declaration])
 
+    def test_dynamic_enable_rejects_unrecognized_fields_after_metadata(self):
+        line = 'cron "0 8 * * *" then script("https://example.com/a.js") with enable=${Enabled}'
+        tails = ['tag=Toggle, bogus', 'desc=Description, bogus',
+                 'tag=Toggle, bogus, desc=Description', 'tag=Toggle, true',
+                 'tag=Toggle, ', 'tag=Toggle, future=number',
+                 'future=number, tag=Toggle', 'desc=Description, type=number']
+        for tail in tails:
+            declaration = 'Enabled=switch, false, true, ' + tail
+            with self.subTest(declaration=declaration), self.assertRaises(compat.UnverifiedScriptArgument):
+                context = self.context([declaration], [line])
+                self.assertIn('Enabled', context.declaration_errors)
+                compat.adapt_script_v2(parse_script_v2_line(line), context)
+
+    def test_object_adapter_rejects_unrecognized_fields_after_metadata(self):
+        line = self.line(variables=['tab'])
+        for tail in ['tag=Tab, bogus', 'desc=Description, bogus, tag=Tab',
+                     'tag=Tab, future=number', 'future=number, desc=Description']:
+            declaration = 'tab=switch, false, true, ' + tail
+            with self.subTest(declaration=declaration), self.assertRaises(compat.UnverifiedScriptArgument):
+                self.adapt_with_probe(line, [declaration])
+
+    def test_recognized_metadata_fields_remain_supported(self):
+        line = 'cron "0 8 * * *" then script("https://example.com/a.js") with enable=${Enabled}'
+        for tail in ['tag=Toggle, desc=Description', 'desc=Description, tag=Toggle',
+                     'tag="Toggle, with comma", desc=', 'TAG = Toggle, DESC = Description']:
+            with self.subTest(tail=tail):
+                declaration = 'Enabled=switch, false, true, ' + tail
+                adapted = compat.adapt_script_v2(parse_script_v2_line(line), self.context([declaration], [line]))
+                self.assertEqual(adapted.enable_prefix, '{{{Enabled}}}')
+        adapted = self.adapt_with_probe(self.line(variables=['tab']), ['tab=switch, false, true, tag=Tab, desc=Description'])
+        self.assertEqual(adapted.argument_override, '{"tab":{{{tab}}}}')
+
     def test_string_choice_safety_checks_all_options_not_only_default(self):
         options = ['a&b', 'a=b', 'a,b', 'a\\"b', 'a\\\\b', '${Other}', '{{{Other}}}', 'a\\nb', 'a%20b', 'a b']
         for option in options:

@@ -103,30 +103,75 @@ def parse_sections(text: str, file: str, errors: list[str]) -> tuple[list[str], 
     return order, sections
 
 
-def module_arguments(text: str, file: str, errors: list[str]) -> set[str]:
+def module_argument_features(text: str, file: str, errors: list[str]) -> tuple[set[str], bool]:
+    """Parse generated argument metadata independently of converter formatting.
+
+    Commas delimit entries except inside a double-quoted default. Quotes and
+    backslashes can be escaped there; punctuation inside an unquoted default
+    does not start a quoted field. Any quoted default uses the modern syntax.
+    """
     lines = [item for item in text.splitlines() if item.startswith("#!arguments=")]
     if not lines:
-        return set()
+        return set(), False
     if len(lines) > 1:
         errors.append(f"{file}: must contain at most one #!arguments line")
-
     payload = lines[0].removeprefix("#!arguments=")
-    if not payload:
+    if not payload.strip():
         errors.append(f"{file}: #!arguments must declare at least one argument")
-        return set()
+        return set(), False
+
     arguments: set[str] = set()
-    for item in split_top_level(payload, ","):
-        key, separator, default = item.partition(":")
-        key = key.strip()
+    has_quoted_default = False
+    position = 0
+    while position < len(payload):
+        start = position
+        while position < len(payload) and payload[position] not in ":,":
+            position += 1
+        key = payload[start:position].strip()
         if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", key):
             errors.append(f"{file}: invalid module argument name: {key!r}")
-            continue
-        if separator and any(char in default for char in ("\r", "\n")):
-            errors.append(f"{file}: invalid line break in default for module argument: {key}")
-        if key in arguments:
-            errors.append(f"{file}: duplicate module argument name: {key}")
-        arguments.add(key)
-    return arguments
+        else:
+            if key in arguments:
+                errors.append(f"{file}: duplicate module argument name: {key}")
+            arguments.add(key)
+
+        if position < len(payload) and payload[position] == ":":
+            position += 1
+            while position < len(payload) and payload[position].isspace():
+                position += 1
+            if position < len(payload) and payload[position] == '"':
+                has_quoted_default = True
+                position += 1
+                closed = False
+                while position < len(payload):
+                    char = payload[position]
+                    position += 1
+                    if char == "\\":
+                        if position < len(payload):
+                            position += 1
+                        else:
+                            break
+                    elif char == '"':
+                        closed = True
+                        break
+                if not closed:
+                    errors.append(f"{file}: unterminated quoted module argument default: {key}")
+                    break
+                while position < len(payload) and payload[position].isspace():
+                    position += 1
+                if position < len(payload) and payload[position] != ",":
+                    errors.append(f"{file}: unexpected text after quoted module argument default: {key}")
+            while position < len(payload) and payload[position] != ",":
+                position += 1
+        if position < len(payload):
+            position += 1  # The separating comma, never a comma inside quotes.
+            if position == len(payload):
+                errors.append(f"{file}: empty module argument after trailing comma")
+    return arguments, has_quoted_default
+
+
+def module_arguments(text: str, file: str, errors: list[str]) -> set[str]:
+    return module_argument_features(text, file, errors)[0]
 
 
 def effective_section_line(section: str, line: str) -> str | None:
@@ -558,6 +603,7 @@ def validate_surge_modules(
         requirement_lines = [line for line in text.splitlines() if line.startswith("#!requirement=")]
         if len(requirement_lines) > 1:
             errors.append(f"{path.name}: must contain at most one #!requirement line")
+        declared, has_quoted_argument_default = module_argument_features(text, path.name, errors)
         has_base_module_feature = (
             "Body Rewrite" in sections
             or "Map Local" in sections
@@ -578,14 +624,14 @@ def validate_surge_modules(
         )
         expected_requirement = (
             SURGE_5_14_FEATURE_REQUIREMENT
-            if has_jq_rewrite or has_modern_rule_feature
+            if has_jq_rewrite or has_modern_rule_feature or has_quoted_argument_default
             else BASE_MODULE_FEATURE_REQUIREMENT
             if has_base_module_feature
             else None
         )
         if expected_requirement and requirement_lines != [f"#!requirement={expected_requirement}"]:
             errors.append(
-                f"{path.name}: expected #!requirement={expected_requirement} for its HTTP rewrite features"
+                f"{path.name}: expected #!requirement={expected_requirement} for its version-gated module features"
             )
         elif not expected_requirement and requirement_lines:
             errors.append(f"{path.name}: unexpected #!requirement without a version-gated module feature")
@@ -666,7 +712,6 @@ def validate_surge_modules(
                 if re.search(pattern, line):
                     errors.append(f"{path.name}:{number}: residual {label}: {line}")
 
-        declared = module_arguments(text, path.name, errors)
         replacement_text = "\n".join(
             line for line in text.splitlines() if not line.startswith("#!arguments=")
         )

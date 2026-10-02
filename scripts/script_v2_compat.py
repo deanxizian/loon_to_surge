@@ -143,9 +143,13 @@ def _declaration(line: str) -> ArgumentDeclaration:
     if metadata_names - {"tag", "desc"}:
         raise UnverifiedScriptArgument("unknown argument declaration metadata has not been verified")
     values = []
+    metadata_started = False
     for token in tokens[1:]:
-        if re.match(r"^[A-Za-z_][\w-]*\s*=", token):
-            break
+        if re.match(r"^(?:tag|desc)\s*=", token, re.I):
+            metadata_started = True
+            continue
+        if metadata_started:
+            raise UnverifiedScriptArgument("argument metadata must contain only tag= or desc= fields")
         values.append(_scalar(token))
     if not values:
         raise UnverifiedScriptArgument("argument has no default")

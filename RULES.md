@@ -46,7 +46,7 @@ Loon 文件里的 `#!` 元数据按以下规则输出：
 - 继续保留：`openUrl`、`open`、`tag`、`system_version`、`loon_version`、`homepage`、`date`
 - `system` 只输出 Surge 官方支持的 `ios` 或 `mac`：Loon 的 `iOS/iPadOS` 映射为 `ios`，`macOS` 映射为 `mac`；同时覆盖 iOS 和 macOS 时省略限制，`watchOS` 没有 Surge 对应目标。
 - 使用模块参数、域名 `extended-matching`、普通 `[Body Rewrite]` 或 `[Map Local]` 的模块添加 `#!requirement=CORE_VERSION>=20`，这是官方已列出的基础兼容门槛。
-- 含 `http-request-jq`、`http-response-jq`、`pre-matching`、URL-REGEX `extended-matching`，或使用引号保护含逗号参数默认值的模块添加保守门槛 `#!requirement=CORE_VERSION>=6008000`。Surge Manual/Release Notes 只给出部分新特性的客户端最低版本（JQ 为 iOS 5.14 / Mac 5.9，引号值为 iOS 5.21 / Mac 6.8）；`6008000` 是官方版本表中已确认共同支持这些语法的 Core，会排除部分可能兼容的旧客户端，但不会向不支持这些特性的版本宣称可用。
+- 含 `http-request-jq`、`http-response-jq`、`pre-matching`、URL-REGEX `extended-matching`，或使用引号保护含逗号或以双引号开头的参数默认值的模块添加保守门槛 `#!requirement=CORE_VERSION>=6008000`。Surge Manual/Release Notes 只给出部分新特性的客户端最低版本（JQ 为 iOS 5.14 / Mac 5.9，引号值为 iOS 5.21 / Mac 6.8）；`6008000` 是官方版本表中已确认共同支持这些语法的 Core，会排除部分可能兼容的旧客户端，但不会向不支持这些特性的版本宣称可用。
 
 模块文件名使用模块 `name`，并清理 Windows 不合法文件名字符。重名时自动追加 `-2`、`-3`。
 
@@ -61,7 +61,7 @@ Loon `[Argument]` 会转换为 Surge `#!arguments=`。
 - 按 Surge 当前表格语法输出 `参数名:默认值,参数名2:默认值2`，不做 URL 编码。
 - 参数名只保留 ASCII 字母、数字和下划线；其他字符转换为 `_`，数字开头时加 `ARG_`。归一化后重名会阻止发布。
 - 脚本参数、cron 或 Rewrite 里的 Loon 占位符 `{Name}` / `${Name}` 会转换成 Surge 模块占位符 `{{{Name}}}`。
-- 默认值含逗号时使用双引号保护，并按 Surge 引号值语法转义反斜杠和双引号；对应模块要求 `CORE_VERSION>=6008000`。实际换行仍会记录 `argument-default` 并终止发布。
+- 默认值含逗号或去掉前导空白后以双引号开头时，使用双引号保护原始值，并按 Surge 引号值语法转义反斜杠和双引号；对应模块要求 `CORE_VERSION>=6008000`。实际换行仍会记录 `argument-default` 并终止发布。
 - 未被任何生成行引用的 Loon 参数会删除，并记录 `argument-unused-dropped`。
 
 示例：

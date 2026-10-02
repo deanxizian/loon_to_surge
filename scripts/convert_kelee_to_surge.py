@@ -8,7 +8,9 @@ import shutil
 import tempfile
 import urllib.request
 from collections import OrderedDict
+from collections.abc import Callable
 from datetime import datetime
+from functools import cache
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit
@@ -104,7 +106,6 @@ SECTION_ORDER = (
     "MITM",
 )
 JQ_PATH_CACHE: dict[str, str] = {}
-SCRIPT_SOURCE_CACHE: dict[str, bytes] = {}
 JSON_PATH_KEY_PATTERN = r"""[^.\[\]'"\\\s\x00-\x1f\x7f]+"""
 JSON_PATH_BRACKET_PATTERN = r"""\[(?:-?[0-9]+|'[^'"\\\[\]\x00-\x1f\x7f]*'|"[^'"\\\[\]\x00-\x1f\x7f]*")\]"""
 JSON_PATH_PATTERN = re.compile(
@@ -468,11 +469,9 @@ def convert_replace_pairs_to_jq(text: str) -> list[str]:
 
 def fetch_script_source(url: str) -> bytes:
     """Download bytes only for exact reviewed adapters; never execute JavaScript."""
-    if url not in SCRIPT_SOURCE_CACHE:
-        request = urllib.request.Request(url, headers={"User-Agent": LOON_USER_AGENT, "Accept": "*/*"})
-        with urllib.request.urlopen(request, timeout=30) as response:
-            SCRIPT_SOURCE_CACHE[url] = response.read()
-    return SCRIPT_SOURCE_CACHE[url]
+    request = urllib.request.Request(url, headers={"User-Agent": LOON_USER_AGENT, "Accept": "*/*"})
+    with urllib.request.urlopen(request, timeout=30) as response:
+        return response.read()
 
 
 def fetch_jq_path(url: str) -> str:
@@ -1991,8 +1990,13 @@ def convert_argument_lines(
     return items
 
 
+def surge_argument_default_requires_quotes(value: str) -> bool:
+    # A leading literal quote would otherwise be consumed as Surge syntax.
+    return "," in value or value.lstrip().startswith('"')
+
+
 def format_surge_argument_default(value: str) -> str:
-    if "," not in value:
+    if not surge_argument_default_requires_quotes(value):
         return value
     escaped = value.replace("\\", "\\\\").replace('"', '\\"')
     return f'"{escaped}"'
@@ -2017,7 +2021,7 @@ def surge_module_requirement(
         or re.search(r"(?:^|\()URL-REGEX,", line) is not None
         for line in sections["Rule"]
     )
-    has_quoted_argument_default = any("," in default for _, default in argument_items)
+    has_quoted_argument_default = any(surge_argument_default_requires_quotes(default) for _, default in argument_items)
     if has_jq_rewrite or has_modern_rule_feature or has_quoted_argument_default:
         return SURGE_5_14_FEATURE_REQUIREMENT
     if (
@@ -2265,6 +2269,8 @@ def convert_file(
     output_root: Path,
     report: list[dict[str, str]],
     seen_files: dict[str, int],
+    *,
+    script_source_loader: Callable[[str], bytes] | None = None,
 ) -> dict[str, Any] | None:
     raw_source = path.read_bytes().decode("utf-8")
     source_text, repair_items = apply_reviewed_source_repairs(path.name, raw_source)
@@ -2328,7 +2334,7 @@ def convert_file(
                     surge_argument_name(name) == "Policy" for name in argument_defaults
                 ):
                     raise UnverifiedScriptV2("NodeLinkCheck injected Policy argument collides with an existing source declaration")
-            adapted = adapt_script_v2(script, script_context, source_loader=fetch_script_source)
+            adapted = adapt_script_v2(script, script_context, source_loader=script_source_loader or fetch_script_source)
             name, parts = prepare_script_v2(adapted.script)
             parts = adapted.apply_parts(parts)
             adapted_scripts[line] = adapted
@@ -2620,10 +2626,14 @@ def convert_kelee_to_surge(
         report: list[dict[str, str]] = []
         manifest: list[dict[str, Any]] = []
         seen_files: dict[str, int] = {}
+        # Share downloads only within this conversion. A later invocation must
+        # verify fresh bytes from mutable URLs, including after a failed run.
+        script_source_loader = cache(fetch_script_source)
         files = sorted(input_root.glob("*.lpx"), key=lambda item: item.name)
 
         for file_path in files:
-            converted = convert_file(file_path, temp_output_root, report, seen_files)
+            converted = convert_file(file_path, temp_output_root, report, seen_files,
+                                     script_source_loader=script_source_loader)
             if converted is not None:
                 manifest.append(converted)
 

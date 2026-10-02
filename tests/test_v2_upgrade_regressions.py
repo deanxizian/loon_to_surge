@@ -166,6 +166,56 @@ class OutputJSONQualityTest(unittest.TestCase):
 
 
 class AdapterIntegrationTest(unittest.TestCase):
+    def test_script_bytes_are_fetched_again_for_each_conversion_run(self):
+        import hashlib
+        from dataclasses import replace
+        from unittest.mock import patch
+        import script_v2_compat as compat
+        import convert_kelee_to_surge as converter
+        url=compat.BASE+'Spotify/Spotify_remove_ads.js'
+        reviewed=b'// Reviewed fixture bytes; never executed'
+        changed=b'// Changed remote bytes; never executed'
+        adapters=dict(compat.VERIFIED_OBJECT_ADAPTERS)
+        adapters[url]=replace(adapters[url],sha256=hashlib.sha256(reviewed).hexdigest())
+        source='''[Argument]
+tab=switch, false, true
+useractivity=switch, true, false
+[Script]
+response if ${url} ~= /ads/ then script("'''+url+'''", {${tab}, ${useractivity}})
+'''
+        with tempfile.TemporaryDirectory() as tmp, contextlib.redirect_stdout(io.StringIO()):
+            root=Path(tmp);(root/'Loon').mkdir()
+            for name in ('One','Two'):
+                (root/'Loon'/f'{name}.lpx').write_text(f'#!name={name}\n'+source)
+            before=Path.cwd()
+            try:
+                os.chdir(root)
+                with patch.object(compat,'VERIFIED_OBJECT_ADAPTERS',adapters), patch.object(
+                    converter.urllib.request,'urlopen',
+                    side_effect=[io.BytesIO(reviewed),io.BytesIO(changed),io.BytesIO(reviewed)],
+                ) as download:
+                    convert_kelee_to_surge('Loon','Surge','Surge/convert-report.json')
+                    self.assertEqual(download.call_count,1)  # Shared only within one run.
+                    original={p.name:p.read_bytes() for p in (root/'Surge').iterdir()}
+                    with self.assertRaisesRegex(RuntimeError,'script-verification'):
+                        convert_kelee_to_surge('Loon','Surge','Surge/convert-report.json')
+                    self.assertEqual(download.call_count,2)
+                    self.assertEqual({p.name:p.read_bytes() for p in (root/'Surge').iterdir()},original)
+                    convert_kelee_to_surge('Loon','Surge','Surge/convert-report.json')
+                    self.assertEqual(download.call_count,3)  # A failed digest is not retained.
+                    self.assertEqual({p.name:p.read_bytes() for p in (root/'Surge').iterdir()},original)
+            finally:
+                os.chdir(before)
+
+    def test_direct_script_source_fetch_never_reuses_previous_bytes(self):
+        from unittest.mock import patch
+        import convert_kelee_to_surge as converter
+        with patch.object(converter.urllib.request,'urlopen',
+                          side_effect=[io.BytesIO(b'first'),io.BytesIO(b'second')]) as download:
+            self.assertEqual(converter.fetch_script_source('https://example.com/script.js'),b'first')
+            self.assertEqual(converter.fetch_script_source('https://example.com/script.js'),b'second')
+            self.assertEqual(download.call_count,2)
+
     def test_object_final_variable_is_declared_and_source_failure_is_fatal(self):
         import hashlib
         from dataclasses import replace
