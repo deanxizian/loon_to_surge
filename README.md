@@ -1,85 +1,51 @@
 # loon_to_surge
 
-将 [Kelee](https://hub.kelee.one/) 收录的 Loon 模块抓取到本仓库，并自动转换为 Surge 模块。
-
-## 目录
-
-- `Loon/`：抓取到的原始 Loon 模块。
-- `Surge/`：转换后的 Surge 模块、索引和转换报告。
-- `scripts/`：抓取、转换和站点数据生成脚本。
-- `RULES.md`：当前 Loon 到 Surge 的转换规则说明。
+同步 [可莉插件中心](https://hub.kelee.one/) 的 Loon 插件，保留原始文件，并将支持的功能转换为 Surge 模块。网站提供搜索和一键导入，转换报告记录未支持的插件及原因。
 
 ## 使用
 
-打开网站后可以搜索模块，并一键导入 Loon 或 Surge。
+打开 **[模块网站](https://loon-to-surge.vercel.app)**：
 
-Surge 模块文件位于：
+1. 搜索需要的插件。
+2. 选择 Loon 或 Surge，点击对应的导入按钮。
+3. 在客户端启用插件，并按模块说明填写参数。
 
-```text
-Surge/*.sgmodule
-```
-
-转换报告位于：
-
-```text
-Surge/convert-report.json
-```
-
-成功生成后的 warning 是需要知情的转换事项。Surge 官方规定模块规则只能使用 `DIRECT`、`REJECT`、`REJECT-TINYGIF`，因此含 `PROXY`、`REJECT-DROP` 等策略的模块会整项排除。当前支持 Rewrite V2 的 URL `/i`、Body 正则 `i/m/s`、仅 URL 条件的 HTTP Script V2，以及经过校验的静态或参数化 Cron。新版 Object 参数仅对已核对的 Spotify、网易云、YouTube 去广告/字幕脚本适配，转换时必须验证其源码 SHA-256；下载失败或版本变化会阻止发布。仅用于 enable 的 Boolean 开关可映射为行前缀参数，NodeLinkCheck/WARP 新旧 generic 均使用专门适配。复杂条件、未验证对象参数、其他动态属性/运行上下文等仍会整模块排除并记录 `module-excluded`。URL 的 `m/s` 及 Header 正则 flags 暂不转换。无效语法、已确认的上游 JSON 类型漂移及损坏的 JSON mock 会阻止发布；候选产物先校验再替换上一版 Surge。
-
-旧版 HTTP Script 缺省超时显式输出为 10 秒，新版为 20 秒；源文件明确设置的超时保持不变。转换前还会检查 Body Rewrite／脚本匹配冲突、跨行 URL 改写顺序和禁止修改的 Header 字段；无法保证语义的组合整模块排除。现有模块和用户主配置之间的交互仍需实际流量验证。
-
-## 转换质量边界
-
-新旧 Rewrite 共用空 JQ 处理与已验证的 JQ 修正；不会改写含嵌套插值的 JQ 文本。源 JSON mock 和生成后的 JSON Map Local 均检查实际内容，不能仅用合法 Base64 代表合法 JSON。已确认的上游类型变化按精确源规则阻断，绝不把所有 `"{}"` / `"[]"` 字符串强制转成对象/数组。
-
-Surge 参数是文本框，不会强制执行 Loon 的 switch/select 控件：请仅填原声明允许的值；enable 行前缀使用 `#` 或空值。远程脚本在转换时进行版本核验，发布后 URL 仍可变；静态通过不代表已做 Surge 真机验证。测试夹具和核验依据见 `tests/fixtures/`。
-
-2026-10-02 固定快照已加入 10 项经过历史证据核对的窄范围兼容补丁：259/275 项通过完整转换及 1711 条 JQ 校验，16 项明确排除。补丁仅匹配精确源文件 SHA-256，并检查每条原始行、替换行和最终文件 hash；恢复原对象/数组类型、驾校一点通 12 项删除及顺丰完整 JSON，不修改下载的原始文件。每次应用记录 `source-repair-applied`。这 10 项的未知新版本仍会阻断，必须重新审查；不是通用猜测修复。当前发布状态和排除原因以 [转换报告](Surge/convert-report.json) 为准。
+也可以直接浏览仓库中的 [Loon 插件](Loon/) 和 [Surge 模块](Surge/)。请使用满足插件或模块最低版本要求的客户端。
 
 ## 自动更新
 
-GitHub Actions 每天 00:00（Asia/Shanghai）运行：
+[GitHub Actions](https://github.com/deanxizian/loon_to_surge/actions/workflows/update-kelee-modules.yml) 计划每天北京时间 00:00 抓取上游、转换模块并自动提交更新。实际运行状态以 Actions 页面为准。
 
-```text
-.github/workflows/update-kelee-modules.yml
+下载或转换校验失败时，保留上一版 Surge 产物。当前发布的转换结果、警告和排除原因见 [转换报告](Surge/convert-report.json)。
+
+## 兼容说明
+
+- 支持已实现的 Loon 旧语法及 Rewrite V2、Script V2 转换；部分功能无法在 Surge 中等价表达，对应插件会被排除。详细范围见 [转换规则](RULES.md)。
+- Surge 参数框不会限制可选值，请按 [参数说明](RULES.md#argument) 填写。[脚本开关](RULES.md#script-enable-开关) 使用行前缀时，`#` 表示关闭，留空表示开启。
+- 通过静态校验不代表所有脚本都经过真机测试，实际效果还会受到客户端版本、个人配置及远程脚本的影响。
+- 远程脚本的下载状态可在更新任务的 `remote-script-audit` 附件中查看；Action 成功不代表所有远程脚本都可用。
+
+## 项目结构
+
+| 目录 | 内容 |
+| --- | --- |
+| [Loon/](Loon/) | 上游原始插件与索引 |
+| [Surge/](Surge/) | 生成的模块、索引和转换报告 |
+| [scripts/](scripts/) | 抓取、转换与校验脚本 |
+| [tests/](tests/) | 回归测试与已核验的源文件样例 |
+
+## 本地运行
+
+准备 Python 3 和 `jq`，在仓库根目录执行：
+
+```sh
+python3 scripts/update_kelee_modules.py
 ```
 
-流程会抓取最新 Kelee 模块，重新生成 `Loon/` 和 `Surge/`，如有变化则自动提交。抓取结果为空、条目缺少有效 HTTP(S) URL、URL 重复、下载不完整，或模块总数一次下降超过 20% 时，任务会在替换现有文件前失败；确认上游确实进行了大规模删除后，才可手工使用 `--allow-large-drop` 放行。
+这会抓取最新上游并更新 `Loon/`、`Surge/`。单独转换、校验、测试和远程脚本检查的命令见 [开发与维护](AGENTS.md)。
 
-转换和测试后会检查输出中引用的远程 JavaScript，记录下载状态、SHA-256、模块引用位置，以及 `$utils.gzip`、`$crypto.aes`、`$dns.query` 的文本线索。每次运行将报告保存为 `remote-script-audit` Actions 附件，保留 30 天。远程脚本检查默认只报告问题；下载失败或出现 API 文本不直接判定整个模块不兼容，也不阻断其他模块更新。
+## 文档与来源
 
-提交到 `main` 的 PR 会运行 Python 测试、已生成模块校验、JQ 编译及 macOS Foundation 正则对照检查。PR 检查不抓取上游模块，也不提交生成结果。
-
-## 本地转换
-
-```powershell
-python scripts\update_kelee_modules.py
-python scripts\validate_surge_modules.py --loon-dir Loon --surge-dir Surge --report-path Surge\convert-report.json
-```
-
-运行测试：
-
-```powershell
-python -m unittest discover -s tests
-```
-
-单独检查远程脚本（仅下载和检查文本，不执行 JavaScript）：
-
-```powershell
-python scripts\check_remote_scripts.py
-```
-
-结果保存到 `.tmp/remote-script-audit.json`。可用 `--strict` 在下载失败或发现待复核 API 时返回非零状态；`--user-agent` 可用于复查按客户端限制访问的资源。没有命中 API 文本不代表已经通过 Surge 运行验证。
-
-## 转换参考
-
-- [luestr/ProxyResource](https://github.com/luestr/ProxyResource)：Kelee Loon 模块来源。
-- [Loon Rewrite V2](https://nsloon.app/docs/Rewrite/rewrite_v2/)：新版 Rewrite 的语法、类型、Action 和执行顺序依据。
-- [Loon Script V2](https://nsloon.app/docs/Script/script_v2/)：五种触发类型、参数类型、属性及默认值依据。
-- [Loon Script API](https://nsloon.app/docs/Script/script_api/)：远程脚本运行时能力的复核依据。
-- [QingRex/LoonKissSurge](https://github.com/QingRex/LoonKissSurge)：参考 Kelee 成品模块的 Surge 输出形态，包括 section 组织、`Map Local`、`http-response-jq`、`extended-matching`、`pre-matching` 等。
-- [Script-Hub-Org/Script-Hub](https://github.com/Script-Hub-Org/Script-Hub)：参考 `enable={...}` 转 Surge 行前缀开关，以及规则标记处理边界。
-- [Surge Manual](https://manual.nssurge.com/)：作为 Surge 模块、配置语法和规则参数的最终依据。
-
-更完整的转换规则和真机验证步骤见 [RULES.md](RULES.md)。
+- [转换规则](RULES.md)：支持范围、转换语义与真机验证说明。
+- [开发与维护](AGENTS.md)：修改约定、本地命令、校验与发布流程。
+- [luestr/ProxyResource](https://github.com/luestr/ProxyResource)：上游插件来源；其他转换参考列在 RULES.md 中。
