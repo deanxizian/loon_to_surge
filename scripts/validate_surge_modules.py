@@ -315,6 +315,20 @@ def script_quoted_escape_feature(lines: list[tuple[int, str]]) -> bool:
     return False
 
 
+def serialized_rule_types(text: str) -> set[str]:
+    """Derive feature usage from serialized rule structure, independently."""
+    fields = split_top_level(strip_wrapping_parentheses(text), ",")
+    if not fields:
+        return set()
+    kind = fields[0].strip().upper()
+    result = {kind}
+    if kind in LOGICAL_RULE_TYPES and len(fields) > 1:
+        children = split_top_level(strip_wrapping_parentheses(fields[1]), ",")
+        for child in children:
+            result.update(serialized_rule_types(child))
+    return result
+
+
 def validate_process_expression(prefix: str, value: str, errors: list[str]) -> None:
     pattern = unquote_property_value(value)
     if not pattern.startswith("/") or (not pattern.endswith("/") and any(char in pattern for char in "[]\\")):
@@ -347,7 +361,7 @@ def validate_nested_rule_matcher(prefix: str, matcher: str, errors: list[str]) -
         errors.append(f"{prefix}: nested logical matcher contains pre-matching: {matcher}")
 
     if rule_type in LOGICAL_RULE_TYPES:
-        if rule_type == "NOT" and re.search(r"(?:^|\()PROCESS-NAME,", parts[1]):
+        if rule_type == "NOT" and "PROCESS-NAME" in serialized_rule_types(text):
             errors.append(f"{prefix}: NOT with PROCESS-NAME has unverified unknown-process semantics")
         group = strip_wrapping_parentheses(parts[1])
         children = split_top_level(group, ",")
@@ -466,7 +480,7 @@ def validate_section_line(
         ):
             errors.append(f"{prefix}: REJECT rule is missing pre-matching: {line}")
         if rule_type in LOGICAL_RULE_TYPES:
-            if rule_type == "NOT" and re.search(r"(?:^|\()PROCESS-NAME,", parts[1]):
+            if rule_type == "NOT" and "PROCESS-NAME" in serialized_rule_types(effective):
                 errors.append(f"{prefix}: NOT with PROCESS-NAME has unverified unknown-process semantics")
             group = strip_wrapping_parentheses(parts[1])
             children = split_top_level(group, ",")
@@ -800,16 +814,16 @@ def validate_surge_modules(
         )
         has_modern_rule_feature = any(
             "pre-matching" in {part.strip().lower() for part in split_top_level(line, ",")[3:]}
-            or re.search(r"(?:^|\()URL-REGEX,", line) is not None
+            or "URL-REGEX" in serialized_rule_types(line)
             for _, line in sections.get("Rule", [])
         )
         has_quoted_script_escape = script_quoted_escape_feature(sections.get("Script", []))
-        has_process_rule = any(re.search(r"(?:^|\()PROCESS-NAME,", line) for _, line in sections.get("Rule", []))
+        has_process_rule = any("PROCESS-NAME" in serialized_rule_types(line) for _, line in sections.get("Rule", []))
         has_latest_feature = (
             "IP Rewrite" in sections
             or any(re.match(r"^(?:tun-included-routes|ipv6-vif)\s*=", line) for _, line in sections.get("General", []))
             or has_process_rule
-            or any(re.search(r"(?:^|\()DOMAIN-WILDCARD,", line) for _, line in sections.get("Rule", []))
+            or any("DOMAIN-WILDCARD" in serialized_rule_types(line) for _, line in sections.get("Rule", []))
         )
         if has_process_rule and system_lines != ["#!system=mac"]:
             errors.append(f"{path.name}: PROCESS-NAME requires #!system=mac")

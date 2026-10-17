@@ -76,6 +76,24 @@ class OctoberSyntaxTest(unittest.TestCase):
         self.assertEqual([x['kind'] for x in report['items']], ['ip-rewrite-duplicate-skipped'])
         self.validate()
 
+    def test_repeated_general_lists_and_aliases_are_merged(self):
+        self.source('[General]\n'
+                    'real-ip = first.example, shared.example\n'
+                    'include-tun = 10.8.0.9/24\n'
+                    'ipv6-vif = off\n'
+                    'always-real-ip = shared.example, second.example\n'
+                    'real-ip = third.example, first.example\n'
+                    'include-tun = 10.8.0.0/24, 10.7.0.1/32\n')
+        self.publish()
+        text = self.converted()
+        self.assertIn('[General]\n'
+                      'always-real-ip = %APPEND% first.example, shared.example, second.example, third.example\n'
+                      'tun-included-routes = %APPEND% 10.8.0.0/24, 10.7.0.1/32\n'
+                      'ipv6-vif = disabled\n', text)
+        self.assertEqual(text.count('always-real-ip ='), 1)
+        self.assertEqual(text.count('tun-included-routes ='), 1)
+        self.validate()
+
     def test_auto_and_always_preserve_main_profile_ipv6_setting(self):
         for value in ('auto', 'always'):
             with self.subTest(value=value):
@@ -102,7 +120,9 @@ class OctoberSyntaxTest(unittest.TestCase):
             '10.7.0.1 = reflect\n[IP Rewrite]\n10.7.0.2 = drop',
         )]
         cases += ['[General]\nipv6-vif = disabled\n',
-                  '[General]\ninclude-tun = 10.7.0.1/32\ninclude-tun = 10.7.0.2/32\n']
+                  '[General]\nipv6-vif = off\nipv6-vif = off\n',
+                  '[General]\nreal-ip = example.com\nalways-real-ip = example.net,\n',
+                  '[General]\ninclude-tun = 10.7.0.1/32\ninclude-tun = ::1/128\n']
         for source in cases:
             with self.subTest(source=source):
                 self.source('[Rule]\nDOMAIN,example.com,DIRECT\n')
@@ -168,6 +188,39 @@ class OctoberSyntaxTest(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, 'Unsupported Loon rule type'):
             self.publish()
 
+    def test_rule_type_names_inside_values_do_not_trigger_feature_guards(self):
+        cases = [
+            ('URL-REGEX,"^https://example\\.com/\\(PROCESS-NAME,",DIRECT', True),
+            ('NOT,((URL-REGEX,"^https://example\\.com/\\(PROCESS-NAME,")),DIRECT', True),
+            ('AND,((DOMAIN,example.com),(NOT,((URL-REGEX,"(PROCESS-NAME,|(DOMAIN-WILDCARD,")))),DIRECT', True),
+            ('USER-AGENT,"Client (PROCESS-NAME, (DOMAIN-WILDCARD, (URL-REGEX,",DIRECT', False),
+            ('NOT,((USER-AGENT,"Client (PROCESS-NAME, (DOMAIN-WILDCARD, (URL-REGEX,")),DIRECT', False),
+        ]
+        for rule, url_regex in cases:
+            with self.subTest(rule=rule):
+                self.source('[Rule]\n' + rule + '\n')
+                report = self.publish()
+                self.assertEqual((report['converted'], report['excluded']), (1, 0))
+                text = self.converted()
+                self.assertNotIn('#!system=mac', text)
+                self.assertNotIn('CORE_VERSION>=6010000', text)
+                self.assertEqual('#!requirement=' + converter.SURGE_5_14_FEATURE_REQUIREMENT in text, url_regex)
+                self.validate()
+
+    def test_validator_rejects_duplicate_serialized_general_keys(self):
+        for source, line in (
+            ('real-ip=example.com', 'always-real-ip = %APPEND% example.net'),
+            ('include-tun=10.7.0.1/32', 'tun-included-routes = %APPEND% 10.7.0.2/32'),
+            ('ipv6-vif=off', 'ipv6-vif = disabled'),
+        ):
+            with self.subTest(source=source):
+                self.source('[General]\n' + source + '\n')
+                self.publish()
+                path = self.output / 'Sample.sgmodule'
+                path.write_text(self.converted().replace('[General]\n', '[General]\n' + line + '\n'))
+                with self.assertRaisesRegex(SurgeValidationError, 'duplicate keys'):
+                    self.validate()
+
     def test_unavailable_urls_hide_whole_modules_without_editing_sources(self):
         for url in sorted(converter.UNAVAILABLE_SCRIPT_URLS):
             for legacy in (False, True):
@@ -224,7 +277,9 @@ class OctoberSyntaxTest(unittest.TestCase):
     def test_validator_checks_new_feature_version_and_platform_gates(self):
         cases = ('[General]\ninclude-tun=10.7.0.1/32\n', '[IP Rewrite]\n10.7.0.1=reflect\n',
                  '[Rule]\nDOMAIN-WILDCARD,*.example.com,DIRECT\n',
-                 '#!system=macOS\n[Rule]\nPROCESS-NAME,/usr/bin/curl,DIRECT\n')
+                 '[Rule]\nOR,((DOMAIN,example.com),(DOMAIN-WILDCARD,*.example.com)),DIRECT\n',
+                 '#!system=macOS\n[Rule]\nPROCESS-NAME,/usr/bin/curl,DIRECT\n',
+                 '#!system=macOS\n[Rule]\nAND,((DOMAIN,example.com),(OR,((PROCESS-NAME,/usr/bin/curl)))),DIRECT\n')
         for source in cases:
             with self.subTest(source=source):
                 self.source(source)

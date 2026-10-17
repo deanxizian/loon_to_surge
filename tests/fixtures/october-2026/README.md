@@ -27,6 +27,10 @@ guards and invalid routes/actions.
   [modules](https://manual.nssurge.com/profile/module.html): route-list append and
   `ipv6-vif=disabled`. Loon plugin `auto/always` has no overriding effect, so
   these source declarations do not generate a Surge General override.
+- [Loon plugin General](https://nsloon.app/docs/Plugin/#general): list entries
+  merge and deduplicate. Repeated real-IP declarations, including its alias,
+  and include-TUN declarations produce one append line per output key; invalid
+  later entries still block publication. Repeated scalar IPv6 keys are rejected.
 - [Surge Core Version](https://manual.nssurge.com/profile/requirement.html):
   6.10 maps to `6010000`. The new features use this conservative common gate;
   existing feature-only modules retain their previous requirements.
@@ -35,6 +39,9 @@ Raw Loon downloads remain unchanged. A repeated destination retains its first
 IP Rewrite action, but malformed later actions and duplicate sections still
 block publication. The two unavailable script URLs are separately recorded in
 `unavailable-scripts.json`; hiding them does not certify that they recovered.
+Rule feature checks parse logical children structurally so quoted URL regexes
+and User-Agent values containing rule-type names cannot trigger a platform,
+NOT, or minimum-version restriction.
 
 This review establishes documented conversion behavior and static validation.
 It does not claim on-device traffic testing or timed SSE streaming emulation.

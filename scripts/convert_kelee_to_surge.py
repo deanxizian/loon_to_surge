@@ -888,6 +888,20 @@ def strip_wrapping_parentheses(text: str) -> str:
     return stripped
 
 
+def rule_matcher_types(text: str) -> set[str]:
+    """Inspect rule fields, never type-like text inside a matcher value."""
+    parts = split_top_level(strip_wrapping_parentheses(text), ",")
+    if not parts:
+        return set()
+    source_type = parts[0].strip().upper()
+    rule_type = RULE_TYPE_ALIASES.get(source_type, source_type)
+    types = {rule_type}
+    if rule_type in LOGICAL_RULE_TYPES and len(parts) >= 2:
+        for child in split_top_level(strip_wrapping_parentheses(parts[1]), ","):
+            types.update(rule_matcher_types(child))
+    return types
+
+
 def convert_logical_matcher_group(text: str) -> str:
     inner = strip_wrapping_parentheses(text)
     converted: list[str] = []
@@ -964,7 +978,7 @@ def convert_rule_line(line: str, matcher_only: bool = False) -> str:
 
     if rule_type in LOGICAL_RULE_TYPES:
         parts[1] = convert_logical_matcher_group(parts[1])
-        if rule_type == "NOT" and re.search(r"(?:^|\()PROCESS-NAME,", parts[1]):
+        if rule_type == "NOT" and "PROCESS-NAME" in rule_matcher_types(",".join(parts)):
             raise UnverifiedRule("Loon does not invert unknown process information in NOT; Surge equivalence is not documented")
         if matcher_only:
             remove_rule_option(parts, "pre-matching", 2)
@@ -2141,7 +2155,7 @@ def surge_module_requirement(
     if (
         sections.get("IP Rewrite")
         or any(re.match(r"^(?:tun-included-routes|ipv6-vif)\s*=", line) for line in sections["General"])
-        or any(re.search(r"(?:^|\()(?:DOMAIN-WILDCARD|PROCESS-NAME),", line) for line in sections["Rule"])
+        or any(rule_matcher_types(line) & {"DOMAIN-WILDCARD", "PROCESS-NAME"} for line in sections["Rule"])
     ):
         return SURGE_5_23_FEATURE_REQUIREMENT
     has_jq_rewrite = any(
@@ -2150,7 +2164,7 @@ def surge_module_requirement(
     )
     has_modern_rule_feature = any(
         "pre-matching" in {part.strip().lower() for part in split_top_level(line, ",")[3:]}
-        or re.search(r"(?:^|\()URL-REGEX,", line) is not None
+        or "URL-REGEX" in rule_matcher_types(line)
         for line in sections["Rule"]
     )
     has_quoted_argument_default = any(surge_argument_default_requires_quotes(default) for _, default in argument_items)
@@ -2398,7 +2412,7 @@ def module_semantics_problem(sections: dict[str, list[str]]) -> tuple[str, str] 
 
 
 def convert_general_lines(lines: list[str], report: list[dict[str, str]], file: str) -> list[str]:
-    output: list[str] = []
+    values: OrderedDict[str, str | list[str]] = OrderedDict()
     seen: set[str] = set()
     for raw in lines:
         line = strip_rule_inline_comment(raw)
@@ -2406,7 +2420,7 @@ def convert_general_lines(lines: list[str], report: list[dict[str, str]], file: 
             continue
         key, separator, value = line.partition("=")
         key, value = key.strip().lower(), value.strip()
-        if key in {"include-tun", "ipv6-vif"}:
+        if key == "ipv6-vif":
             if key in seen:
                 add_report(report, file, "general-pass-through", f"Duplicate General key: {key}", raw)
                 continue
@@ -2415,7 +2429,13 @@ def convert_general_lines(lines: list[str], report: list[dict[str, str]], file: 
             if not separator:
                 raise ValueError("General line requires key=value")
             if key in {"real-ip", "always-real-ip"} and value:
-                output.append(f"always-real-ip = %APPEND% {value}")
+                entries = [item.strip() for item in value.split(",")]
+                if not all(entries):
+                    raise ValueError("real-ip requires non-empty list entries")
+                previous = values.setdefault("always-real-ip", [])
+                for entry in entries:
+                    if entry not in previous:
+                        previous.append(entry)
             elif key == "include-tun":
                 networks: list[str] = []
                 for item in value.split(","):
@@ -2425,10 +2445,13 @@ def convert_general_lines(lines: list[str], report: list[dict[str, str]], file: 
                     network = str(ipaddress.IPv4Network(item, strict=False))
                     if network not in networks:
                         networks.append(network)
-                output.append("tun-included-routes = %APPEND% " + ", ".join(networks))
+                previous = values.setdefault("tun-included-routes", [])
+                for network in networks:
+                    if network not in previous:
+                        previous.append(network)
             elif key == "ipv6-vif":
                 if value == "off":
-                    output.append("ipv6-vif = disabled")
+                    values["ipv6-vif"] = "disabled"
                 elif value in {"auto", "always"}:
                     add_report(report, file, "general-noop-skipped",
                                "Loon plugins only override IPv6 VIF with off; preserve the main profile for auto/always.", raw)
@@ -2438,7 +2461,8 @@ def convert_general_lines(lines: list[str], report: list[dict[str, str]], file: 
                 raise ValueError("General key has no verified conversion")
         except ValueError as exc:
             add_report(report, file, "general-pass-through", str(exc), raw)
-    return output
+    return [f"{key} = " + ("%APPEND% " + ", ".join(value) if isinstance(value, list) else value)
+            for key, value in values.items()]
 
 
 def convert_ip_rewrite_lines(lines: list[str], report: list[dict[str, str]], file: str) -> list[str]:
@@ -2571,7 +2595,7 @@ def convert_file(
             add_report(report, path.name, "mitm-unsupported", "Unsupported MitM line", line)
 
     surge_system = convert_system_metadata(metadata.get("system"), report, path.name)
-    if surge_system != "mac" and any(re.search(r"(?:^|\()PROCESS-NAME,", line) for line in sections["Rule"]):
+    if surge_system != "mac" and any("PROCESS-NAME" in rule_matcher_types(line) for line in sections["Rule"]):
         add_report(rule_exclusions, path.name, "module-excluded",
                    "PROCESS-NAME conversion requires an explicitly macOS-only plugin; mobile logical-rule skipping is not equivalent.", "[Rule]")
     argument_preflight: list[dict[str, str]] = []

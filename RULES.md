@@ -101,6 +101,8 @@ real-ip = example.com
 always-real-ip = %APPEND% example.com
 ```
 
+同一插件内重复声明的 `real-ip` / `always-real-ip` 合并到一条 `always-real-ip`；`include-tun` 同样合并到一条路由列表。条目按首次出现的顺序去重，避免在 Surge 的键值 section 中重复写同一个键。依据 [Loon 插件 General 的列表合并语义](https://nsloon.app/docs/Plugin/#general)。
+
 Build 1007+ 的插件配置按以下方式转换：
 
 | Loon | Surge | 语义 |
@@ -109,7 +111,7 @@ Build 1007+ 的插件配置按以下方式转换：
 | `ipv6-vif = off` | `ipv6-vif = disabled` | 关闭 VIF 的 IPv6 |
 | `ipv6-vif = auto` 或 `always` | 不生成覆盖项，记录 `general-noop-skipped` | Loon 插件这两个值不改变主配置，不能照搬为 Surge 的覆盖值 |
 
-`include-tun` 只接受带数字前缀长度的 IPv4 CIDR，不接受域名、裸 IP、IPv6、空项或参数绑定。重复的 `include-tun` / `ipv6-vif` 键、无效值和其他未经核验的 General 项记录致命 `general-pass-through`，阻止发布。`bypass-tun`、DNS 等其他 General 能力仍需单独核验，不能凭键名相似直接转换。
+`include-tun` 只接受带数字前缀长度的 IPv4 CIDR，不接受域名、裸 IP、IPv6、空项或参数绑定。重复的标量 `ipv6-vif` 键、无效值和其他未经核验的 General 项记录致命 `general-pass-through`，阻止发布；列表的后续声明也必须逐项校验，不能用去重掩盖非法值。`bypass-tun`、DNS 等其他 General 能力仍需单独核验，不能凭键名相似直接转换。
 
 路由追加依据 [Surge General](https://manual.nssurge.com/profile/general.html) 和 [IP Rewrite 的模块示例](https://manual.nssurge.com/features/ip-rewrite.html)。路由必须先让流量进入 VIF；IP Rewrite 不会自动添加路由，转换器也不会凭 IP Rewrite 内容合成额外路由。
 
@@ -155,6 +157,8 @@ DOMAIN,example.com,REJECT,extended-matching,pre-matching
 - 插件未明确限定 macOS：不能假设两端在移动平台忽略整条逻辑规则的方式相同。
 
 这些限制依据 [Loon 进程规则](https://nsloon.app/docs/Rule/process_rule/) 与 [Surge Process Rules](https://manual.nssurge.com/rules/process.html)。排除前继续检查其他规则及逻辑子项，非法源语法仍优先阻断发布。
+
+平台限制、`NOT` 检查和最低版本判断都按规则类型字段递归解析逻辑子项；正则或其他值中的 `PROCESS-NAME,`、`DOMAIN-WILDCARD,`、`URL-REGEX,` 文字不算对应规则。独立校验器也重新检查序列化后的规则结构。
 
 ### 模块策略限制
 
