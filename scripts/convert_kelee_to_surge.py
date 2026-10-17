@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import ipaddress
 import json
 import re
 import shutil
@@ -100,6 +101,7 @@ class UnverifiedRewriteV2Literal(RewriteV2Error):
 WINDOWS_INVALID_FILENAME_CHARS = set('<>:"/\\|?*')
 SECTION_ORDER = (
     "General",
+    "IP Rewrite",
     "Rule",
     "URL Rewrite",
     "Header Rewrite",
@@ -121,8 +123,9 @@ LEGACY_HTTP_SCRIPT_TIMEOUT = "10"
 FRAMING_HEADERS = frozenset({"content-length", "transfer-encoding"})
 BASE_MODULE_FEATURE_REQUIREMENT = "CORE_VERSION>=20"
 SURGE_5_14_FEATURE_REQUIREMENT = "CORE_VERSION>=6008000"
-SUPPORTED_LOON_SECTIONS = frozenset({"argument", "general", "rule", "rewrite", "script", "mitm"})
-DOMAIN_RULE_TYPES = {"DOMAIN", "DOMAIN-SUFFIX", "DOMAIN-KEYWORD"}
+SURGE_5_23_FEATURE_REQUIREMENT = "CORE_VERSION>=6010000"
+SUPPORTED_LOON_SECTIONS = frozenset({"argument", "general", "ip rewrite", "rule", "rewrite", "script", "mitm"})
+DOMAIN_RULE_TYPES = {"DOMAIN", "DOMAIN-SUFFIX", "DOMAIN-KEYWORD", "DOMAIN-WILDCARD"}
 IP_RULE_TYPES = {"IP-CIDR", "IP-CIDR6", "GEOIP", "IP-ASN"}
 LOGICAL_RULE_TYPES = {"AND", "OR", "NOT"}
 RULE_TYPE_ALIASES = {"IPASN": "IP-ASN"}
@@ -130,7 +133,7 @@ SUPPORTED_RULE_TYPES = frozenset(
     DOMAIN_RULE_TYPES
     | IP_RULE_TYPES
     | LOGICAL_RULE_TYPES
-    | {"DEST-PORT", "PROTOCOL", "SRC-PORT", "URL-REGEX", "USER-AGENT"}
+    | {"DEST-PORT", "PROTOCOL", "SRC-PORT", "URL-REGEX", "USER-AGENT", "PROCESS-NAME"}
 )
 RULE_TYPE_OPTIONS = {
     **{rule_type: {"extended-matching", "pre-matching"} for rule_type in DOMAIN_RULE_TYPES},
@@ -141,6 +144,7 @@ RULE_TYPE_OPTIONS = {
     "SRC-PORT": {"pre-matching"},
     "URL-REGEX": {"extended-matching"},
     "USER-AGENT": set(),
+    "PROCESS-NAME": set(),
 }
 PRE_MATCHING_RULE_TYPES = {
     "DOMAIN",
@@ -159,6 +163,7 @@ PRE_MATCHING_RULE_TYPES = {
 }
 MODULE_RULE_POLICIES = frozenset({"DIRECT", "REJECT", "REJECT-TINYGIF"})
 FATAL_REPORT_KINDS = {
+    "unsupported-ip-rewrite",
     "argument-default",
     "argument-name-collision",
     "argument-parse",
@@ -197,6 +202,7 @@ VERIFIED_SURGE_GENERIC_SCRIPT_PATHS = frozenset({NODE_LINK_CHECK_SCRIPT_PATH, WA
 LOON_MOCK_CONTENT_TYPES = {
     "json": "application/json",
     "text": "text/plain",
+    "text/event-stream": "text/event-stream",
     "css": "text/css",
     "html": "text/html",
     "javascript": "text/javascript",
@@ -209,6 +215,14 @@ LOON_MOCK_CONTENT_TYPES = {
     "mp4": "video/mp4",
     "form-data": "multipart/form-data",
 }
+# Confirmed with the Loon user agent on 2026-10-17. Keep the source downloads,
+# but hide whole modules that depend on these URLs until the source is repaired
+# or a maintainer verifies recovery and removes the entry. No transient network
+# failure can change this deterministic publication decision.
+UNAVAILABLE_SCRIPT_URLS = frozenset({
+    "https://kelee.one/Resource/JavaScript/CommonScript/replace-body.js",
+    "https://kelee.one/Resource/JavaScript/EasyBike/mobileconfig-gateway.js",
+})
 JQ_COMPATIBILITY_REWRITES = (
     ('type=="object"then', 'type=="object" then'),
     (
@@ -221,6 +235,10 @@ JQ_COMPATIBILITY_REWRITES = (
 
 class RuleConversionError(ValueError):
     pass
+
+
+class UnverifiedRule(RuleConversionError):
+    """Valid Loon matcher whose target semantics have not been established."""
 
 
 class JsonRewriteError(ValueError):
@@ -873,11 +891,18 @@ def strip_wrapping_parentheses(text: str) -> str:
 def convert_logical_matcher_group(text: str) -> str:
     inner = strip_wrapping_parentheses(text)
     converted: list[str] = []
+    unverified: UnverifiedRule | None = None
     for item in split_top_level(inner, ","):
         matcher = strip_wrapping_parentheses(item)
         if not matcher:
             raise RuleConversionError("Logical rule contains an empty matcher")
-        converted.append(f"({convert_rule_line(matcher, matcher_only=True)})")
+        try:
+            converted.append(f"({convert_rule_line(matcher, matcher_only=True)})")
+        except UnverifiedRule as exc:
+            # Still diagnose malformed siblings before an eligibility exclusion.
+            unverified = unverified or exc
+    if unverified:
+        raise unverified
     if not converted:
         raise RuleConversionError("Logical rule contains no matchers")
     return "(" + ",".join(converted) + ")"
@@ -902,7 +927,7 @@ def logical_group_supports_pre_matching(text: str) -> bool:
 
 
 def convert_rule_line(line: str, matcher_only: bool = False) -> str:
-    normalized = re.sub(r"\s*,\s*", ",", line).strip()
+    normalized = line.strip()
     parts = split_top_level(normalized, ",")
     if not parts:
         return normalized
@@ -928,8 +953,19 @@ def convert_rule_line(line: str, matcher_only: bool = False) -> str:
             f"Unsupported {rule_type} rule option(s): {', '.join(unknown_options)}"
         )
 
+    if rule_type == "PROCESS-NAME":
+        pattern = unquote_property_value(parts[1])
+        if not pattern:
+            raise RuleConversionError("PROCESS-NAME requires a non-empty expression")
+        if not pattern.startswith("/"):
+            raise UnverifiedRule("PROCESS-NAME filename matching is case-insensitive in Loon but case-sensitive in Surge")
+        if not pattern.endswith("/") and any(char in pattern for char in "[]\\"):
+            raise UnverifiedRule("PROCESS-NAME path character classes/backslashes have no documented equivalent in Surge")
+
     if rule_type in LOGICAL_RULE_TYPES:
         parts[1] = convert_logical_matcher_group(parts[1])
+        if rule_type == "NOT" and re.search(r"(?:^|\()PROCESS-NAME,", parts[1]):
+            raise UnverifiedRule("Loon does not invert unknown process information in NOT; Surge equivalence is not documented")
         if matcher_only:
             remove_rule_option(parts, "pre-matching", 2)
         else:
@@ -1078,19 +1114,19 @@ def convert_mock_response_options(text: str) -> str:
         content_type = LOON_MOCK_CONTENT_TYPES.get(original_data_type or "")
         if content_type:
             mock = ensure_mock_option(mock, "header", f'"Content-Type:{content_type}"')
-    elif original_data_type == "json":
-        mock = mock.replace("data-type=json", "data-type=text")
-        mock = ensure_mock_option(mock, "header", '"Content-Type:application/json"')
+    elif original_data_type in {"json", "text/event-stream"}:
+        mock = set_mock_scalar_option(mock, "data-type", "text")
+        mock = ensure_mock_option(mock, "header", f'"Content-Type:{LOON_MOCK_CONTENT_TYPES[original_data_type]}"')
     else:
         mock = normalize_mock_inline_data(mock, original_data_type)
 
     if not re.search(r"\bdata-path=", mock):
         mock = normalize_mock_inline_data(mock, original_data_type)
 
-    if not re.search(r"(?:(?<=^)|(?<=\s))data=", mock) and original_data_type in {"text", "plain"}:
+    if not re.search(r"(?:(?<=^)|(?<=\s))data=", mock) and original_data_type in {"text", "plain", "text/event-stream"}:
         mock = ensure_mock_option(mock, "data", '""')
         mock = ensure_mock_option(mock, "status-code", "200")
-        mock = ensure_mock_option(mock, "header", '"Content-Type:text/plain"')
+        mock = ensure_mock_option(mock, "header", f'"Content-Type:{LOON_MOCK_CONTENT_TYPES[original_data_type]}"')
 
     mock = ensure_mock_option(mock, "status-code", "200")
     status_text = mock_option_value(mock, "status-code")
@@ -2102,6 +2138,12 @@ def surge_module_requirement(
     sections: OrderedDict[str, list[str]],
     argument_items: list[tuple[str, str]],
 ) -> str | None:
+    if (
+        sections.get("IP Rewrite")
+        or any(re.match(r"^(?:tun-included-routes|ipv6-vif)\s*=", line) for line in sections["General"])
+        or any(re.search(r"(?:^|\()(?:DOMAIN-WILDCARD|PROCESS-NAME),", line) for line in sections["Rule"])
+    ):
+        return SURGE_5_23_FEATURE_REQUIREMENT
     has_jq_rewrite = any(
         re.match(r"^http-(?:request|response)-jq\s", line)
         for line in sections["Body Rewrite"]
@@ -2355,6 +2397,79 @@ def module_semantics_problem(sections: dict[str, list[str]]) -> tuple[str, str] 
     return None
 
 
+def convert_general_lines(lines: list[str], report: list[dict[str, str]], file: str) -> list[str]:
+    output: list[str] = []
+    seen: set[str] = set()
+    for raw in lines:
+        line = strip_rule_inline_comment(raw)
+        if not line:
+            continue
+        key, separator, value = line.partition("=")
+        key, value = key.strip().lower(), value.strip()
+        if key in {"include-tun", "ipv6-vif"}:
+            if key in seen:
+                add_report(report, file, "general-pass-through", f"Duplicate General key: {key}", raw)
+                continue
+            seen.add(key)
+        try:
+            if not separator:
+                raise ValueError("General line requires key=value")
+            if key in {"real-ip", "always-real-ip"} and value:
+                output.append(f"always-real-ip = %APPEND% {value}")
+            elif key == "include-tun":
+                networks: list[str] = []
+                for item in value.split(","):
+                    item = item.strip()
+                    if not re.fullmatch(r"[0-9.]+/[0-9]{1,2}", item):
+                        raise ValueError("include-tun requires explicit IPv4 CIDR literals without argument binding")
+                    network = str(ipaddress.IPv4Network(item, strict=False))
+                    if network not in networks:
+                        networks.append(network)
+                output.append("tun-included-routes = %APPEND% " + ", ".join(networks))
+            elif key == "ipv6-vif":
+                if value == "off":
+                    output.append("ipv6-vif = disabled")
+                elif value in {"auto", "always"}:
+                    add_report(report, file, "general-noop-skipped",
+                               "Loon plugins only override IPv6 VIF with off; preserve the main profile for auto/always.", raw)
+                else:
+                    raise ValueError("Loon ipv6-vif must be off, auto, or always")
+            else:
+                raise ValueError("General key has no verified conversion")
+        except ValueError as exc:
+            add_report(report, file, "general-pass-through", str(exc), raw)
+    return output
+
+
+def convert_ip_rewrite_lines(lines: list[str], report: list[dict[str, str]], file: str) -> list[str]:
+    output: list[str] = []
+    seen: set[str] = set()
+    for raw in lines:
+        line = strip_rule_inline_comment(raw)
+        if not line:
+            continue
+        address, separator, action = line.partition("=")
+        address, action = address.strip(), action.strip()
+        try:
+            if not separator or action not in {"reflect", "reject", "drop"}:
+                raise ValueError("IP Rewrite requires IPv4 = reflect, reject, or drop")
+            address = str(ipaddress.IPv4Address(address))
+        except ValueError as exc:
+            add_report(report, file, "unsupported-ip-rewrite", str(exc), raw)
+            continue
+        if address in seen:
+            add_report(report, file, "ip-rewrite-duplicate-skipped", "Preserved the first action for this IPv4 address.", raw)
+            continue
+        seen.add(address)
+        output.append(f"{address} = {action}")
+    return output
+
+
+def unavailable_script_urls(lines: list[str]) -> list[str]:
+    paths = (unquote_property_value(parse_properties(line.partition(" = ")[2]).get("script-path", "")) for line in lines)
+    return sorted(set(paths) & UNAVAILABLE_SCRIPT_URLS)
+
+
 def convert_file(
     path: Path,
     output_root: Path,
@@ -2383,13 +2498,11 @@ def convert_file(
     # Complete non-Script local diagnostics before any Script-derived exclusion.
     # Keep Rewrite eligibility decisions pending until all Script syntax is known.
     rewrite_exclusions: list[dict[str, str]] = []
-    for line in section_lines(source_sections, "General"):
-        match = re.match(r"^real-ip\s*=\s*(.+)$", line, flags=re.IGNORECASE)
-        if match:
-            sections["General"].append(f"always-real-ip = %APPEND% {match.group(1).strip()}")
-        else:
-            sections["General"].append(line)
-            add_report(report, path.name, "general-pass-through", "General line passed through without conversion.", line)
+    rule_exclusions: list[dict[str, str]] = []
+    sections["General"] = convert_general_lines(section_lines(source_sections, "General"), report, path.name)
+    sections["IP Rewrite"] = convert_ip_rewrite_lines(section_lines(source_sections, "IP Rewrite"), report, path.name)
+    if len(re.findall(r"(?im)^\s*\[IP Rewrite\]\s*$", source_text)) > 1:
+        add_report(report, path.name, "unsupported-ip-rewrite", "Loon does not apply duplicate [IP Rewrite] sections.", "[IP Rewrite]")
 
     for raw_rule_line in section_lines(source_sections, "Rule"):
         line = strip_rule_inline_comment(raw_rule_line)
@@ -2421,6 +2534,8 @@ def convert_file(
 
         try:
             sections["Rule"].append(convert_rule_line(line))
+        except UnverifiedRule as exc:
+            add_report(rule_exclusions, path.name, "module-excluded", str(exc), line)
         except RuleConversionError as exc:
             add_report(report, path.name, "unsupported-rule", str(exc), line)
 
@@ -2456,6 +2571,9 @@ def convert_file(
             add_report(report, path.name, "mitm-unsupported", "Unsupported MitM line", line)
 
     surge_system = convert_system_metadata(metadata.get("system"), report, path.name)
+    if surge_system != "mac" and any(re.search(r"(?:^|\()PROCESS-NAME,", line) for line in sections["Rule"]):
+        add_report(rule_exclusions, path.name, "module-excluded",
+                   "PROCESS-NAME conversion requires an explicitly macOS-only plugin; mobile logical-rule skipping is not equivalent.", "[Rule]")
     argument_preflight: list[dict[str, str]] = []
     convert_argument_lines(argument_lines, argument_preflight, path.name, used_names=set(argument_defaults))
     argument_fatal = fatal_report_items(argument_preflight)
@@ -2511,7 +2629,7 @@ def convert_file(
             invalid_scripts = True
     if invalid_scripts:
         return None
-    if fatal_report_items(report[report_start:]) and (script_lines or unsupported_rules or rewrite_exclusions):
+    if fatal_report_items(report[report_start:]) and (script_lines or unsupported_rules or rewrite_exclusions or rule_exclusions):
         return None
     if unsupported_rules:
         policies = ", ".join(dict.fromkeys(policy for _, policy in unsupported_rules))
@@ -2523,6 +2641,9 @@ def convert_file(
             f"REJECT-TINYGIF; found: {policies}.",
             unsupported_rules[0][0],
         )
+        return None
+    if rule_exclusions:
+        report.append(rule_exclusions[0])
         return None
     if rewrite_exclusions:
         report.append(rewrite_exclusions[0])
@@ -2618,6 +2739,16 @@ def convert_file(
     if preflight_problem:
         message, converted_line = preflight_problem
         add_report(report, path.name, "module-excluded", "Module was excluded from Surge output: " + message, converted_line)
+        return None
+
+    unavailable = unavailable_script_urls(semantic_preview["Script"])
+    if unavailable:
+        if fatal_report_items(report[report_start:]):
+            return None
+        add_report(report, path.name, "module-excluded",
+                   "Hidden because a required remote script returned HTTP 404 (verified 2026-10-17); raw Loon source is retained.",
+                   ", ".join(unavailable))
+        report[-1]["reason"] = "unavailable-remote-script"
         return None
 
     # Inert JQ is never emitted. Resolve actual resources only after local
