@@ -1,11 +1,11 @@
 {
-    "generated_at": "2026-10-16 19:12:07 +00:00",
+    "generated_at": "2026-10-17 14:36:05 +08:00",
     "input_dir": "Loon",
     "output_dir": "Surge",
     "total": 275,
-    "converted": 259,
-    "excluded": 16,
-    "warnings": 63,
+    "converted": 257,
+    "excluded": 18,
+    "warnings": 65,
     "items": [
         {
             "file": "AliYunDrive_remove_ads.lpx",
@@ -114,6 +114,13 @@
             "baseline_revision": "a991b1d3a6b9af719dedc1be8a2c767e8f4228f0",
             "original_line_sha256": "e776436d52cfc1c5564a864a08c74f0747fed8b37fd54524be44094c5349e1da",
             "replacement_line_sha256": "dd7f94259c7ea6774d6ec4c45931ff0a80789c966bbb3b44813e630efa15d8a5"
+        },
+        {
+            "file": "EasyBike_remove_ads.lpx",
+            "kind": "module-excluded",
+            "message": "Hidden because a required remote script returned HTTP 404 (verified 2026-10-17); raw Loon source is retained.",
+            "line": "https://kelee.one/Resource/JavaScript/EasyBike/mobileconfig-gateway.js",
+            "reason": "unavailable-remote-script"
         },
         {
             "file": "FollowRSS_checkin.lpx",
@@ -399,6 +406,13 @@
             "kind": "script-http-name-shared",
             "message": "Preserved repeated explicit HTTP Script names and source order. Surge documents line-based first-match selection, not a global name-uniqueness rule; repeated-name runtime behavior has not been device-tested. Names are observable via $script.name.",
             "line": "移除淘宝开屏广告"
+        },
+        {
+            "file": "Tencent_Video_remove_ads.lpx",
+            "kind": "module-excluded",
+            "message": "Hidden because a required remote script returned HTTP 404 (verified 2026-10-17); raw Loon source is retained.",
+            "line": "https://kelee.one/Resource/JavaScript/CommonScript/replace-body.js",
+            "reason": "unavailable-remote-script"
         },
         {
             "file": "TestFlightRegionUnlock.lpx",

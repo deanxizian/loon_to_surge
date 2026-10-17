@@ -1,0 +1,20 @@
+{
+  "checked_at": "2026-10-16T19:12:14+00:00",
+  "locally_rechecked_on": "2026-10-17",
+  "user_agent": "Loon/860 CFNetwork/3826.500.111.2.2 Darwin/24.4.0",
+  "evidence": "https://github.com/deanxizian/loon_to_surge/actions/runs/38953058308",
+  "scripts": [
+    {
+      "url": "https://kelee.one/Resource/JavaScript/CommonScript/replace-body.js",
+      "status": 404,
+      "source": "Tencent_Video_remove_ads.lpx",
+      "module": "腾讯视频去广告.sgmodule"
+    },
+    {
+      "url": "https://kelee.one/Resource/JavaScript/EasyBike/mobileconfig-gateway.js",
+      "status": 404,
+      "source": "EasyBike_remove_ads.lpx",
+      "module": "哈罗去广告.sgmodule"
+    }
+  ]
+}

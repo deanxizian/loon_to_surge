@@ -5,6 +5,7 @@
 参考方向：
 
 - [Loon Rewrite V2 官方文档](https://nsloon.app/docs/Rewrite/rewrite_v2/)：作为新版 Rewrite 的语法、类型、Action 顺序和执行阶段依据。
+- [Loon 插件](https://nsloon.app/docs/Plugin/)、[域名规则](https://nsloon.app/docs/Rule/domain_rule/)和[进程规则](https://nsloon.app/docs/Rule/process_rule/)：作为 Build 1007/1008 的 TUN 配置、IP Rewrite、通配符和进程匹配依据。逐项对照结论见 [审查依据](tests/fixtures/october-2026/README.md)。
 - [QingRex/LoonKissSurge](https://github.com/QingRex/LoonKissSurge)：主要对照其 Kelee 成品模块的 Surge 输出形态，包括 section 组织、`Map Local`、`http-response-jq`、`extended-matching`、`pre-matching` 等规则标记。
 - [Script-Hub-Org/Script-Hub](https://github.com/Script-Hub-Org/Script-Hub)：主要参考 `enable={...}` 转 Surge 行前缀开关、参数引号与顶层分隔处理，以及规则标记处理的边界。
 - [Loon Script](https://nsloon.app/docs/Script/)、[Script V2](https://nsloon.app/docs/Script/script_v2/) 与 [Script API](https://nsloon.app/docs/Script/script_api/) 官方文档：作为触发器、参数类型和运行上下文依据，包括 `generic` 的 `$environment.params.node/nodeInfo`。
@@ -23,6 +24,7 @@
 
 ```ini
 [General]
+[IP Rewrite]
 [Rule]
 [URL Rewrite]
 [Header Rewrite]
@@ -41,7 +43,7 @@ Script V2 按源文件中的出现顺序逐条准备；重复文本也保留独�
 
 转换先完成不依赖远程内容的语法与已知排除检查；`jq_file`/`jq-path` 的预检查只验证本地调用形状与潜在改写范围，不下载资源，也不把占位内容写入产物；远程 JQ 按可能生效的 Body Rewrite 做组合排除，不以资源可能为空来放宽重叠判定。确定候选资格后解析所需 JQ 资源、构造内存候选并检查组合语义，再核对 Object 脚本的当前 hash；未验签的 Object 候选不会落盘。最后仍须通过独立暂存产物校验与 JQ 编译，才替换发布目录。Rewrite 排除不会终止其余行的语法检查，已有致命诊断优先。
 
-输入只接受非空的 `[Argument]`、`[General]`、`[Rule]`、`[Rewrite]`、`[Script]` 和 `[MITM]`。出现其他非空 section，或仅大小写不同的重复 section 时，会记录 `unsupported-section` 并终止发布，避免静默丢掉上游新语法。
+输入只接受非空的 `[Argument]`、`[General]`、`[IP Rewrite]`、`[Rule]`、`[Rewrite]`、`[Script]` 和 `[MITM]`。出现其他非空 section，或仅大小写不同的重复 section 时，会记录 `unsupported-section` 并终止发布，避免静默丢掉上游新语法。重复的 `[IP Rewrite]` 即使大小写相同，也会阻断发布。
 
 ## 元数据
 
@@ -54,6 +56,7 @@ Loon 文件里的 `#!` 元数据按以下规则输出：
 - 使用模块参数、域名 `extended-matching`、普通 `[Body Rewrite]` 或 `[Map Local]` 的模块添加 `#!requirement=CORE_VERSION>=20`，这是官方已列出的基础兼容门槛。
 - 含 `http-request-jq`、`http-response-jq`、`pre-matching`、URL-REGEX `extended-matching`，或使用引号保护含逗号或以双引号开头的参数默认值的模块添加保守门槛 `#!requirement=CORE_VERSION>=6008000`。Surge Manual/Release Notes 只给出部分新特性的客户端最低版本（JQ 为 iOS 5.14 / Mac 5.9，引号值为 iOS 5.21 / Mac 6.8）；`6008000` 是官方版本表中已确认共同支持这些语法的 Core，会排除部分可能兼容的旧客户端，但不会向不支持这些特性的版本宣称可用。
 - `[Script]` 属性的双引号值使用 `\"` 或 `\\` 转义时，同样要求 `CORE_VERSION>=6008000`，包括 V2 Object 序列化后的 JSON `argument`、String 参数和正则属性；转换器与独立产物校验器均检查实际输出。依据 [Surge Quoted Values](https://manual.nssurge.com/profile/format.html)，此转义语法对应 iOS 5.21 / Mac 6.8。普通 Cron 引号、未使用这两种转义的引号值和未加引号的正则不会因此提高门槛。
+- `[IP Rewrite]`、转换后的 `tun-included-routes` / `ipv6-vif`、`DOMAIN-WILDCARD` 和受支持的 `PROCESS-NAME` 使用 `CORE_VERSION>=6010000`。IP Rewrite 官方最低版本为 iOS 5.23 / Mac 6.10；其他新增能力保守使用同一已核对版本。数值依据 [Core Version 编码](https://manual.nssurge.com/profile/requirement.html)：`6 * 1000000 + 10 * 1000`。此门槛优先于较低门槛，转换器和校验器均检查嵌套逻辑规则。
 
 模块文件名使用模块 `name`，并清理 Windows 不合法文件名字符。重名时自动追加 `-2`、`-3`。
 
@@ -86,7 +89,7 @@ Cron=select, "0 1 * * *", "0 2 * * *", tag=Cron
 
 ## General
 
-当前只特殊处理一类：
+`real-ip`（兼容别名 `always-real-ip`）追加到 Surge 的真实 IP 列表：
 
 ```ini
 real-ip = example.com
@@ -98,7 +101,25 @@ real-ip = example.com
 always-real-ip = %APPEND% example.com
 ```
 
-其他 `[General]` 行会原样透传，并在报告中记录 `general-pass-through`，表示没有做专门语义转换。
+同一插件内重复声明的 `real-ip` / `always-real-ip` 合并到一条 `always-real-ip`；`include-tun` 同样合并到一条路由列表。条目按首次出现的顺序去重，避免在 Surge 的键值 section 中重复写同一个键。依据 [Loon 插件 General 的列表合并语义](https://nsloon.app/docs/Plugin/#general)。
+
+Build 1007+ 的插件配置按以下方式转换：
+
+| Loon | Surge | 语义 |
+|---|---|---|
+| `include-tun = 10.8.0.9/24,10.7.0.1/32` | `tun-included-routes = %APPEND% 10.8.0.0/24, 10.7.0.1/32` | 规范化 IPv4 网段并去重，追加而不覆盖主配置 |
+| `ipv6-vif = off` | `ipv6-vif = disabled` | 关闭 VIF 的 IPv6 |
+| `ipv6-vif = auto` 或 `always` | 不生成覆盖项，记录 `general-noop-skipped` | Loon 插件这两个值不改变主配置，不能照搬为 Surge 的覆盖值 |
+
+`include-tun` 只接受带数字前缀长度的 IPv4 CIDR，不接受域名、裸 IP、IPv6、空项或参数绑定。重复的标量 `ipv6-vif` 键、无效值和其他未经核验的 General 项记录致命 `general-pass-through`，阻止发布；列表的后续声明也必须逐项校验，不能用去重掩盖非法值。`bypass-tun`、DNS 等其他 General 能力仍需单独核验，不能凭键名相似直接转换。
+
+路由追加依据 [Surge General](https://manual.nssurge.com/profile/general.html) 和 [IP Rewrite 的模块示例](https://manual.nssurge.com/features/ip-rewrite.html)。路由必须先让流量进入 VIF；IP Rewrite 不会自动添加路由，转换器也不会凭 IP Rewrite 内容合成额外路由。
+
+## IP Rewrite
+
+Loon Build 1007+ 的 `IPv4 = reflect|reject|drop` 转为同名 Surge section；只接受单个 IPv4 字面地址和这三个动作。保持源行顺序，同一地址保留第一条并记录 `ip-rewrite-duplicate-skipped`。即使后续重复地址已不会生效，其非法动作仍会导致发布失败。
+
+`reflect` 交换源、目的地址，`reject` 拒绝数据包，`drop` 静默丢弃；处理发生在常规规则、HTTP 改写和脚本之前，且只作用于进入 TUN/VIF 的包。Loon 不支持的 CIDR、IPv6、参数绑定、未知动作和重复 section 都记录致命 `unsupported-ip-rewrite`，不会借用 Surge 较宽的输入能力绕过源语法检查。
 
 ## Rule
 
@@ -107,7 +128,7 @@ always-real-ip = %APPEND% example.com
 - 会去掉规则行尾的独立 `//` 注释。
 - 逗号两侧空格会标准化。
 - 空行和注释行不会进入输出。
-- 只接受已核对 Loon 与 Surge 语义的类型：`DOMAIN`、`DOMAIN-SUFFIX`、`DOMAIN-KEYWORD`、`IP-CIDR`、`IP-CIDR6`、`GEOIP`、`IPASN`/`IP-ASN`、`AND`、`OR`、`NOT`、`DEST-PORT`、`PROTOCOL`、`SRC-PORT`、`URL-REGEX`、`USER-AGENT`。
+- 只接受已核对 Loon 与 Surge 语义的类型：`DOMAIN`、`DOMAIN-SUFFIX`、`DOMAIN-KEYWORD`、`DOMAIN-WILDCARD`、`IP-CIDR`、`IP-CIDR6`、`GEOIP`、`IPASN`/`IP-ASN`、`AND`、`OR`、`NOT`、`DEST-PORT`、`PROTOCOL`、`SRC-PORT`、`URL-REGEX`、`USER-AGENT`，以及下述受限的 `PROCESS-NAME`。
 - Loon 的 `IPASN` 会规范为 Surge 的 `IP-ASN`。规则 option 也按类型限制为 Surge 已确认支持的 `extended-matching`、`no-resolve`、`pre-matching` 组合，并递归检查逻辑规则子 matcher；未知类型或 option 会记录 `unsupported-rule` 并终止发布，不能原样透传。
 
 ### 裸域名
@@ -124,6 +145,21 @@ example.com
 DOMAIN,example.com,REJECT,extended-matching,pre-matching
 ```
 
+### 域名通配符与进程规则
+
+`DOMAIN-WILDCARD` 保留 `*`、`?`、字符集合和范围的原表达式，两端都按不区分大小写的完整域名匹配，`*` 可以跨越点号。它和其他域名类型一样补 `extended-matching`，拒绝策略补 `pre-matching`；嵌套 matcher 不带 `pre-matching`。带逗号的引号值保持内部空格和标点，不做整行的逗号正则替换。依据 [Surge Domain Rules](https://manual.nssurge.com/rules/domain.html)。
+
+`PROCESS-NAME` 只转换明确标注 macOS 的插件，支持绝对路径（精确或 `*` / `?` 通配）和以 `/` 结尾的字面目录前缀，保留大小写；允许在 `AND` / `OR` 中组合，不添加 `pre-matching`。以下合法 Loon 用法整模块排除：
+
+- 按可执行文件名匹配：Loon 忽略大小写，Surge 所有模式均区分大小写。
+- 非目录前缀的路径含字符集合或反斜杠：Surge 进程规则文档未确认这些匹配细节。
+- `NOT` 的任意后代包含进程条件：Loon 不会反转未知进程信息，Surge 未说明同样的处理。
+- 插件未明确限定 macOS：不能假设两端在移动平台忽略整条逻辑规则的方式相同。
+
+这些限制依据 [Loon 进程规则](https://nsloon.app/docs/Rule/process_rule/) 与 [Surge Process Rules](https://manual.nssurge.com/rules/process.html)。排除前继续检查其他规则及逻辑子项，非法源语法仍优先阻断发布。
+
+平台限制、`NOT` 检查和最低版本判断都按规则类型字段递归解析逻辑子项；正则或其他值中的 `PROCESS-NAME,`、`DOMAIN-WILDCARD,`、`URL-REGEX,` 文字不算对应规则。独立校验器也重新检查序列化后的规则结构。
+
 ### 模块策略限制
 
 Surge Manual 明确规定模块 `[Rule]` 只允许 `DIRECT`、`REJECT`、`REJECT-TINYGIF`。因此，只要一个 Loon 模块含有 `PROXY`、`REJECT-DROP` 或其他策略，该模块会整项排除并记录一次 `module-excluded`，不会删除单条规则后发布语义残缺的模块。
@@ -137,6 +173,7 @@ Surge Manual 明确规定模块 `[Rule]` 只允许 `DIRECT`、`REJECT`、`REJECT
 - `DOMAIN`
 - `DOMAIN-SUFFIX`
 - `DOMAIN-KEYWORD`
+- `DOMAIN-WILDCARD`
 - `URL-REGEX`
 - 逻辑规则里的域名类子规则
 
@@ -211,6 +248,7 @@ response if ${url} ~= /^https:\/\/example\.com/ then response.json.delete("data.
 - `request.json.*`、`response.json.*` 的 `add`、`delete`、`replace`、`jq` 转为 Surge JQ Body Rewrite。
 - HTTP(S) `json.jq_file` 会抓取并内联；相对资源文件因不包含在独立 `.lpx` 下载结果中而拒绝转换。
 - `response.body.mock` 转为 base64 `[Map Local]`；HTTP(S) `response.body.mock_file` 转为 `data-type=file`。
+- Mock 支持 `text/event-stream`（SSE）：保留正文、状态码和 `Content-Type:text/event-stream`。旧语法的内联、Base64 和远程文件 Mock 同样映射；这表示静态 Mock 响应，不承诺模拟逐条事件的发送时序。
 - Header、Body 正则和 JSON 修改的批量数组参数会按原顺序展开。
 
 多个 Action 只有在都能落入同一个 Surge section、且仍能保持从左到右执行语义时才会展开。方法、请求或响应 Header、响应状态码、逻辑组合条件，以及请求 Body Mock、响应 Mock 与 Header 的混合 Action 等，当前都不会被弱化为仅 URL 匹配。
@@ -571,20 +609,21 @@ hostname = %APPEND% example.com, *.example.org
 - `rewrite-empty-skipped`：上游存在空 JQ，Surge 不接受空程序，因此跳过该无有效操作的行。
 - `rewrite-action-corrected`：上游把完整 `del(...)` JQ 写在 JSON delete Action 后，按完整 JQ 原样转换，避免按空格拆坏。
 - `jq-expression-corrected`：上游 JQ 缺少变量绑定所需的分组，补齐括号后再输出。
-- `general-pass-through`：`[General]` 行原样透传。
+- `general-pass-through`：`[General]` 项无已核验映射、值无效或重复，阻止发布。
 - `jq-path-inline-failed`：远端 jq 抓取失败，保留原表达式。
 - `unsupported-rewrite`：Rewrite 动作不支持、无法解析，或 JSON 路径/参数不完整、无法安全转换。
 - `unsupported-header-rewrite`：Header rewrite 无法解析。
 - `unsupported-script`：Script 行不支持或无法解析。
 - `unsupported-rule`：Loon Rule 类型/option 未知、字段不完整或逻辑 matcher 无法安全转换。
 - `unsupported-section`：Loon 出现未知的非空 section，或仅大小写不同的重复 section。
+- `unsupported-ip-rewrite`：IP Rewrite 地址、动作或 section 重复不符合 Loon 语法。
 - `argument-parse`：Argument 行无法解析。
 - `argument-default`：Argument 行找不到默认值，或默认值含无法写入单行 Surge 参数表的实际换行。
 - `argument-name-collision`：参数名归一化后重名。
 - `mitm-unsupported`：MITM 行不支持。
 - `unsupported-system`：Loon 平台限制无法映射为 Surge 的 `ios/mac`。
 
-`argument-unused-dropped`、`generic-script-adapted`、`script-object-adapted`、`script-dynamic-cron-adapted`、`script-http-name-shared`、`source-quality-unverified`、`source-repair-applied`、`module-excluded`、`script-enable-*`、`script-property-corrected`、`rewrite-empty-skipped`、`rewrite-action-corrected` 和 `jq-expression-corrected` 是成功生成后的知情报告；其中 `module-excluded` 表示对应模块没有发布到 Surge。`source-repair-blocked`、`source-quality`、`script-verification`、`general-pass-through`、`jq-path-inline-failed`、`unsupported-*`、`argument-parse`、`argument-default`、`argument-name-collision`、`mitm-unsupported` 属于致命转换错误；出现时 GitHub Action 失败并保留上一版 Surge 产物。
+`argument-unused-dropped`、`general-noop-skipped`、`ip-rewrite-duplicate-skipped`、`generic-script-adapted`、`script-object-adapted`、`script-dynamic-cron-adapted`、`script-http-name-shared`、`source-quality-unverified`、`source-repair-applied`、`module-excluded`、`script-enable-*`、`script-property-corrected`、`rewrite-empty-skipped`、`rewrite-action-corrected` 和 `jq-expression-corrected` 是成功生成后的知情报告；其中 `module-excluded` 表示对应模块没有发布到 Surge。`source-repair-blocked`、`source-quality`、`script-verification`、`general-pass-through`、`jq-path-inline-failed`、`unsupported-*`、`argument-parse`、`argument-default`、`argument-name-collision`、`mitm-unsupported` 属于致命转换错误；出现时 GitHub Action 失败并保留上一版 Surge 产物。
 
 因此，成功生成的 `convert-report.json` 中存在 warning 不等于模块不可用。当前上游的空 JQ 和错标 JQ 会被明确记录，不会生成空规则或拆坏的规则。
 
@@ -619,6 +658,10 @@ macOS 上额外运行 `swift tests/verify_url_ignore_case.swift` 和 `swift test
 
 远程脚本报告独立写入 `.tmp/remote-script-audit.json`，CI 则保存为 Actions 附件。报告按 URL 去重，包含禁用脚本的引用，记录 SHA-256、最终下载地址、引用模块与行号，并扫描新 API 的点号/方括号写法。API 命中与 `$loon` / Surge 环境标记只提供人工复核线索，可能命中注释或字符串，也不能追踪别名、动态属性或外部加载代码。普通网络错误形成报告项；程序异常仍使检查失败。默认不因单个远程脚本问题阻断转换，可用 `--strict` 收紧。
 
+对已经人工确认持续 404 的脚本，`UNAVAILABLE_SCRIPT_URLS` 保存精确 URL，依据见 [失效资源记录](tests/fixtures/october-2026/unavailable-scripts.json)。实际 Script 路径引用这些 URL（包括禁用脚本）的整个模块记录 `module-excluded`，附 `reason=unavailable-remote-script`，从 Surge 产物、索引和网站列表移除；原始 Loon 下载保持完整。参数字符串里出现同一 URL 不触发隐藏。语法检查先于隐藏，独立产物校验也拒绝这些引用。
+
+这份名单不随单次联网失败自动增减。上游换用新路径后按正常流程重新转换；原路径恢复时，先复查资源内容与兼容性，再移除名单项。已隐藏模块不会进入发布产物的远程审计，因此需从转换报告查看隐藏原因，不能将零下载失败理解为这些 URL 已修复。
+
 还应扫描生成的 `Surge/*.sgmodule`，确认：
 
 - 没有 Loon `enable=` 或 `enabled?=` 残留。
@@ -630,6 +673,7 @@ macOS 上额外运行 `swift tests/verify_url_ignore_case.swift` 和 `swift test
 - 模块 `[Rule]` 只含已核对的规则类型，并且策略只含 `DIRECT`、`REJECT`、`REJECT-TINYGIF`。
 - `#!system` 只可能是 `ios` 或 `mac`。
 - 模块参数、域名 `extended-matching`、普通 `[Body Rewrite]` / `[Map Local]` 使用 `CORE_VERSION>=20`；JQ、`pre-matching`、URL-REGEX `extended-matching`、引号参数默认值及 Script 双引号值中的引号/反斜杠转义使用保守门槛 `CORE_VERSION>=6008000`。
+- 新增的 TUN/IP Rewrite、域名通配符和 Mac 进程路径功能要求 `CORE_VERSION>=6010000`；General 的路由追加、IPv6 禁用和 IP Rewrite 的地址、动作、重复项均独立校验。
 - 所有 Map Local `status-code` 都在 `200` 至 `999`。
 - Surge 清单与 `module-excluded` 报告合起来完整覆盖全部 Loon 模块。
 - 每个动态 `[Panel]` 引用的 `script-name` 都存在于同一模块的 `[Script]`。

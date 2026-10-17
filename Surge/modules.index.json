@@ -637,15 +637,6 @@
         ]
     },
     {
-        "source": "EasyBike_remove_ads.lpx",
-        "output": "哈罗去广告.sgmodule",
-        "name": "哈罗去广告",
-        "sections": [
-            "Script",
-            "MITM"
-        ]
-    },
-    {
         "source": "EasyCharge_remove_ads.lpx",
         "output": "e充电去广告.sgmodule",
         "name": "e充电去广告",
@@ -1888,17 +1879,6 @@
         "name": "Telegram重定向",
         "sections": [
             "URL Rewrite",
-            "MITM"
-        ]
-    },
-    {
-        "source": "Tencent_Video_remove_ads.lpx",
-        "output": "腾讯视频去广告.sgmodule",
-        "name": "腾讯视频去广告",
-        "sections": [
-            "Rule",
-            "Map Local",
-            "Script",
             "MITM"
         ]
     },

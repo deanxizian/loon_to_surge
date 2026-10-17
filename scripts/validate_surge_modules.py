@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import ipaddress
 from collections import Counter
 from dataclasses import replace
 import json
@@ -43,6 +44,8 @@ from convert_kelee_to_surge import (  # noqa: E402
     SECTION_ORDER,
     SUPPORTED_RULE_TYPES,
     SURGE_5_14_FEATURE_REQUIREMENT,
+    SURGE_5_23_FEATURE_REQUIREMENT,
+    UNAVAILABLE_SCRIPT_URLS,
     VERIFIED_SURGE_GENERIC_SCRIPT_PATHS,
     WARP_PANEL_SCRIPT_PATH,
     module_semantics_problem,
@@ -57,6 +60,8 @@ from convert_kelee_to_surge import (  # noqa: E402
 
 
 INFORMATIONAL_REPORT_KINDS = {
+    "general-noop-skipped",
+    "ip-rewrite-duplicate-skipped",
     "argument-unused-dropped",
     "generic-script-adapted",
     "jq-expression-corrected",
@@ -310,6 +315,26 @@ def script_quoted_escape_feature(lines: list[tuple[int, str]]) -> bool:
     return False
 
 
+def serialized_rule_types(text: str) -> set[str]:
+    """Derive feature usage from serialized rule structure, independently."""
+    fields = split_top_level(strip_wrapping_parentheses(text), ",")
+    if not fields:
+        return set()
+    kind = fields[0].strip().upper()
+    result = {kind}
+    if kind in LOGICAL_RULE_TYPES and len(fields) > 1:
+        children = split_top_level(strip_wrapping_parentheses(fields[1]), ",")
+        for child in children:
+            result.update(serialized_rule_types(child))
+    return result
+
+
+def validate_process_expression(prefix: str, value: str, errors: list[str]) -> None:
+    pattern = unquote_property_value(value)
+    if not pattern.startswith("/") or (not pattern.endswith("/") and any(char in pattern for char in "[]\\")):
+        errors.append(f"{prefix}: PROCESS-NAME requires a verified absolute path or literal directory prefix")
+
+
 def validate_nested_rule_matcher(prefix: str, matcher: str, errors: list[str]) -> None:
     text = strip_wrapping_parentheses(matcher)
     parts = split_top_level(text, ",")
@@ -321,6 +346,8 @@ def validate_nested_rule_matcher(prefix: str, matcher: str, errors: list[str]) -
     if rule_type not in SUPPORTED_RULE_TYPES:
         errors.append(f"{prefix}: unsupported logical Rule matcher type: {rule_type or '<empty>'}")
         return
+    if rule_type == "PROCESS-NAME":
+        validate_process_expression(prefix, parts[1], errors)
 
     options = {part.strip().lower() for part in parts[2:]}
     unknown_options = sorted(options - RULE_TYPE_OPTIONS[rule_type])
@@ -334,6 +361,8 @@ def validate_nested_rule_matcher(prefix: str, matcher: str, errors: list[str]) -
         errors.append(f"{prefix}: nested logical matcher contains pre-matching: {matcher}")
 
     if rule_type in LOGICAL_RULE_TYPES:
+        if rule_type == "NOT" and "PROCESS-NAME" in serialized_rule_types(text):
+            errors.append(f"{prefix}: NOT with PROCESS-NAME has unverified unknown-process semantics")
         group = strip_wrapping_parentheses(parts[1])
         children = split_top_level(group, ",")
         if not children:
@@ -381,8 +410,38 @@ def validate_section_line(
 
     prefix = f"{file}:{number}"
     if section == "General":
-        if "=" not in effective:
-            errors.append(f"{prefix}: invalid General line: {line}")
+        key, separator, value = effective.partition("=")
+        key, value = key.strip(), value.strip()
+        if not separator or key not in {"always-real-ip", "tun-included-routes", "ipv6-vif"}:
+            errors.append(f"{prefix}: unsupported General line: {line}")
+        elif key == "ipv6-vif":
+            if value != "disabled":
+                errors.append(f"{prefix}: converted plugin ipv6-vif must be disabled")
+        elif not value.startswith("%APPEND% ") or not value.removeprefix("%APPEND% ").strip():
+            errors.append(f"{prefix}: General list must append non-empty entries")
+        elif key == "tun-included-routes":
+            entries = [entry.strip() for entry in value.removeprefix("%APPEND% ").split(",")]
+            if len(entries) != len(set(entries)):
+                errors.append(f"{prefix}: duplicate included routes")
+            for entry in entries:
+                try:
+                    if not re.fullmatch(r"[0-9.]+/[0-9]{1,2}", entry):
+                        raise ValueError("expected IPv4 CIDR")
+                    network = ipaddress.IPv4Network(entry, strict=True)
+                    if str(network) != entry:
+                        raise ValueError("route is not canonical")
+                except ValueError:
+                    errors.append(f"{prefix}: invalid normalized IPv4 route: {entry}")
+        return
+
+    if section == "IP Rewrite":
+        address, separator, action = effective.partition("=")
+        try:
+            ipaddress.IPv4Address(address.strip())
+        except ValueError:
+            errors.append(f"{prefix}: IP Rewrite requires a single IPv4 address")
+        if not separator or action.strip() not in {"reflect", "reject", "drop"}:
+            errors.append(f"{prefix}: invalid IP Rewrite action")
         return
 
     if section == "Rule":
@@ -397,6 +456,8 @@ def validate_section_line(
         if rule_type not in SUPPORTED_RULE_TYPES:
             errors.append(f"{prefix}: unsupported Rule type: {rule_type or '<empty>'}")
             return
+        if rule_type == "PROCESS-NAME":
+            validate_process_expression(prefix, parts[1], errors)
         unknown_options = sorted(options - RULE_TYPE_OPTIONS[rule_type])
         if unknown_options:
             errors.append(f"{prefix}: unsupported {rule_type} Rule option(s): {unknown_options}")
@@ -419,6 +480,8 @@ def validate_section_line(
         ):
             errors.append(f"{prefix}: REJECT rule is missing pre-matching: {line}")
         if rule_type in LOGICAL_RULE_TYPES:
+            if rule_type == "NOT" and "PROCESS-NAME" in serialized_rule_types(effective):
+                errors.append(f"{prefix}: NOT with PROCESS-NAME has unverified unknown-process semantics")
             group = strip_wrapping_parentheses(parts[1])
             children = split_top_level(group, ",")
             if not children:
@@ -577,6 +640,8 @@ def validate_section_line(
             script_path = unquote_property_value(properties["script-path"])
             if script_path not in VERIFIED_SURGE_GENERIC_SCRIPT_PATHS:
                 errors.append(f"{prefix}: generic script-path is not verified for Surge: {script_path}")
+        if unquote_property_value(properties.get("script-path", "")) in UNAVAILABLE_SCRIPT_URLS:
+            errors.append(f"{prefix}: Script references a known unavailable HTTP 404 resource")
         if script_type in {"http-request", "http-response"} and "pattern" not in properties:
             errors.append(f"{prefix}: {script_type} Script is missing pattern")
         if script_type == "cron" and "cronexp" not in properties:
@@ -749,12 +814,23 @@ def validate_surge_modules(
         )
         has_modern_rule_feature = any(
             "pre-matching" in {part.strip().lower() for part in split_top_level(line, ",")[3:]}
-            or re.search(r"(?:^|\()URL-REGEX,", line) is not None
+            or "URL-REGEX" in serialized_rule_types(line)
             for _, line in sections.get("Rule", [])
         )
         has_quoted_script_escape = script_quoted_escape_feature(sections.get("Script", []))
+        has_process_rule = any("PROCESS-NAME" in serialized_rule_types(line) for _, line in sections.get("Rule", []))
+        has_latest_feature = (
+            "IP Rewrite" in sections
+            or any(re.match(r"^(?:tun-included-routes|ipv6-vif)\s*=", line) for _, line in sections.get("General", []))
+            or has_process_rule
+            or any("DOMAIN-WILDCARD" in serialized_rule_types(line) for _, line in sections.get("Rule", []))
+        )
+        if has_process_rule and system_lines != ["#!system=mac"]:
+            errors.append(f"{path.name}: PROCESS-NAME requires #!system=mac")
         expected_requirement = (
-            SURGE_5_14_FEATURE_REQUIREMENT
+            SURGE_5_23_FEATURE_REQUIREMENT
+            if has_latest_feature
+            else SURGE_5_14_FEATURE_REQUIREMENT
             if has_jq_rewrite or has_modern_rule_feature or has_quoted_argument_default or has_quoted_script_escape
             else BASE_MODULE_FEATURE_REQUIREMENT
             if has_base_module_feature
@@ -772,6 +848,10 @@ def validate_surge_modules(
         script_name_counts: Counter[str] = Counter()
         warp_script_names: set[str] = set()
         for name, lines in sections.items():
+            if name in {"General", "IP Rewrite"}:
+                keys = [line.partition("=")[0].strip() for _, line in lines if effective_section_line(name, line)]
+                if len(keys) != len(set(keys)):
+                    errors.append(f"{path.name}: duplicate keys in [{name}]")
             if not lines:
                 errors.append(f"{path.name}: empty section [{name}]")
             section_modules[name] += 1
