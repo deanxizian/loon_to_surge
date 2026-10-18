@@ -132,10 +132,8 @@
         "output": "高德地图去广告.sgmodule",
         "name": "高德地图去广告",
         "sections": [
-            "Rule",
             "Body Rewrite",
             "Map Local",
-            "Script",
             "MITM"
         ]
     },

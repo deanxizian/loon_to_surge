@@ -1,23 +1,17 @@
 {
-    "generated_at": "2026-10-17 14:36:05 +08:00",
+    "generated_at": "2026-10-18 18:24:43 +00:00",
     "input_dir": "Loon",
     "output_dir": "Surge",
     "total": 275,
     "converted": 257,
     "excluded": 18,
-    "warnings": 65,
+    "warnings": 64,
     "items": [
         {
             "file": "AliYunDrive_remove_ads.lpx",
             "kind": "script-http-name-shared",
             "message": "Preserved repeated explicit HTTP Script names and source order. Surge documents line-based first-match selection, not a global name-uniqueness rule; repeated-name runtime behavior has not been device-tested. Names are observable via $script.name.",
             "line": "移除阿里云盘广告"
-        },
-        {
-            "file": "Amap_remove_ads.lpx",
-            "kind": "script-http-name-shared",
-            "message": "Preserved repeated explicit HTTP Script names and source order. Surge documents line-based first-match selection, not a global name-uniqueness rule; repeated-name runtime behavior has not been device-tested. Names are observable via $script.name.",
-            "line": "移除路线规划推广, 移除首页推广"
         },
         {
             "file": "AppleWeatherEnhancer.lpx",
