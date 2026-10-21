@@ -17,11 +17,11 @@ from typing import Any
 from urllib.parse import urlsplit
 
 try:
-    from jq_program import compact_jq_program
+    from jq_program import JQProgramError, compact_jq_program
     from regex_overlap import patterns_may_overlap
     from surge_syntax import tokenize_surge_line
 except ModuleNotFoundError:
-    from scripts.jq_program import compact_jq_program
+    from scripts.jq_program import JQProgramError, compact_jq_program
     from scripts.regex_overlap import patterns_may_overlap
     from scripts.surge_syntax import tokenize_surge_line
 
@@ -446,7 +446,7 @@ def jq_array(segments: list[str | int]) -> str:
 def convert_delete_paths_to_jq(paths: list[str]) -> list[str]:
     if not paths:
         raise JsonRewriteError("JSON delete requires at least one key path")
-    return ["'delpaths([" + convert_path_to_jq_array(path) + "])'" for path in paths]
+    return [quote_jq_expression("delpaths([" + convert_path_to_jq_array(path) + "])") for path in paths]
 
 
 def convert_delete_source_to_jq(
@@ -478,7 +478,9 @@ def convert_replace_pair_to_jq(path_text: str, value_text: str) -> str:
     key = json.dumps(segments[-1], ensure_ascii=False, separators=(",", ":"))
     path = jq_array(segments)
     value = convert_json_value(value_text)
-    return f"'if (try (getpath({parent}) | has({key})) catch false) then (setpath({path}; {value})) else . end'"
+    return quote_jq_expression(
+        f"if (try (getpath({parent}) | has({key})) catch false) then (setpath({path}; {value})) else . end"
+    )
 
 
 def convert_replace_pairs_to_jq(text: str) -> list[str]:
@@ -524,17 +526,18 @@ def checked_remote_jq_program(program: str) -> str:
 
 
 def quote_jq_expression(text: str) -> str:
-    return "'" + text.replace("'", "\\'") + "'"
+    return "'" + compact_jq_program(text) + "'"
 
 
 def normalize_jq_program(expression: str, report: list[dict[str, str]], file: str, line: str) -> str | None:
     """Share legacy/V2 empty-program policy and known JQ compatibility repairs."""
+    expression = compact_jq_program(expression)
     if not expression.strip():
         add_report(report, file, "rewrite-empty-skipped",
                    "Empty JQ expression was skipped because Surge requires a non-empty JQ program.", line)
         return None
     # JQ interpolation can contain nested code and strings. A flat quote scan
-    # cannot classify those safely; leave such programs byte-for-byte intact.
+    # cannot classify those safely; do not apply historical repairs to them.
     if "\\(" in expression:
         return expression
     original = expression
@@ -595,9 +598,6 @@ def convert_jq_expression(text: str, report: list[dict[str, str]], file: str, li
     normalized = normalize_jq_program(expression, report, file, line)
     if normalized is None:
         return None
-    # Keep unchanged legacy quoting for stable old output.
-    if not match and normalized == expression:
-        return stripped
     return quote_jq_expression(normalized)
 
 
@@ -1527,7 +1527,8 @@ def convert_v2_json_action(
     if operation == "delete":
         for arguments in expand_v2_arguments(action, 1):
             path = v2_constant_string(arguments[0], f"{action.name} path")
-            converted.append(("Body Rewrite", f"{direction} {pattern} 'delpaths([{convert_path_to_jq_array(path)}])'"))
+            expression = quote_jq_expression(f"delpaths([{convert_path_to_jq_array(path)}])")
+            converted.append(("Body Rewrite", f"{direction} {pattern} {expression}"))
         return converted
 
     if operation in ("add", "replace"):
@@ -1692,7 +1693,7 @@ def convert_rewrite_v2_line(
             sections[section].append(converted_line)
     except (UnverifiedRewriteV2RegexFlags, UnverifiedRewriteV2Literal) as exc:
         return str(exc)
-    except RewriteV2Error as exc:
+    except (RewriteV2Error, JQProgramError) as exc:
         add_report(report, file, "unsupported-rewrite", f"Rewrite V2: {exc}", line)
     return None
 
@@ -2570,7 +2571,7 @@ def convert_file(
     for line in section_lines(source_sections, "Rewrite"):
         try:
             regex_flag_reason = convert_rewrite_line(line, rewrite_preflight_sections, rewrite_preflight_report, path.name, set(argument_defaults), jq_loader=lambda _: ".")
-        except JsonRewriteError as exc:
+        except (JsonRewriteError, JQProgramError) as exc:
             add_report(rewrite_preflight_report, path.name, "unsupported-rewrite", str(exc), line)
             continue
         if regex_flag_reason:
@@ -2784,7 +2785,7 @@ def convert_file(
             continue
         try:
             convert_rewrite_line(line, sections, report, path.name, set(argument_defaults))
-        except JsonRewriteError as exc:
+        except (JsonRewriteError, JQProgramError) as exc:
             add_report(report, path.name, "unsupported-rewrite", str(exc), line)
 
     if NODE_LINK_CHECK_SCRIPT_PATH in generic_paths:

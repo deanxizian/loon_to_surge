@@ -38,9 +38,12 @@ class UpgradeRegressionTest(unittest.TestCase):
         self.assertIn('http-response-jq', output)
 
     def test_repairs_do_not_rewrite_jq_literal_or_comments(self):
-        for program in ('")else .end;removeParentIfNameMatches"', '# )else .end;removeParentIfNameMatches\n.'):
+        for program, expected in (
+            ('")else .end;removeParentIfNameMatches"', '")else .end;removeParentIfNameMatches"'),
+            ('# )else .end;removeParentIfNameMatches\n.', '.'),
+        ):
             report = []
-            self.assertEqual(normalize_jq_program(program, report, 'Sample', 'line'), program)
+            self.assertEqual(normalize_jq_program(program, report, 'Sample', 'line'), expected)
             self.assertEqual(report, [])
 
     def test_jq_interpolation_literals_are_never_normalized(self):
