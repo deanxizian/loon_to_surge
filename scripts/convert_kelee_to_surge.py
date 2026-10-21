@@ -17,9 +17,11 @@ from typing import Any
 from urllib.parse import urlsplit
 
 try:
+    from jq_program import compact_jq_program
     from regex_overlap import patterns_may_overlap
     from surge_syntax import tokenize_surge_line
 except ModuleNotFoundError:
+    from scripts.jq_program import compact_jq_program
     from scripts.regex_overlap import patterns_may_overlap
     from scripts.surge_syntax import tokenize_surge_line
 
@@ -508,7 +510,7 @@ def fetch_jq_path(url: str) -> str:
         )
         with urllib.request.urlopen(request, timeout=30) as response:
             text = response.read().decode("utf-8")
-        JQ_PATH_CACHE[url] = " ".join(line.strip() for line in text.splitlines() if line.strip() and not line.lstrip().startswith("#"))
+        JQ_PATH_CACHE[url] = text
     return JQ_PATH_CACHE[url]
 
 
@@ -518,7 +520,7 @@ def checked_remote_jq_program(program: str) -> str:
         raise JsonRewriteError("Remote JQ resource did not provide text")
     if re.search(r"\{\{\{.*?\}\}\}", program, flags=re.DOTALL):
         raise JsonRewriteError("Remote JQ contains an unproven Surge module placeholder")
-    return program
+    return compact_jq_program(program)
 
 
 def quote_jq_expression(text: str) -> str:
