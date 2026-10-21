@@ -353,6 +353,8 @@ pattern data-type=text data="" status-code=200
 
 - `response-body-json-jq` 转为 `http-response-jq`。
 - `jq-path=<url>` 会尝试抓取远端 jq 内容并内联。抓取失败时报告 `jq-path-inline-failed`，并阻止本次生成结果替换上一版产物。
+- `jq-path` 和 V2 `json.jq_file` 共用远程 JQ 序列化：先按词法去除整行、行尾及文件末尾注释，再合成 Surge 的单行表达式。字符串中的 `#`、空格、转义与嵌套 `\(...)` 插值保持语义，字符串内的实际换行转为等价 JSON 转义；不能直接拼接含行尾注释的原始代码。下载缓存保留原文本，缓存命中和外部 loader 同样经过检查。依据 [JQ 注释规则](https://jqlang.org/manual/#comments)、[字符串插值](https://jqlang.org/manual/#string-interpolation) 和 [Surge JQ Body Rewrite](https://manual.nssurge.com/http/body-rewrite.html)。回归依据见 [JQ 注释案例](tests/fixtures/jq-comments/README.md)。
+- 注释行末奇数个反斜杠的续行语义在 JQ 1.7 和 1.8 间不同；未确认两端运行时版本前，这类远程程序明确阻断，不能猜测后续代码是否属于注释。未闭合字符串或括号也阻断，最终语法仍必须通过真实 `jq` 编译。
 - `response-body-json-del` 转为 jq `delpaths(...)`。
 - `response-body-json-replace` 转为带 `try (getpath(...) | has(...)) catch false` 检查的 `setpath`，避免父路径不存在时 jq 报错，也避免目标路径不存在时误建结构。
 
@@ -581,7 +583,7 @@ hostname = %APPEND% example.com, *.example.org
 
 ## 上游内容与候选校验
 
-新旧 JQ 使用同一空表达式和已验证修正规则。含 JQ 插值的程序保持原文，避免嵌套字符串被误改。生成候选在替换 `Surge/` 前运行完整校验；生产更新强制安装并使用 jq。校验失败保留原产物（不承诺操作系统/磁盘故障下跨目录提交的原子性）。
+新旧 JQ 使用同一空表达式和已验证修正规则。含 JQ 插值的程序不应用历史表达式替换，避免嵌套字符串被误改；远程程序的去注释与单行序列化仍按上述词法规则执行。生成候选在替换 `Surge/` 前运行完整校验；生产更新强制安装并使用 jq。校验失败保留原产物（不承诺操作系统/磁盘故障下跨目录提交的原子性）。
 
 `source_quality.py` 检查内联 JSON mock 的 UTF-8、Base64 和严格 JSON；生成端再次检查声明 JSON 的 Map Local 实际内容。车来了六个精确来源/URL允许已验证的协议外壳，内部仍须是合法 JSON；不全局放行这类外壳。远程/动态内容不能静态核验时明确记录验证范围。
 
