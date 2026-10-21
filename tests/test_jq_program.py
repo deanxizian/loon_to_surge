@@ -1,4 +1,4 @@
-"""Remote JQ comments must not swallow code when embedded in Surge."""
+"""JQ serialization must preserve comments, strings and interpolation semantics."""
 from __future__ import annotations
 
 import contextlib
@@ -45,6 +45,9 @@ class JQProgramTest(unittest.TestCase):
         self.assertEqual(len(compacted.splitlines()), 1)
         self.assertEqual(self.evaluate(program, value), [expected])
         self.assertEqual(self.evaluate(compacted, value), [expected])
+        token = converter.quote_jq_expression(program)
+        self.assertEqual(tokenize_surge_line("http-response-jq example " + token),
+                         ["http-response-jq", "example", compacted])
         return compacted
 
     def test_amap_comment_layout_preserves_filtering_and_order(self):
@@ -80,6 +83,19 @@ class JQProgramTest(unittest.TestCase):
         program = r'''"value \(({a: [1, # ) \" ] } are comment text
                                    2]}.a | add)) # literal"'''
         self.assert_equivalent(program, None, "value 3 # literal")
+
+    def test_apostrophes_and_backslash_parity_survive_profile_roundtrip(self):
+        values = ["O'Hara", r"literal \u0027", "quote \" and # hash"]
+        values += ["backslashes " + "\\" * count + "'" for count in range(5)]
+        self.assert_equivalent(json.dumps(values), None, values)
+        self.assert_equivalent('"outer \\("O\'Hara") end"', None, "outer O'Hara end")
+
+    def test_source_locations_are_rejected_only_in_code(self):
+        for program in ('$__loc__', '. |\n$__loc__', '"location \\($__loc__)"'):
+            with self.subTest(program=program), self.assertRaisesRegex(ValueError, "source locations"):
+                compact_jq_program(program)
+        self.assert_equivalent('"$__loc__" # $__loc__\n', None, "$__loc__")
+        self.assert_equivalent('1 as $__loc__suffix | $__loc__suffix', None, 1)
 
     def test_ambiguous_comment_continuations_are_rejected(self):
         for newline in ("\n", "\r\n"):
@@ -118,6 +134,113 @@ class JQProgramTest(unittest.TestCase):
         path = folder / "Sample.lpx"
         path.write_text("#!name=Sample\n[Rewrite]\n" + rule + "\n")
         return path
+
+    def inline_source(self, syntax, program):
+        folder = self.root / "Loon"
+        folder.mkdir(exist_ok=True)
+        if syntax == "v2":
+            rule = 'response if ${url} ~= /example/ then response.json.jq(' + json.dumps(program) + ')'
+        else:
+            rule = "example response-body-json-jq '" + program + "'"
+        path = folder / "Sample.lpx"
+        path.write_text("#!name=Sample\n[Rewrite]\n" + rule + "\n")
+        return path
+
+    def published_expressions(self):
+        text = (self.root / "Surge" / "Sample.sgmodule").read_text()
+        return [tokenize_surge_line(line)[2] for line in text.splitlines()
+                if line.startswith(("http-request-jq ", "http-response-jq "))]
+
+    def test_legacy_and_v2_inline_comments_and_apostrophes_publish(self):
+        program = '.name = "O\'Hara # literal" # trailing comment'
+        for syntax in ("legacy", "v2"):
+            with self.subTest(syntax=syntax):
+                source = self.inline_source(syntax, program)
+                before = source.read_bytes()
+                self.publish()
+                self.assertEqual(self.evaluate(self.published_expressions()[0], {}),
+                                 self.evaluate(program, {}))
+                self.assertEqual(source.read_bytes(), before)
+
+    def test_v2_multiline_program_and_string_keep_their_values(self):
+        program = '.name = "first\n# string\nsecond" | # code comment\n .count = 2'
+        self.inline_source("v2", program)
+        self.publish()
+        self.assertEqual(self.evaluate(self.published_expressions()[0], {}),
+                         [{"name": "first\n# string\nsecond", "count": 2}])
+
+    def test_generated_json_replacements_preserve_string_data(self):
+        value = "O'Hara # literal \\ tail\n\t\u2028\u2029\x85"
+        for operation in ("add", "replace"):
+            with self.subTest(operation=operation):
+                # Loon supports \n and \t, while the Unicode separators can be
+                # provided as literal data by its AST / batch API.
+                action = converter.V2Action("response.json." + operation,
+                    (converter.V2String(("name",)), converter.V2String((value,))))
+                lines = converter.convert_v2_json_action(action, "response", "example", [], "Sample", "line")
+                self.assertEqual(len(lines), 1)
+                self.assertEqual(len(lines[0][1].splitlines()), 1)
+                expression = tokenize_surge_line(lines[0][1])[2]
+                self.assertEqual(self.evaluate(expression, {"name": "old"}), [{"name": value}])
+                self.assertEqual(self.evaluate(expression, {}), [{"name": value}] if operation == "add" else [{}])
+        token = converter.convert_replace_pair_to_jq("name", "O'Hara")
+        self.assertEqual(self.evaluate(tokenize_surge_line(token)[0], {"name": "old"}), [{"name": "O'Hara"}])
+
+    def test_json_deletion_paths_keep_unicode_separators_in_one_profile_line(self):
+        key = "ad\u2028banner"
+        path = '["' + key + '"]'
+        tokens = converter.convert_delete_paths_to_jq([path])
+        action = converter.V2Action("response.json.delete", (converter.V2String((path,)),))
+        lines = converter.convert_v2_json_action(action, "response", "example", [], "Sample", "line")
+        tokens.append(lines[0][1].split("example ", 1)[1])
+        for token in tokens:
+            self.assertEqual(len(token.splitlines()), 1)
+            self.assertEqual(self.evaluate(tokenize_surge_line(token)[0], {key: 1, "keep": 2}), [{"keep": 2}])
+
+    def test_empty_comment_only_inline_program_is_a_noop(self):
+        for syntax in ("legacy", "v2"):
+            with self.subTest(syntax=syntax):
+                self.inline_source(syntax, "# comment only")
+                self.publish()
+                self.assertFalse((self.root / "Surge" / "Sample.sgmodule").exists())
+                report = json.loads((self.root / "Surge" / "convert-report.json").read_text())
+                self.assertEqual(report["excluded"], 1)
+
+    def test_invalid_inline_program_retains_all_previous_artifacts(self):
+        for syntax in ("legacy", "v2"):
+            with self.subTest(syntax=syntax):
+                self.inline_source(syntax, ".")
+                self.publish()
+                before = {p.name: p.read_bytes() for p in (self.root / "Surge").iterdir()}
+                for invalid in ('"bad\\\'escape"', '"unterminated', '$__loc__', "'not a JQ string'"):
+                    self.inline_source(syntax, invalid)
+                    with self.assertRaises(RuntimeError):
+                        self.publish()
+                    self.assertEqual(before, {p.name: p.read_bytes() for p in (self.root / "Surge").iterdir()})
+
+    def test_validator_comment_boundaries_and_source_diagnostics(self):
+        self.inline_source("v2", ".")
+        self.publish()
+        path = self.root / "Surge" / "Sample.sgmodule"
+        text = path.read_text().replace("http-response-jq example '.'",
+            "http-response-jq example '. # comment'\nhttp-response-jq other 'unknown_filter'")
+        path.write_text(text)
+        number = next(i for i, line in enumerate(text.splitlines(), 1) if "unknown_filter" in line)
+        with self.assertRaisesRegex(RuntimeError, f"Sample.sgmodule:{number}") as failure:
+            validate_surge_modules(str(self.root / "Loon"), str(self.root / "Surge"),
+                                   str(self.root / "Surge" / "convert-report.json"), require_jq=True)
+        self.assertIn("unknown_filter/0 is not defined", str(failure.exception))
+
+    def test_validation_resolves_names_without_executing_filters(self):
+        self.inline_source("v2", 'halt_error(42)')
+        self.publish()  # Would fail if the validation actually ran this filter.
+        before = {p.name: p.read_bytes() for p in (self.root / "Surge").iterdir()}
+        for program in ('unknown_filter', '$undefined_variable', '__surge_audit_0'):
+            with self.subTest(program=program):
+                self.inline_source("v2", program)
+                with self.assertRaisesRegex(RuntimeError, 'jq failed to compile'):
+                    self.publish()
+                self.assertEqual(before, {p.name: p.read_bytes() for p in (self.root / "Surge").iterdir()})
 
     def publish(self):
         with contextlib.chdir(self.root), contextlib.redirect_stdout(io.StringIO()):

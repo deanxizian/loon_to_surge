@@ -353,8 +353,9 @@ pattern data-type=text data="" status-code=200
 
 - `response-body-json-jq` 转为 `http-response-jq`。
 - `jq-path=<url>` 会尝试抓取远端 jq 内容并内联。抓取失败时报告 `jq-path-inline-failed`，并阻止本次生成结果替换上一版产物。
-- `jq-path` 和 V2 `json.jq_file` 共用远程 JQ 序列化：先按词法去除整行、行尾及文件末尾注释，再合成 Surge 的单行表达式。字符串中的 `#`、空格、转义与嵌套 `\(...)` 插值保持语义，字符串内的实际换行转为等价 JSON 转义；不能直接拼接含行尾注释的原始代码。下载缓存保留原文本，缓存命中和外部 loader 同样经过检查。依据 [JQ 注释规则](https://jqlang.org/manual/#comments)、[字符串插值](https://jqlang.org/manual/#string-interpolation) 和 [Surge JQ Body Rewrite](https://manual.nssurge.com/http/body-rewrite.html)。回归依据见 [JQ 注释案例](tests/fixtures/jq-comments/README.md)。
-- 注释行末奇数个反斜杠的续行语义在 JQ 1.7 和 1.8 间不同；未确认两端运行时版本前，这类远程程序明确阻断，不能猜测后续代码是否属于注释。未闭合字符串或括号也阻断，最终语法仍必须通过真实 `jq` 编译。
+- 所有 JQ 入口（旧版内联、V2 `json.jq`、远程 `jq-path` / `json.jq_file`，以及 JSON 增删改生成的表达式）共用单行序列化。先按词法去除整行、行尾及文件末尾注释；字符串中的 `#`、空格、转义与嵌套 `\(...)` 插值保持语义。字符串内的实际换行、控制字符及 Unicode 行分隔符转为等价 JSON 转义，不能直接拼接含行尾注释的原始代码。下载缓存保留原文本，缓存命中和外部 loader 同样经过检查。依据 [JQ 注释规则](https://jqlang.org/manual/#comments)、[字符串插值](https://jqlang.org/manual/#string-interpolation) 和 [Surge JQ Body Rewrite](https://manual.nssurge.com/http/body-rewrite.html)。回归依据见 [JQ 注释案例](tests/fixtures/jq-comments/README.md) 和 [全入口审查](tests/fixtures/jq-serialization/README.md)。
+- Surge 表达式统一使用外层单引号。JQ 字符串内的单引号写成等价的 `\u0027`，包括插值中的嵌套字符串；不能使用 JQ 不支持的 `\'`，也不能改变已有反斜杠的奇偶性或把字面 `\\u0027` 解码成单引号。空白或纯注释程序按空操作记录并跳过。
+- 注释行末奇数个反斜杠的续行语义在 JQ 1.7 和 1.8 间不同；未确认两端运行时版本前，这类程序明确阻断，不能猜测后续代码是否属于注释。代码中的 [`$__loc__`](https://jqlang.org/manual/#__loc__) 依赖源文件名及行号，内联无法保持，因此阻断；字符串字面值或注释中的同名文本不受影响。未闭合字符串或括号也阻断，最终语法仍必须通过真实 `jq` 编译。
 - `response-body-json-del` 转为 jq `delpaths(...)`。
 - `response-body-json-replace` 转为带 `try (getpath(...) | has(...)) catch false` 检查的 `setpath`，避免父路径不存在时 jq 报错，也避免目标路径不存在时误建结构。
 
@@ -583,7 +584,7 @@ hostname = %APPEND% example.com, *.example.org
 
 ## 上游内容与候选校验
 
-新旧 JQ 使用同一空表达式和已验证修正规则。含 JQ 插值的程序不应用历史表达式替换，避免嵌套字符串被误改；远程程序的去注释与单行序列化仍按上述词法规则执行。生成候选在替换 `Surge/` 前运行完整校验；生产更新强制安装并使用 jq。校验失败保留原产物（不承诺操作系统/磁盘故障下跨目录提交的原子性）。
+新旧 JQ 使用同一空表达式和已验证修正规则。含 JQ 插值的程序不应用历史表达式替换，避免嵌套字符串被误改；所有入口的去注释与单行序列化仍按上述词法规则执行。生成候选在替换 `Surge/` 前运行完整校验；生产更新强制安装并使用 jq。校验失败保留原产物（不承诺操作系统/磁盘故障下跨目录提交的原子性）。
 
 `source_quality.py` 检查内联 JSON mock 的 UTF-8、Base64 和严格 JSON；生成端再次检查声明 JSON 的 Map Local 实际内容。车来了六个精确来源/URL允许已验证的协议外壳，内部仍须是合法 JSON；不全局放行这类外壳。远程/动态内容不能静态核验时明确记录验证范围。
 
@@ -668,7 +669,7 @@ macOS 上额外运行 `swift tests/verify_url_ignore_case.swift` 和 `swift test
 
 - 没有 Loon `enable=` 或 `enabled?=` 残留。
 - 没有 Loon Rewrite V2 的 `request if ... then` 或 `response if ... then` 残留。
-- 所有 `http-request-jq`、`http-response-jq` 表达式均通过真实 `jq` 编译。
+- 所有 `http-request-jq`、`http-response-jq` 表达式均通过真实 `jq` 编译。批量检查将表达式直接放入 `empty` 下游，确保未定义函数或变量也被检查，同时不执行程序；不能只定义未引用的包装函数来代替编译。包装括号独占行，避免被表达式末尾注释吞掉；编译错误按实际行映射回模块文件及行号。
 - 没有旧式 `%Arg%` 或裸 `{Arg}` 占位符残留，模块参数应使用 `{{{Arg}}}`。
 - `#!arguments` 使用 `name:default,name2:default` 表格语法，参数名唯一，且每个参数都被生成内容引用。
 - URL Rewrite 的拒绝行使用 `_ reject`。

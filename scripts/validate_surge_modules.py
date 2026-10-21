@@ -973,8 +973,19 @@ def validate_surge_modules(
     if resolved_jq and jq_expressions:
         with tempfile.TemporaryDirectory(prefix="surge_jq_validation_") as temp_dir:
             program_path = Path(temp_dir) / "all-expressions.jq"
-            definitions = [f"def __surge_audit_{index}: ({expression});" for index, (_, _, expression) in enumerate(jq_expressions)]
-            program_path.write_text("\n".join(definitions) + "\nnull\n", encoding="utf-8", newline="\n")
+            expressions = []
+            source_lines = [None]  # The opening `empty | (` line.
+            for file, number, expression in jq_expressions:
+                # Keep the wrapper outside any final JQ comment. Track actual
+                # physical lines instead of assuming one line per expression.
+                wrapped = f"(\n{expression}\n)"
+                expressions.append(wrapped)
+                source_lines.extend([(file, number)] * (wrapped.count("\n") + 1))
+            # jq does not resolve calls inside unused definitions. Compile the
+            # expressions directly after empty, without executing any of them
+            # or introducing helper names that a source could accidentally use.
+            program_path.write_text("empty | (\n" + ",\n".join(expressions) + "\n)\n",
+                                    encoding="utf-8", newline="\n")
             result = subprocess.run(
                 [resolved_jq, "-n", "-f", str(program_path)],
                 capture_output=True,
@@ -987,9 +998,11 @@ def validate_surge_modules(
             program_lines = sorted({int(item) for item in re.findall(r"line (\d+)", result.stderr)})
             sources = []
             for program_line in program_lines:
-                if 1 <= program_line <= len(jq_expressions):
-                    file, number, _ = jq_expressions[program_line - 1]
-                    sources.append(f"{file}:{number}")
+                if 1 <= program_line <= len(source_lines) and source_lines[program_line - 1] is not None:
+                    file, number = source_lines[program_line - 1]
+                    source = f"{file}:{number}"
+                    if source not in sources:
+                        sources.append(source)
             source_text = f" ({', '.join(sources)})" if sources else ""
             errors.append(f"jq failed to compile generated expressions{source_text}: {result.stderr.strip()}")
 
